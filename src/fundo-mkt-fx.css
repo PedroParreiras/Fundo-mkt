@@ -1,0 +1,127 @@
+/* ============================================================================
+   Fundo MKT visual FX — additive, scoped (.fm-*) layer on top of the inline
+   styles the pages already use. Only sets properties the inline styles DON'T
+   (animation / :hover|:focus transform+shadow+filter), so it never fights them.
+   All motion is gated behind prefers-reduced-motion.
+   ============================================================================ */
+
+@keyframes fm-fade-up   { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+@keyframes fm-fade-in   { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fm-pop       { 0% { opacity: 0; transform: translateY(18px) scale(.92) } 60% { transform: translateY(-3px) scale(1.015) } 100% { opacity: 1; transform: none } }
+@keyframes fm-shimmer   { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+@keyframes fm-dot-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(var(--secondary-rgb), .5) } 50% { box-shadow: 0 0 0 6px rgba(var(--secondary-rgb), 0) } }
+@keyframes fm-bounce    { 0% { transform: scale(1) } 30% { transform: scale(1.28) } 60% { transform: scale(.9) } 100% { transform: scale(1) } }
+@keyframes fm-spin      { to { transform: rotate(360deg) } }
+@keyframes fm-bar-grow  { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+@keyframes fm-success   { 0% { transform: scale(.96) } 40% { transform: scale(1.06) } 100% { transform: scale(1) } }
+@keyframes fm-glow-sweep{ 0% { transform: translateX(-120%) } 60%, 100% { transform: translateX(220%) } }
+
+/* ── page / section entrances ─────────────────────────────────────────────── */
+.fm-page  { animation: fm-fade-up .5s cubic-bezier(.2,.7,.2,1) both }
+.fm-head  { animation: fm-fade-up .5s cubic-bezier(.2,.7,.2,1) both }
+.fm-section { animation: fm-fade-up .55s cubic-bezier(.2,.7,.2,1) both }
+
+/* Animated accent rule that can sit under a page title. */
+.fm-title-rule { position: relative; height: 3px; width: 46px; margin-top: 10px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--secondary), rgba(var(--secondary-rgb), .15));
+  transform-origin: left center; animation: fm-bar-grow .6s cubic-bezier(.2,.7,.2,1) both .1s }
+
+/* ── staggered grid / list children ──────────────────────────────────────── */
+.fm-stagger > * { animation: fm-fade-up .45s cubic-bezier(.2,.7,.2,1) both }
+.fm-stagger > *:nth-child(1)  { animation-delay: .02s }
+.fm-stagger > *:nth-child(2)  { animation-delay: .05s }
+.fm-stagger > *:nth-child(3)  { animation-delay: .08s }
+.fm-stagger > *:nth-child(4)  { animation-delay: .11s }
+.fm-stagger > *:nth-child(5)  { animation-delay: .14s }
+.fm-stagger > *:nth-child(6)  { animation-delay: .17s }
+.fm-stagger > *:nth-child(7)  { animation-delay: .20s }
+.fm-stagger > *:nth-child(8)  { animation-delay: .23s }
+.fm-stagger > *:nth-child(9)  { animation-delay: .26s }
+.fm-stagger > *:nth-child(10) { animation-delay: .29s }
+.fm-stagger > *:nth-child(11) { animation-delay: .32s }
+.fm-stagger > *:nth-child(12) { animation-delay: .35s }
+.fm-stagger > *:nth-child(n+13) { animation-delay: .38s }
+
+/* ── cards (only those without JS-driven inline hover) ───────────────────── */
+.fm-card { transition: transform .2s cubic-bezier(.2,.7,.2,1), box-shadow .2s ease; will-change: transform }
+.fm-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(0,0,0,.34), 0 0 0 1px rgba(var(--secondary-rgb), .35) }
+.fm-card .fm-card-img { transition: transform .35s cubic-bezier(.2,.7,.2,1) }
+.fm-card:hover .fm-card-img { transform: scale(1.06) }
+
+/* ── buttons: shine sweep + lift + tactile press ─────────────────────────── */
+.fm-btn { position: relative; overflow: hidden; transition: transform .12s ease, filter .18s ease, box-shadow .22s ease; will-change: transform }
+.fm-btn:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-1px) }
+.fm-btn:active:not(:disabled) { transform: scale(.96) }
+.fm-btn:disabled { opacity: .6; cursor: not-allowed }
+.fm-btn::after { content: ''; position: absolute; top: 0; left: 0; width: 35%; height: 100%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); transform: translateX(-120%) }
+.fm-btn:hover:not(:disabled)::after { animation: fm-glow-sweep .8s ease }
+/* keyboard focus affordance (mouse clicks don't trigger :focus-visible) */
+.fm-btn:focus-visible, .fm-btn-soft:focus-visible, .fm-card:focus-visible {
+  outline: none; box-shadow: 0 0 0 3px rgba(var(--secondary-rgb), .45) }
+
+/* ghost / quieter buttons: lift + ring, no shine */
+.fm-btn-soft { transition: transform .12s ease, border-color .18s ease, background-color .18s ease }
+.fm-btn-soft:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--secondary) }
+.fm-btn-soft:active:not(:disabled) { transform: scale(.97) }
+
+/* success pop (add-to-cart / approved) */
+.fm-success { animation: fm-success .4s ease both }
+
+/* ── inputs: focus glow ring (box-shadow isn't set inline) ────────────────── */
+.fm-input:focus, .fm-search:focus { box-shadow: 0 0 0 3px rgba(var(--secondary-rgb), .28); border-color: var(--secondary) !important }
+.fm-input, .fm-search { transition: box-shadow .18s ease, border-color .18s ease }
+
+/* ── loading skeletons + spinner ─────────────────────────────────────────── */
+.fm-skeleton { background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.13) 37%, rgba(255,255,255,.05) 63%);
+  background-size: 200% 100%; animation: fm-shimmer 1.4s ease-in-out infinite; border-radius: 12px }
+.fm-spinner { display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: -3px;
+  border: 2px solid rgba(var(--secondary-rgb), .3); border-top-color: var(--secondary); animation: fm-spin .7s linear infinite }
+
+/* ── modal overlay + box ─────────────────────────────────────────────────── */
+.fm-overlay { animation: fm-fade-in .2s ease both; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px) }
+.fm-modal   { animation: fm-pop .36s cubic-bezier(.2,.85,.25,1) both }
+
+/* ── cart widget ─────────────────────────────────────────────────────────── */
+.fm-cart { animation: fm-pop .42s cubic-bezier(.2,.85,.25,1) both; transition: transform .18s ease, box-shadow .25s ease }
+.fm-cart:hover { transform: translateY(-3px) scale(1.015) }
+.fm-bounce { display: inline-block; animation: fm-bounce .45s ease }
+
+/* ── tables: row hover + staggered row entrance ──────────────────────────── */
+.fm-table tbody tr { transition: background-color .15s ease }
+.fm-table tbody tr:hover { background: rgba(var(--secondary-rgb), .07) }
+.fm-table tbody tr { animation: fm-fade-in .4s ease both }
+.fm-table tbody tr:nth-child(1) { animation-delay: .03s }
+.fm-table tbody tr:nth-child(2) { animation-delay: .06s }
+.fm-table tbody tr:nth-child(3) { animation-delay: .09s }
+.fm-table tbody tr:nth-child(4) { animation-delay: .12s }
+.fm-table tbody tr:nth-child(5) { animation-delay: .15s }
+.fm-table tbody tr:nth-child(n+6) { animation-delay: .18s }
+
+/* ── step bar (delivery progress) ────────────────────────────────────────── */
+.fm-step-current { animation: fm-dot-pulse 1.9s ease-out infinite }
+.fm-step-fill { transform-origin: left center; animation: fm-bar-grow .55s cubic-bezier(.2,.7,.2,1) both }
+
+/* ── progress / accumulation bars: smooth width tweening ─────────────────── */
+.fm-progress { transition: width .6s cubic-bezier(.2,.7,.2,1), background-color .3s ease }
+
+/* ── reduced motion: kill all of the above ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .fm-page, .fm-head, .fm-section, .fm-title-rule, .fm-stagger > *, .fm-cart, .fm-bounce,
+  .fm-overlay, .fm-modal, .fm-success, .fm-step-current, .fm-step-fill, .fm-spinner,
+  .fm-table tbody tr, .fm-btn:hover::after { animation: none !important }
+  .fm-card, .fm-btn, .fm-btn-soft, .fm-cart, .fm-progress, .fm-input, .fm-search { transition: none !important }
+  .fm-card:hover, .fm-btn:hover, .fm-cart:hover { transform: none !important }
+}
+
+/* ── light theme (data-theme on <html>, see PLATFORM THEMES in index.css) ── */
+[data-theme="light"] .fm-card:hover {
+  box-shadow: 0 16px 34px rgba(14, 32, 80, 0.12), 0 0 0 1px rgba(var(--secondary-rgb), .35);
+}
+[data-theme="light"] .fm-skeleton {
+  background: linear-gradient(90deg, #eceef1 25%, #f6f7f9 37%, #eceef1 63%);
+  background-size: 200% 100%;
+}
+[data-theme="light"] .area-tab--active {
+  box-shadow: 0 3px 10px rgba(14, 32, 80, 0.18);
+}
