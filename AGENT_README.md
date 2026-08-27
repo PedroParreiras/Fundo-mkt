@@ -48,5 +48,23 @@ Nada aqui persiste. Para virar produto é preciso: endpoint de carteira
 (saldo/contribuições), catálogo de ações, e resgate (POST que debita e abre o
 pedido) — `useFundoWallet` é o único ponto a trocar.
 
-Pendências de plataforma (fora deste repo): slug no nginx, slug no deploy
-runner, tile no hub `/system` e flag `can_access_*` no backend `auth`.
+## Acesso (por enquanto: só admin)
+
+`src/components/AdminOnly.tsx` embrulha a rota: quem não é `role === 'admin'`
+na sessão do HRM vê "Em construção". É gate de **UI** (lê o `user` do
+localStorage, forjável) — vale como "ainda não é pra todo mundo", não como
+autorização. Quando existir API do fundo, o servidor é que tem que barrar,
+com a flag `can_access_fundo_mkt`.
+
+No hub `/system` o nó **FUNDO** está com `adminOnly: true`
+(`honesty/src/pages/system/HonestySystemPage.tsx`).
+
+## Plataforma (já wired)
+
+- nginx: slug `fundo-mkt` nas 5 regex de submódulo de `/etc/nginx/sites-enabled/behonest`
+- symlink `honesty/submodules/fundo-mkt` → este repo (é o que o deploy resolve)
+- deploy: `fundo-mkt` em `ALLOWED_TARGETS`/`TARGET_LABELS` de `auth/routes/build.py`
+  e no registry de `honesty/deploy/sync-submodules.sh` → dá pra enfileirar deploy
+  pelo Painel Administrativo
+
+Pendência: flag `can_access_fundo_mkt` no backend `auth` (hoje é adminOnly).

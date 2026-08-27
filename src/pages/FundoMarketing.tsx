@@ -11,7 +11,6 @@ import { Wallet } from '../fundo/components/Wallet'
 import type { FundView } from '../fundo/types'
 import { useFundoWallet, type StoreSelection } from '../fundo/useFundoWallet'
 import { useToast } from '../fundo/useToast'
-import '../styles/fundo-proto.css'
 
 function readUserName(): string {
   try {
