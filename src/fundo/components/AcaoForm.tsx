@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { draftDe, type AcaoDraft } from '../acaoDraft'
-import { CATEGORIAS, MODOS } from '../meta'
+import { CATEGORIA_DOCUMENTO, CATEGORIAS, MODOS } from '../meta'
 import type { Acao, Categoria, Modo } from '../types'
+import { AcaoThumb } from './AcaoThumb'
+import { FileField } from './FileField'
 
 interface AcaoFormProps {
   inicial?: Acao
@@ -9,13 +11,20 @@ interface AcaoFormProps {
   erro: string | null
   onCancel: () => void
   onSubmit: (d: AcaoDraft) => void
+  /** Sobe a imagem da ação. Só existe depois de salva (precisa do id), então
+   *  no formulário de criação a seção nem aparece. */
+  onImagem?: (dataUrl: string) => void
+  onRemoverImagem?: () => void
 }
 
 /** Formulário de ação. Não valida regra de negócio: quem valida preço,
  *  categoria e modo é o backend, e a mensagem dele é a que aparece. */
-export function AcaoForm({ inicial, salvando, erro, onCancel, onSubmit }: AcaoFormProps) {
+export function AcaoForm({
+  inicial, salvando, erro, onCancel, onSubmit, onImagem, onRemoverImagem,
+}: AcaoFormProps) {
   const [d, setD] = useState<AcaoDraft>(draftDe(inicial))
   const set = <K extends keyof AcaoDraft>(k: K, v: AcaoDraft[K]) => setD((p) => ({ ...p, [k]: v }))
+  const ehDocumento = d.categoria === CATEGORIA_DOCUMENTO
 
   return (
     <form className="ger-form" onSubmit={(e) => { e.preventDefault(); onSubmit(d) }}>
@@ -33,11 +42,18 @@ export function AcaoForm({ inicial, salvando, erro, onCancel, onSubmit }: AcaoFo
           </select>
         </label>
 
-        <label className="fld">
-          <span>Preço por unidade (R$)</span>
-          <input type="number" min={0} step="0.01" value={d.preco}
-            onChange={(e) => set('preco', e.target.value)} placeholder="180,00" />
-        </label>
+        {ehDocumento ? (
+          <div className="fld">
+            <span>Preço por unidade (R$)</span>
+            <div className="fld-static">Definido pelo documento que o franqueado envia</div>
+          </div>
+        ) : (
+          <label className="fld">
+            <span>Preço por unidade (R$)</span>
+            <input type="number" min={0} step="0.01" value={d.preco}
+              onChange={(e) => set('preco', e.target.value)} placeholder="180,00" />
+          </label>
+        )}
 
         <label className="fld fld-wide">
           <span>Descrição</span>
@@ -62,11 +78,37 @@ export function AcaoForm({ inicial, salvando, erro, onCancel, onSubmit }: AcaoFo
           <span>Emoji</span>
           <input value={d.emoji} onChange={(e) => set('emoji', e.target.value)} maxLength={4} />
         </label>
+
+        {inicial && onImagem && (
+          <div className="fld fld-wide">
+            <span>Imagem do card</span>
+            <div className="img-row">
+              <AcaoThumb acao={inicial} className="img-preview" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <FileField
+                  label=""
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  hint="JPG, PNG, GIF ou WEBP até 8 MB. Com imagem, ela substitui o emoji no card."
+                  atual={inicial.tem_imagem ? 'imagem salva' : null}
+                  onPick={(dataUrl) => onImagem(dataUrl)}
+                  onClear={inicial.tem_imagem ? onRemoverImagem : undefined}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="ger-hint">
         O <b>modo</b> define o texto de prazo que o franqueado vê: Entrega → "entrega prevista",
         Ativação → "no ar em até", Evento → "planejamento em até".
+        {ehDocumento && (
+          <>
+            {' '}Em <b>Boleto ou Nota Fiscal</b> o franqueado informa o valor e anexa o
+            documento; o pedido passa pela etapa de <b>Conferência</b> antes de seguir, e o
+            gestor pode recusar com um motivo — aí o valor volta pra carteira.
+          </>
+        )}
       </div>
 
       {erro && <div className="co-warn" style={{ margin: '10px 0 0' }}>{erro}</div>}

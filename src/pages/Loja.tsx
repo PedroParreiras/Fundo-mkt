@@ -7,7 +7,7 @@ import { Toast } from '../fundo/components/Toast'
 import { Wallet } from '../fundo/components/Wallet'
 import { useFundo } from '../fundo/fundoStore'
 import { CATEGORIAS } from '../fundo/meta'
-import type { Acao } from '../fundo/types'
+import type { Acao, TipoDocumento } from '../fundo/types'
 import { useToast } from '../fundo/useToast'
 import { api, ApiError } from '../lib/api'
 import { isGestor, userName } from '../lib/session'
@@ -32,11 +32,14 @@ export function Loja() {
 
   const abrir = (a: Acao) => { setErroResgate(null); setAlvo(a) }
 
-  const resgatar = async (sel: { nome: string; store_unique_id?: string; quantidade: number }[]) => {
+  const resgatar = async (payload: {
+    lojas: { nome: string; store_unique_id?: string; quantidade: number }[]
+    valor?: number; documento_tipo?: TipoDocumento; documento?: string
+  }) => {
     if (!alvo) return
     setEnviando(true)
     try {
-      const pedido = await api.resgatar(alvo.id, sel)
+      const pedido = await api.resgatar({ acao_id: alvo.id, ...payload })
       setAlvo(null)
       await refresh()
       toast(`${pedido.codigo} solicitado — acompanhe em Pedidos`)
@@ -55,7 +58,7 @@ export function Loja() {
         desc="Use o saldo que você acumulou no fundo para contratar ações que fazem a sua loja vender mais. Escolha por categoria, veja o valor e selecione."
       />
 
-      <Wallet carteira={carteira!} userName={userName()} lojasCount={lojas.length}
+      <Wallet carteira={carteira} userName={userName()} lojasCount={lojas.length}
         onOpenHistory={() => setHistOpen(true)} />
 
       <div className="fund-note">
@@ -99,11 +102,11 @@ export function Loja() {
         </>
       )}
 
-      <HistoryModal open={histOpen} carteira={carteira!} onClose={() => setHistOpen(false)} />
+      <HistoryModal open={histOpen} carteira={carteira} onClose={() => setHistOpen(false)} />
       <CheckoutModal
         key={alvo?.id ?? 'closed'}
         acao={alvo}
-        saldo={carteira!.saldo}
+        saldo={carteira.saldo}
         lojas={lojas}
         erro={erroResgate}
         enviando={enviando}

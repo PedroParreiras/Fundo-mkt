@@ -1,12 +1,19 @@
 /** Contratos do Fundo de Marketing — espelham o JSON de /api/fundo-mkt/*. */
 
-export type Categoria = 'tracao' | 'recorrencia' | 'branding'
+/** `documento` é a categoria em que o franqueado informa o valor e anexa
+ *  boleto ou nota fiscal — não tem preço de tabela nem quantidade. */
+export type Categoria = 'tracao' | 'recorrencia' | 'branding' | 'documento'
+
+export type TipoDocumento = 'boleto' | 'nota_fiscal'
 
 /** Como a ação é entregue — define o rótulo de prazo no resgate. */
 export type Modo = 'Entrega' | 'Ativação' | 'Evento'
 
 /** Esteira do pedido, na ordem em que o stepper mostra. */
-export type Status = 'solicitacao' | 'conferencia' | 'solicitado' | 'disponivel'
+export type Etapa = 'solicitacao' | 'conferencia' | 'solicitado' | 'disponivel'
+
+/** `recusado` é terminal e fica FORA da esteira (etapa = -1). */
+export type Status = Etapa | 'recusado'
 
 export interface Acao {
   id: number
@@ -21,6 +28,10 @@ export interface Acao {
   prazo_dias: number
   ativo: boolean
   ordem: number
+  /** Imagem substitui o emoji na vitrine quando presente. */
+  tem_imagem: boolean
+  /** Carimbo da imagem — entra na URL p/ o navegador não servir a antiga. */
+  imagem_v: number
 }
 
 export interface CategoriaMeta {
@@ -84,30 +95,34 @@ export interface Pedido {
   date: string
   usuario_id: number
   usuario_nome: string
+  categoria: Categoria
+  documento_tipo: TipoDocumento | null
+  motivo_recusa: string | null
+  tem_documento: boolean
+  documento_nome: string | null
   lojas: PedidoLoja[]
   eventos: PedidoEvento[]
 }
 
+export interface Campanha {
+  id: number
+  ano: number
+  mes: number
+  mes_nome: string
+  trimestre: number
+  tema: string
+  descricao: string
+  ativo: boolean
+  /** Ações recomendadas, já resolvidas (só as ativas). */
+  acoes: Acao[]
+}
+
 export interface PedidosResposta {
   pedidos: Pedido[]
-  etapas: Status[]
+  etapas: Etapa[]
   labels: Record<Status, string>
 }
 
-export interface ScheduleMonth {
-  m: string
-  /** Mês 1-12, usado para destacar o mês atual. */
-  n: number
-  theme: string
-  desc: string
-  /** Slugs de ações recomendadas para a campanha. */
-  items: string[]
-}
-
-export interface ScheduleQuarter {
-  q: string
-  months: ScheduleMonth[]
-}
 
 export interface UsuarioCarteira {
   id: number

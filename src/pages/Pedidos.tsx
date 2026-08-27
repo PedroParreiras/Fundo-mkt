@@ -1,6 +1,7 @@
+import { DocumentoLink } from '../fundo/components/DocumentoLink'
 import { StatusTrack } from '../fundo/components/StatusTrack'
 import { brl } from '../fundo/format'
-import { ETAPA_CLASSE } from '../fundo/meta'
+import { ETAPA_CLASSE, STATUS_RECUSADO } from '../fundo/meta'
 import { usePedidos } from '../fundo/usePedidos'
 import { Carregando, ErroBox, EstadoVazio, Page, PageHead } from './shared'
 
@@ -34,7 +35,13 @@ export function Pedidos() {
             <div className={`fo-status ${ETAPA_CLASSE[p.status]}`}>{p.status_label}</div>
           </div>
 
-          <StatusTrack etapa={p.etapa} eventos={p.eventos} />
+          {p.status === STATUS_RECUSADO ? (
+            <div className="recusa-box">
+              <b>Pedido recusado.</b> {p.motivo_recusa}
+            </div>
+          ) : (
+            <StatusTrack etapa={p.etapa} eventos={p.eventos} />
+          )}
 
           <div className="fo-body">
             <div className="fo-stores">
@@ -45,6 +52,7 @@ export function Pedidos() {
             <div className="fo-right">
               <div className="fo-total">{brl(p.total)}</div>
               <div className="fo-eta">{p.previsao}</div>
+              <DocumentoLink pedido={p} />
             </div>
           </div>
         </div>

@@ -12,16 +12,57 @@ mock — o único dado semeado à mão são as contribuições da carteira.
 | `/fundo` | `pages/Loja` | vitrine das ações por categoria + carteira + resgate |
 | `/cronograma` | `pages/Cronograma` | campanhas do ano; a recomendação abre o mesmo resgate |
 | `/pedidos` | `pages/Pedidos` | **os próprios** pedidos, com a esteira de 4 etapas |
-| `/gerenciar` | `pages/Gerenciar` | **gestor**: Produtos + Carteiras + todos os pedidos |
+| `/gerenciar` | `pages/Gerenciar` | **gestor**: Produtos + Campanhas + Carteiras + Pedidos |
 
 ## Esteira do pedido
 
-`solicitacao → conferencia → solicitado → disponivel`. Definida no backend
-(`fundo_mkt_service.ETAPAS`) e espelhada em `fundo/meta.ts`. O servidor só
-aceita mover **uma etapa por vez** (pra frente ou pra trás): pular etapa
-esconderia do franqueado o que aconteceu com o pedido dele. Cada mudança grava
-uma linha em `fundo_mkt.pedido_eventos` — é dela que sai a data de cada passo no
-`StatusTrack`.
+`solicitacao → conferencia → solicitado → disponivel`, mais o terminal
+`recusado`. Definida no backend (`fundo_mkt_service.comum.ETAPAS`) e espelhada
+em `fundo/meta.ts`. O servidor só aceita mover **uma etapa por vez** (pra frente
+ou pra trás): pular etapa esconderia do franqueado o que aconteceu com o pedido.
+Cada mudança grava uma linha em `fundo_mkt.pedido_eventos` — é dela que sai a
+data de cada passo no `StatusTrack`.
+
+**Recusa** é a exceção: alcançável de qualquer etapa, **exige motivo** (o
+franqueado lê), **devolve o valor pra carteira** (o `resgatado` ignora pedido
+recusado) e reabrir só volta pra `solicitacao` — as etapas já percorridas não
+valem mais.
+
+## As 4 categorias
+
+`tracao`, `recorrencia`, `branding` — preço de tabela × quantidade × lojas.
+
+`documento` é diferente: **não tem preço**. O franqueado informa o valor do
+boleto/NF, escolhe UMA loja e anexa o arquivo (PDF ou imagem, 8 MB); o pedido
+nasce em Solicitação e o gestor aprova ou recusa na Conferência. O formulário
+do gestor esconde o campo de preço nessa categoria, e o card da vitrine mostra
+"Valor do documento" em vez de um valor.
+
+## Imagem × emoji
+
+A ação pode ter imagem no lugar do emoji (`fundo_mkt.acoes.imagem_data`, mesmo
+padrão do marketplace: bytes no banco + ETag). `components/AcaoThumb` é a fonte
+única — vitrine, resgate, Gerenciar e o preview do formulário usam ele.
+Upload só depois de salva (precisa do id), por isso a seção não aparece no
+formulário de criação. O catálogo NUNCA traz os bytes: só `tem_imagem` e
+`imagem_v` (carimbo que entra na URL p/ invalidar o cache do navegador).
+
+## Anexos: quem é público e quem não é
+
+- **Imagem da ação** → `GET /acoes/{id}/imagem` **sem token**, porque `<img>`
+  não manda header e imagem de catálogo não é sensível.
+- **Documento do pedido** → `GET /pedidos/{id}/documento` **com token e dono**
+  (só o dono do pedido ou o gestor). Por isso o front usa `DocumentoLink`, que
+  busca com o header e abre um blob — `<a href>` não funcionaria.
+- O tipo do arquivo é detectado pela **assinatura**, não pelo content-type que
+  o cliente mandou.
+
+## Campanhas (cronograma)
+
+`fundo_mkt.campanhas` + `campanha_acoes`: uma campanha por (ano, mês) com tema,
+descrição e as ações recomendadas. Substituiu o `schedule.ts` chumbado — o
+gestor monta o calendário sem deploy, e o vínculo é por **id** (não por slug,
+que era o que quebrava quando o catálogo era recriado).
 
 ## Regras que não são óbvias no código
 
@@ -45,18 +86,17 @@ uma linha em `fundo_mkt.pedido_eventos` — é dela que sai a data de cada passo
   `origem='faturamento'`; os dois convivem na mesma tabela.
 - **Remover lançamento não reverte resgate.** O saldo pode ficar negativo se o
   valor removido já tinha sido gasto.
-- **O cronograma casa por slug.** Como o slug é derivado do NOME no servidor,
-  as recomendações de `fundo/schedule.ts` (`t1`, `r3`, `b2`…) não resolvem
-  contra um catálogo cadastrado do zero — o mês mostra "nenhuma ação ligada a
-  esta campanha". Ligar de novo = editar os slugs em `schedule.ts` ou tornar a
-  recomendação gerenciável.
+- **`slug` continua sendo a chave estável da ação**, mas o cronograma NÃO usa
+  mais slug: a campanha aponta para o `acao_id`.
 
 ## Acesso
 
-Gate real no backend: `role admin|manager` OU `auth.users.can_access_fundo_mkt`.
-Escrita do catálogo e avanço de etapa são **só do gestor**. `components/AccessGate`
-e o link "Gerenciar" na navbar repetem a checagem, mas isso é UI — o `user` do
-localStorage é forjável.
+Entrar no app: `role admin|manager` OU `auth.users.can_access_fundo_mkt`.
+
+**Gerenciar é só de admin/manager** — catálogo, campanhas, carteiras e avanço
+de etapa. No backend isso é `_gestor_ou_403`; no front, `isGestor()` esconde a
+aba e a rota. O gate de UI é conveniência: o `user` do localStorage é forjável,
+quem barra de verdade é o backend em todo endpoint.
 
 ## Regras deste repo
 
@@ -82,7 +122,8 @@ localStorage é forjável.
 ## Pendências
 
 - Worker do 1% (contribuição automática) — hoje o saldo é lançado à mão.
-- Ligar o cronograma ao catálogo novo (ver a nota sobre slug acima).
+- Notificar o franqueado quando o pedido muda de etapa (principalmente na
+  recusa, que hoje ele só vê se abrir a tela).
 - Notificar o franqueado quando o pedido muda de etapa.
 - Liberar a flag `can_access_fundo_mkt` para os franqueados (hoje só o time
   interno entra).

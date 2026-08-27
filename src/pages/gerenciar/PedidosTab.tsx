@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { DocumentoLink } from '../../fundo/components/DocumentoLink'
 import { StatusTrack } from '../../fundo/components/StatusTrack'
 import { brl } from '../../fundo/format'
-import { ETAPAS, ETAPA_CLASSE, ETAPA_LABEL } from '../../fundo/meta'
+import { ETAPAS, ETAPA_CLASSE, ETAPA_LABEL, STATUS_RECUSADO } from '../../fundo/meta'
 import { usePedidos } from '../../fundo/usePedidos'
 import { ApiError } from '../../lib/api'
 import { Carregando, ErroBox, EstadoVazio } from '../shared'
@@ -12,11 +13,16 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
   const { pedidos, loading, error, mudarStatus } = usePedidos(true)
   const [filtro, setFiltro] = useState<string>('all')
   const [erroAcao, setErroAcao] = useState<string | null>(null)
+  /** Pedido em recusa: o motivo é obrigatório e o franqueado lê. */
+  const [recusando, setRecusando] = useState<number | null>(null)
+  const [motivo, setMotivo] = useState('')
 
-  const mover = async (id: number, status: string) => {
+  const mover = async (id: number, status: string, nota?: string) => {
     setErroAcao(null)
     try {
-      onToast(`Pedido movido para ${await mudarStatus(id, status)}`)
+      onToast(`Pedido movido para ${await mudarStatus(id, status, nota)}`)
+      setRecusando(null)
+      setMotivo('')
     } catch (e) {
       setErroAcao(e instanceof ApiError ? e.message : 'Não consegui mudar a etapa')
     }
@@ -36,7 +42,7 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
           <div className={`chip ${filtro === 'all' ? 'active' : ''}`} onClick={() => setFiltro('all')}>
             Todos <span className="fsub-badge">{pedidos.length}</span>
           </div>
-          {ETAPAS.map((s) => {
+          {[...ETAPAS, STATUS_RECUSADO].map((s) => {
             const n = pedidos.filter((p) => p.status === s).length
             return (
               <div key={s} className={`chip ${filtro === s ? 'active' : ''}`} onClick={() => setFiltro(s)}>
@@ -54,7 +60,10 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
 
       {visiveis.map((p) => {
         const i = p.etapa
-        const vizinhos = [ETAPAS[i - 1], ETAPAS[i + 1]].filter(Boolean)
+        // Recusado é terminal: só volta pro começo. Nas demais, um passo por vez.
+        const vizinhos = p.status === STATUS_RECUSADO
+          ? [ETAPAS[0]]
+          : [ETAPAS[i - 1], ETAPAS[i + 1]].filter(Boolean)
         return (
           <div className="fo-card" key={p.id}>
             <div className="fo-top">
@@ -68,7 +77,11 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
               <div className={`fo-status ${ETAPA_CLASSE[p.status]}`}>{p.status_label}</div>
             </div>
 
-            <StatusTrack etapa={p.etapa} eventos={p.eventos} />
+            {p.status === STATUS_RECUSADO ? (
+              <div className="recusa-box"><b>Recusado.</b> {p.motivo_recusa}</div>
+            ) : (
+              <StatusTrack etapa={p.etapa} eventos={p.eventos} />
+            )}
 
             <div className="fo-body">
               <div className="fo-stores">
@@ -79,13 +92,29 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
               <div className="fo-right">
                 <div className="fo-total">{brl(p.total)}</div>
                 <div className="fo-eta">{p.previsao}</div>
+                <DocumentoLink pedido={p} />
                 <div className="ger-move">
                   {vizinhos.map((s) => (
                     <button key={s} className="btn btn-ghost btn-sm" onClick={() => mover(p.id, s)}>
-                      {ETAPAS.indexOf(s) < i ? '← ' : ''}{ETAPA_LABEL[s]}{ETAPAS.indexOf(s) > i ? ' →' : ''}
+                      {p.status === STATUS_RECUSADO ? 'Reabrir em ' : ETAPAS.indexOf(s) < i ? '← ' : ''}
+                      {ETAPA_LABEL[s]}
+                      {p.status !== STATUS_RECUSADO && ETAPAS.indexOf(s) > i ? ' →' : ''}
                     </button>
                   ))}
+                  {p.status !== STATUS_RECUSADO && (
+                    <button className="btn btn-danger btn-sm"
+                      onClick={() => { setRecusando(p.id); setMotivo('') }}>Recusar</button>
+                  )}
                 </div>
+                {recusando === p.id && (
+                  <div className="recusa-form">
+                    <input value={motivo} autoFocus placeholder="Motivo — o franqueado vê essa mensagem"
+                      onChange={(e) => setMotivo(e.target.value)} />
+                    <button className="btn btn-danger btn-sm"
+                      onClick={() => mover(p.id, STATUS_RECUSADO, motivo)}>Confirmar recusa</button>
+                    <button className="link-btn" onClick={() => setRecusando(null)}>Cancelar</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

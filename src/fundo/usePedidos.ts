@@ -31,8 +31,8 @@ export function usePedidos(todos = false) {
 
   /** Troca de etapa (gestor). Devolve o rótulo novo, ou lança com a mensagem
    *  PT-BR do backend (ex.: "Mova o pedido uma etapa por vez"). */
-  const mudarStatus = useCallback(async (id: number, status: string) => {
-    const atualizado = await api.mudarStatus(id, status)
+  const mudarStatus = useCallback(async (id: number, status: string, nota?: string) => {
+    const atualizado = await api.mudarStatus(id, status, nota)
     setPedidos((list) => list.map((p) => (p.id === id ? atualizado : p)))
     return atualizado.status_label
   }, [])

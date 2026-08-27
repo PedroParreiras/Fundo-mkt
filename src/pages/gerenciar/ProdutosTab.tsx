@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { draftParaApi, type AcaoDraft } from '../../fundo/acaoDraft'
 import { AcaoForm } from '../../fundo/components/AcaoForm'
+import { AcaoThumb } from '../../fundo/components/AcaoThumb'
 import { brl } from '../../fundo/format'
-import { catMeta } from '../../fundo/meta'
+import { CATEGORIA_DOCUMENTO, catMeta } from '../../fundo/meta'
 import type { Acao } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
 import { Carregando, ErroBox, EstadoVazio } from '../shared'
@@ -51,6 +52,19 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
     }
   }
 
+  /** `dataUrl` nulo = voltar ao emoji. Recarrega para o preview refletir. */
+  const mudarImagem = async (id: number, dataUrl: string | null) => {
+    setErroForm(null)
+    try {
+      const nova = dataUrl ? await api.salvarImagemAcao(id, dataUrl) : await api.removerImagemAcao(id)
+      setEditando(nova)
+      await load()
+      onChanged()
+    } catch (e) {
+      setErroForm(e instanceof ApiError ? e.message : 'Não consegui salvar a imagem')
+    }
+  }
+
   const alternarAtivo = async (a: Acao) => {
     try {
       // Baixa é lógica: reativar é só voltar o mesmo campo.
@@ -82,7 +96,9 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
         <div className="ger-panel">
           <div className="ger-panel-title">{editando ? `Editando · ${editando.nome}` : 'Nova ação'}</div>
           <AcaoForm inicial={editando ?? undefined} salvando={salvando} erro={erroForm}
-            onCancel={fechar} onSubmit={salvar} />
+            onCancel={fechar} onSubmit={salvar}
+            onImagem={editando ? (d) => void mudarImagem(editando.id, d) : undefined}
+            onRemoverImagem={editando ? () => void mudarImagem(editando.id, null) : undefined} />
         </div>
       )}
 
@@ -105,7 +121,7 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
                 <tr key={a.id} className={a.ativo ? '' : 'row-off'}>
                   <td>
                     <div className="td-acao">
-                      <span className="td-emoji">{a.emoji}</span>
+                      <AcaoThumb acao={a} className="td-emoji" />
                       <div>
                         <div className="td-nome">{a.nome}</div>
                         <div className="td-sub">{a.descricao || '—'}</div>
@@ -117,7 +133,9 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
                       {catMeta(a.categoria).name}
                     </span>
                   </td>
-                  <td className="num">{brl(a.preco)}</td>
+                  <td className="num">
+                    {a.categoria === CATEGORIA_DOCUMENTO ? '—' : brl(a.preco)}
+                  </td>
                   <td>{a.modo}</td>
                   <td className="num">{a.prazo_dias}d</td>
                   <td>

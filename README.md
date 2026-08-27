@@ -46,10 +46,19 @@ Quatro rotas na navbar (o "Gerenciar" só aparece para admin/manager):
   recomendadas clicáveis (abrem o mesmo resgate).
 - **Pedidos** (`/pedidos`) — os pedidos **do usuário logado**, com a esteira
   Solicitação → Conferência → Solicitado → Disponível e a data de cada etapa.
-- **Gerenciar** (`/gerenciar`, gestor) — **Produtos**: cria/edita/desativa as
-  ações (nome, preço, categoria, descrição, emoji, modo e prazo).
-  **Carteiras**: saldo de cada usuário e o lançamento manual de contribuição.
-  **Pedidos**: todos os pedidos, filtro por etapa e o controle da esteira.
+- **Gerenciar** (`/gerenciar`, **só admin/manager**) — **Produtos**:
+  cria/edita/desativa as ações (nome, preço, categoria, descrição, emoji **ou
+  imagem**, modo e prazo). **Campanhas**: monta o cronograma do ano e escolhe
+  quais ações entram em cada data. **Carteiras**: saldo de cada usuário e o
+  lançamento manual de contribuição. **Pedidos**: todos os pedidos, filtro por
+  etapa, avanço da esteira e a recusa com motivo.
+
+### Categorias
+
+Tração, Recorrência e Branding Local têm preço de tabela. **Boleto ou Nota
+Fiscal** não: o franqueado informa o valor, anexa o documento (PDF ou imagem) e
+o pedido passa pela Conferência — o gestor aprova ou recusa com um motivo, e a
+recusa devolve o valor pra carteira.
 
 > O banco nasce **vazio**: sem catálogo e sem saldo. O gestor cadastra as ações
 > e credita as carteiras pelo Gerenciar.

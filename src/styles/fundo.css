@@ -544,3 +544,78 @@
   .fundo-app .ger-form-foot{flex-direction:column-reverse}
   .fundo-app .ger-form-foot .btn{width:100%}
 }
+
+/* ---------- IMAGEM DA AÇÃO (substitui o emoji) ---------- */
+.fundo-app .thumb-img{background:#fff; padding:0; overflow:hidden}
+.fundo-app .thumb-img img{width:100%; height:100%; object-fit:contain; padding:10px}
+.fundo-app .co-thumb.thumb-img img,
+.fundo-app .td-emoji.thumb-img img,
+.fundo-app .img-preview img{padding:4px}
+.fundo-app .img-row{display:flex; gap:14px; align-items:flex-start}
+.fundo-app .img-preview{
+  width:72px; height:72px; flex-shrink:0; border-radius:10px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg);
+}
+/* Sem preço de tabela: quem define o valor é o documento anexado. */
+.fundo-app .pprice-doc{font-size:13px; font-weight:800; color:var(--text-accent)}
+
+/* ---------- ESCOLHA DE ARQUIVO ---------- */
+.fundo-app .file-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.fundo-app .file-name{
+  flex:1; min-width:0; font-size:12.5px; color:var(--mkt-text-muted);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.fundo-app .file-hint{font-size:11.5px; color:var(--mkt-text-muted); line-height:1.4}
+.fundo-app .file-hint.erro{color:#e5484d; font-weight:600}
+.fundo-app .fld-static{
+  padding:9px 12px; border-radius:9px; font-size:12.5px; color:var(--mkt-text-muted);
+  border:1px dashed var(--mkt-border-dash); background:var(--mkt-input-bg);
+}
+.fundo-app .co-doc{padding-bottom:6px}
+
+/* ---------- RECUSA ---------- */
+.fundo-app .st-recusado{background:rgba(229,72,77,.14); color:#e5484d; border-color:rgba(229,72,77,.45)}
+.fundo-app .recusa-box{
+  margin:4px 0 14px; padding:12px 14px; border-radius:10px; font-size:13px; line-height:1.45;
+  background:rgba(229,72,77,.10); border:1px solid rgba(229,72,77,.35); color:var(--mkt-text);
+}
+.fundo-app .recusa-box b{color:#e5484d}
+.fundo-app .recusa-form{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; justify-content:flex-end}
+.fundo-app .recusa-form input{
+  flex:1; min-width:220px; padding:8px 12px; border-radius:9px; font-family:inherit; font-size:12.5px;
+  border:1px solid rgba(229,72,77,.45); background:var(--mkt-input-bg); color:var(--mkt-text); outline:0;
+}
+.fundo-app .btn-danger{background:#e5484d; border-color:#cf3a3f; color:#fff}
+.fundo-app .btn-danger:hover{background:#ef5b60}
+
+/* ---------- LINK DO DOCUMENTO ---------- */
+.fundo-app .doc-link{
+  display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:0;
+  background:none; border:0; font-family:inherit; cursor:pointer;
+  font-size:12px; font-weight:800; color:var(--text-accent);
+}
+.fundo-app .doc-link:hover{text-decoration:underline}
+.fundo-app .doc-link:disabled{opacity:.6; cursor:default; text-decoration:none}
+
+/* ---------- SELEÇÃO DE AÇÕES DA CAMPANHA ---------- */
+.fundo-app .pick-list{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px;
+  max-height:280px; overflow-y:auto; padding:2px;
+}
+.fundo-app .pick{
+  display:flex; align-items:center; gap:9px; padding:8px 12px; border-radius:10px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg);
+  color:var(--mkt-text); font-family:inherit; font-size:12.5px; font-weight:600;
+  cursor:pointer; text-align:left; transition:border-color .12s, background .12s;
+}
+.fundo-app .pick:hover{border-color:var(--mkt-border-hover)}
+.fundo-app .pick.on{border-color:var(--fm-gold); background:rgba(237,177,37,.10)}
+.fundo-app .pick-check{
+  width:18px; height:18px; flex-shrink:0; border-radius:5px; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--mkt-border-dash); color:var(--fm-navy);
+}
+.fundo-app .pick.on .pick-check{background:var(--fm-gold); border-color:var(--fm-gold)}
+.fundo-app .pick-emoji{font-size:15px; flex-shrink:0}
+.fundo-app .pick-nome{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
