@@ -1,10 +1,30 @@
-/** Contratos da aba "Fundo de Marketing" (portada do protótipo do Hub). */
+/** Contratos do Fundo de Marketing — espelham o JSON de /api/fundo-mkt/*. */
 
-/** Como a ação é entregue — define o rótulo de prazo no checkout. */
-export type FundMode = 'Entrega' | 'Ativação' | 'Evento'
+export type Categoria = 'tracao' | 'recorrencia' | 'branding'
 
-export interface FundCategory {
-  id: string
+/** Como a ação é entregue — define o rótulo de prazo no resgate. */
+export type Modo = 'Entrega' | 'Ativação' | 'Evento'
+
+/** Esteira do pedido, na ordem em que o stepper mostra. */
+export type Status = 'solicitacao' | 'conferencia' | 'solicitado' | 'disponivel'
+
+export interface Acao {
+  id: number
+  /** Chave estável usada pelo cronograma de campanhas (o id serial não serve). */
+  slug: string
+  nome: string
+  descricao: string
+  categoria: Categoria
+  preco: number
+  emoji: string
+  modo: Modo
+  prazo_dias: number
+  ativo: boolean
+  ordem: number
+}
+
+export interface CategoriaMeta {
+  id: Categoria
   name: string
   /** Sigla de 2 letras exibida no "logo" do grupo. */
   short: string
@@ -12,26 +32,13 @@ export interface FundCategory {
   tag: string
 }
 
-export interface FundItem {
+export interface LojaOpcao {
   id: string
-  cat: string
-  name: string
-  desc: string
-  /** Preço por unidade, em reais. */
-  price: number
-  emoji: string
-  mode: FundMode
-  /** Prazo em dias corridos usado para calcular a previsão. */
-  lead: number
+  nome: string
+  cidade: string
 }
 
-export interface FundStore {
-  id: string
-  name: string
-  city: string
-}
-
-export interface FundHistoryEntry {
+export interface HistoricoEntrada {
   /** `in` = contribuição · `out` = resgate. */
   t: 'in' | 'out'
   desc: string
@@ -39,23 +46,52 @@ export interface FundHistoryEntry {
   val: number
 }
 
-export type FundOrderStatus = 'prep' | 'trans' | 'done'
+export interface Carteira {
+  contribuido: number
+  resgatado: number
+  saldo: number
+  historico: HistoricoEntrada[]
+}
 
-export interface FundOrderStore {
+export interface PedidoLoja {
   name: string
   qty: number
 }
 
-export interface FundOrder {
-  id: string
-  emoji: string
-  name: string
+export interface PedidoEvento {
+  status: Status
+  label: string
   date: string
-  stores: FundOrderStore[]
-  units: number
+  nota: string | null
+}
+
+export interface Pedido {
+  id: number
+  codigo: string
+  acao_id: number | null
+  nome: string
+  emoji: string
+  modo: Modo
+  preco_unit: number
+  unidades: number
   total: number
-  status: FundOrderStatus
-  eta: string
+  status: Status
+  status_label: string
+  /** Índice da etapa atual em ETAPAS (0..3) — alimenta o stepper. */
+  etapa: number
+  previsao: string
+  observacao: string | null
+  date: string
+  usuario_id: number
+  usuario_nome: string
+  lojas: PedidoLoja[]
+  eventos: PedidoEvento[]
+}
+
+export interface PedidosResposta {
+  pedidos: Pedido[]
+  etapas: Status[]
+  labels: Record<Status, string>
 }
 
 export interface ScheduleMonth {
@@ -64,7 +100,7 @@ export interface ScheduleMonth {
   n: number
   theme: string
   desc: string
-  /** Ids de FUND_ITEMS recomendados para a campanha. */
+  /** Slugs de ações recomendadas para a campanha. */
   items: string[]
 }
 
@@ -72,6 +108,3 @@ export interface ScheduleQuarter {
   q: string
   months: ScheduleMonth[]
 }
-
-/** Sub-abas internas da tela do fundo. */
-export type FundView = 'store' | 'schedule' | 'orders'

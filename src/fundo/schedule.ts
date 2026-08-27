@@ -1,6 +1,7 @@
 import type { ScheduleQuarter } from './types'
 
-/** Cronograma anual de campanhas: cada mês já traz as ações recomendadas. */
+/** Cronograma anual de campanhas. `items` são SLUGS de fundo_mkt.acoes —
+ *  slug some do catálogo? o mês só deixa de mostrar aquela recomendação. */
 export const FUND_SCHEDULE: ScheduleQuarter[] = [
   {
     q: '3º Trimestre · 2026',

@@ -340,9 +340,11 @@
   font-size:11px; font-weight:800; letter-spacing:.02em;
   padding:4px 12px; border-radius:999px; border:1px solid transparent;
 }
-.fundo-app .st-prep{background:rgba(237,177,37,.15); color:var(--text-accent,#a86a12); border-color:rgba(237,177,37,.45)}
-.fundo-app .st-trans{background:var(--mkt-input-bg); color:var(--mkt-text); border-color:var(--mkt-border-hover)}
-.fundo-app .st-done{background:rgba(22,163,74,.15); color:var(--fm-ok); border-color:rgba(22,163,74,.4)}
+.fundo-app .st-solicitacao{background:var(--mkt-input-bg); color:var(--mkt-text); border-color:var(--mkt-border-hover)}
+.fundo-app .st-conferencia{background:rgba(237,177,37,.15); color:var(--text-accent); border-color:rgba(237,177,37,.45)}
+.fundo-app .st-solicitado{background:rgba(37,99,235,.14); color:var(--mkt-strong); border-color:rgba(37,99,235,.4)}
+.fundo-app .st-disponivel{background:rgba(22,163,74,.15); color:var(--fm-ok); border-color:rgba(22,163,74,.4)}
+.fundo-app .st-off{background:var(--mkt-input-bg); color:var(--mkt-text-muted); border-color:var(--mkt-card-border)}
 .fundo-app .fo-body{
   display:flex; justify-content:space-between; align-items:flex-end; gap:14px; flex-wrap:wrap;
   border-top:1px solid var(--mkt-card-border); padding-top:12px;
@@ -409,4 +411,134 @@
   .fundo-app h1.page-title{font-size:24px}
   .fundo-app .wallet{padding:20px}
   .fundo-app .balance-btn .balance{font-size:30px}
+}
+
+
+/* ---------- ESTEIRA DO PEDIDO (4 etapas) ---------- */
+/* Solicitação → Conferência → Solicitado → Disponível. A régua que liga os
+   passos é ::after no próprio passo — por isso `position:relative` e o z-index
+   no ponto, senão a linha passa por cima da bolinha. */
+.fundo-app .track{
+  display:flex; align-items:flex-start; margin:4px 0 16px;
+  border-top:1px solid var(--mkt-card-border); padding-top:16px;
+}
+.fundo-app .tstep{flex:1; text-align:center; position:relative; min-width:0}
+.fundo-app .tstep .tdot{
+  position:relative; z-index:2; margin:0 auto;
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800;
+  background:var(--mkt-step-idle); color:var(--mkt-modal-bg);
+}
+.fundo-app .tstep.done .tdot{background:var(--fm-ok); color:#fff}
+.fundo-app .tstep.current .tdot{background:var(--fm-gold); color:var(--fm-navy); box-shadow:0 0 0 4px rgba(237,177,37,.18)}
+.fundo-app .tstep .tlabel{
+  margin-top:7px; padding:0 4px; font-size:11px; line-height:1.35;
+  color:var(--mkt-text-muted);
+}
+.fundo-app .tstep.done .tlabel,
+.fundo-app .tstep.current .tlabel{color:var(--mkt-text); font-weight:700}
+.fundo-app .tstep .tdate{font-size:10.5px; color:var(--mkt-text-muted); margin-top:2px}
+.fundo-app .tstep:not(:last-child):after{
+  content:''; position:absolute; top:11px; left:50%; width:100%; height:2px; z-index:1;
+  background:var(--mkt-step-idle);
+}
+.fundo-app .tstep.done:not(:last-child):after{background:var(--fm-ok)}
+
+/* ---------- ESTADOS DE CARGA ---------- */
+.fundo-app .fund-loading{padding:40px 0; text-align:center; color:var(--mkt-text-muted); font-size:13px}
+.fundo-app .fund-error{
+  display:flex; gap:9px; align-items:center; margin-bottom:18px; padding:12px 16px;
+  border-radius:10px; font-size:13px; font-weight:600;
+  background:rgba(229,72,77,.10); border:1px solid rgba(229,72,77,.35); color:#e5484d;
+}
+
+/* ---------- GERENCIAR ---------- */
+.fundo-app .ger-bar{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
+.fundo-app .ger-bar-count{font-size:12.5px; font-weight:700; color:var(--mkt-text-muted); margin-right:auto}
+.fundo-app .ger-panel{
+  background:var(--mkt-card-bg); border:1px solid var(--fm-gold);
+  border-radius:12px; padding:20px; margin-bottom:22px;
+}
+.fundo-app .ger-panel-title{font-size:14px; font-weight:800; color:var(--mkt-strong); margin-bottom:16px}
+.fundo-app .ger-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px}
+.fundo-app .fld{display:flex; flex-direction:column; gap:5px; min-width:0}
+.fundo-app .fld-wide{grid-column:1 / -1}
+.fundo-app .fld-narrow{max-width:120px}
+.fundo-app .fld > span{
+  font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--mkt-text-muted);
+}
+.fundo-app .fld input,
+.fundo-app .fld select,
+.fundo-app .fld textarea{
+  width:100%; padding:9px 12px; border-radius:9px; font-family:inherit; font-size:13px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg); color:var(--mkt-text);
+  outline:0; resize:vertical;
+}
+.fundo-app .fld input:focus,
+.fundo-app .fld select:focus,
+.fundo-app .fld textarea:focus{border-color:var(--fm-gold)}
+.fundo-app .ger-hint{font-size:11.5px; color:var(--mkt-text-muted); line-height:1.5; margin-top:14px}
+.fundo-app .ger-hint b{color:var(--mkt-text)}
+.fundo-app .ger-form-foot{display:flex; gap:10px; justify-content:flex-end; margin-top:18px}
+.fundo-app .btn-sm{padding:6px 14px; font-size:12px}
+.fundo-app .ger-move{display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-top:10px}
+
+/* Tabela do catálogo. Rola dentro do próprio container — a página nunca
+   ganha barra horizontal. Cabeçalho centralizado sobre a coluna; a célula
+   mantém o alinhamento dela (número à direita). */
+.fundo-app .ger-table-wrap{
+  overflow-x:auto; border:1px solid var(--mkt-card-border); border-radius:12px;
+  background:var(--mkt-card-bg);
+}
+.fundo-app .ger-table{width:100%; border-collapse:separate; border-spacing:0; min-width:760px}
+.fundo-app .ger-table th{
+  padding:11px 14px; text-align:center; white-space:nowrap;
+  font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--mkt-text-muted); background:var(--mkt-input-bg);
+  border-bottom:1px solid var(--mkt-card-border);
+}
+.fundo-app .ger-table td{
+  padding:11px 14px; font-size:13px; color:var(--mkt-text);
+  border-bottom:1px solid var(--mkt-card-border); vertical-align:middle;
+}
+.fundo-app .ger-table tr:last-child td{border-bottom:0}
+.fundo-app .ger-table td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+.fundo-app .ger-table tr.row-off td{opacity:.55}
+.fundo-app .td-acao{display:flex; align-items:center; gap:10px; min-width:220px}
+.fundo-app .td-emoji{
+  width:34px; height:34px; flex-shrink:0; border-radius:9px; font-size:17px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--mkt-input-bg); border:1px solid var(--mkt-card-border);
+}
+.fundo-app .td-nome{font-weight:700; color:var(--mkt-strong)}
+.fundo-app .td-sub{
+  font-size:11.5px; color:var(--mkt-text-muted); max-width:340px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.fundo-app .cat-pill{
+  display:inline-block; padding:3px 10px; border-radius:999px;
+  font-size:11px; font-weight:800; color:#fff; white-space:nowrap;
+}
+.fundo-app .acoes-col{white-space:nowrap; text-align:right}
+.fundo-app .link-btn{
+  background:none; border:0; padding:0 8px; font-family:inherit; cursor:pointer;
+  font-size:12px; font-weight:800; color:var(--text-accent);
+}
+.fundo-app .link-btn:hover{text-decoration:underline}
+.fundo-app .link-btn.danger{color:#e5484d}
+
+/* Busca de loja no resgate (aparece quando o gestor tem muitas lojas). */
+.fundo-app .co-search{
+  width:100%; margin:2px 0 8px; padding:9px 12px; border-radius:9px; font-family:inherit;
+  font-size:13px; border:1px solid var(--mkt-card-border);
+  background:var(--mkt-input-bg); color:var(--mkt-text); outline:0;
+}
+.fundo-app .co-search:focus{border-color:var(--fm-gold)}
+
+@media(max-width:640px){
+  .fundo-app .tstep .tlabel{font-size:10px}
+  .fundo-app .ger-form-foot{flex-direction:column-reverse}
+  .fundo-app .ger-form-foot .btn{width:100%}
 }

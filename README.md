@@ -27,33 +27,34 @@ Reaproveita a sessão do HRM: `auth_token` / `user` do `localStorage` na origem
 ## Layout
 
 - `src/main.tsx` — `BrowserRouter basename="/system/fundo-mkt"` (derivado de `BASE_URL`)
-- `src/App.tsx` — rotas (default `/fundo`)
-- `src/pages/FundoMarketing.tsx` — a tela do fundo (3 sub-abas)
-- `src/fundo/` — dados mock, tipos, formatação e o hook da carteira
+- `src/App.tsx` — rotas (default `/fundo`) + gate de acesso
+- `src/pages/` — `Loja`, `Cronograma`, `Pedidos` e `Gerenciar` (gestor)
+- `src/fundo/` — contexto de dados, tipos, formatação e componentes
+- `src/lib/api.ts` — cliente de `/api/fundo-mkt/*` · `src/lib/session.ts` — sessão/papel
 - `src/index.css` — design system do HRM (tokens, navbar, cards, grids)
 - `src/fundo-mkt-fx.css` — camada aditiva `.fm-*` de animação/FX
 - `src/styles/fundo.css` — estilo da tela (tokens `--mkt-*`), escopado em `.fundo-app`
 
-## Tela do fundo
+## Telas
 
-Estrutura e conteúdo vieram da aba **"💰 Fundo de Marketing"** do protótipo
-`mockup-hub-fundo-marketing.html` (Hub de Abastecimento) — só essa aba; o resto
-do hub (marketplace, carrinho, pedidos, estoque CD, pedidos loja) ficou de fora.
-A topbar de abas do protótipo virou a navbar padrão do HRM, e o **visual segue a
-vitrine do marketplace**: mesmos tokens `--mkt-*`, então o botão de tema da
-navbar alterna claro/escuro aqui igual nas outras ferramentas `/system`.
+Quatro rotas na navbar (o "Gerenciar" só aparece para admin/manager):
 
-- **Loja do Fundo** — ações por categoria (Tração / Recorrência / Branding Local),
-  card com preço por unidade e checkout de resgate (escolhe lojas + quantidade,
-  valida saldo, mostra a previsão conforme o modo Entrega/Ativação/Evento).
-- **Cronograma** — campanhas do ano por trimestre, com as ações recomendadas
-  clicáveis (abrem o mesmo checkout).
-- **Meus Pedidos** — resgates feitos, com "simular avanço" (Em preparação → A
-  caminho → Entregue).
-- **Carteira** — saldo clicável abre o histórico (contribuições × resgates).
+- **Loja do Fundo** (`/fundo`) — carteira + ações por categoria (Tração /
+  Recorrência / Branding Local) e o resgate (escolhe lojas + quantidade, valida
+  saldo, mostra a previsão conforme o modo Entrega/Ativação/Evento).
+- **Cronograma** (`/cronograma`) — campanhas do ano por trimestre, com as ações
+  recomendadas clicáveis (abrem o mesmo resgate).
+- **Pedidos** (`/pedidos`) — os pedidos **do usuário logado**, com a esteira
+  Solicitação → Conferência → Solicitado → Disponível e a data de cada etapa.
+- **Gerenciar** (`/gerenciar`, gestor) — **Produtos**: cria/edita/desativa as
+  ações (nome, preço, categoria, descrição, emoji, modo e prazo).
+  **Pedidos**: todos os pedidos, filtro por etapa e o controle da esteira.
 
-> Os dados são **mock em memória** (`src/fundo/catalog.ts`, `schedule.ts`,
-> `seed.ts`), como no protótipo: nada persiste ao recarregar a página.
+## Backend
+
+Schema `fundo_mkt` no `sales_db` e `/api/fundo-mkt/*` no Flask do HRM
+(`auth/routes/fundo_mkt.py`). Ver `AGENT_README.md` para as regras de negócio
+e a documentação completa no Swagger (grupo "Fundo de Marketing").
 
 ## Deploy
 

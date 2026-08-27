@@ -1,79 +1,76 @@
 # Fundo MKT — nota para agentes
 
 App do fundo de marketing (arrecadação × investimento por loja/franqueado).
-Estado atual: **aba "Fundo de Marketing" do protótipo do Hub portada 1:1** —
-tela única em `/fundo`, dados ainda **mock em memória** (nenhuma chamada de API,
-nenhum schema de banco próprio).
+**Tem backend**: schema `fundo_mkt` no `sales_db` + `/api/fundo-mkt/*` no Flask
+(`auth/routes/fundo_mkt.py` + `auth/services/fundo_mkt_service.py`). Nada aqui é
+mock — o único dado semeado à mão são as contribuições da carteira.
 
-## O que existe
+## Telas (rotas na navbar)
 
-`src/pages/FundoMarketing.tsx` monta a tela e orquestra 3 sub-abas (estado
-local, sem rota própria — igual ao protótipo):
-
-| Sub-aba | Componente | O quê |
+| Rota | Página | O quê |
 |---|---|---|
-| 🛍️ Loja do Fundo | `fundo/components/FundStoreView` | vitrine de ações por categoria + chips |
-| 🗓️ Cronograma | `fundo/components/FundScheduleView` | campanhas do ano com ações recomendadas |
-| 📦 Meus Pedidos | `fundo/components/FundOrdersView` | resgates + "simular avanço" prep→trans→done |
+| `/fundo` | `pages/Loja` | vitrine das ações por categoria + carteira + resgate |
+| `/cronograma` | `pages/Cronograma` | campanhas do ano; a recomendação abre o mesmo resgate |
+| `/pedidos` | `pages/Pedidos` | **os próprios** pedidos, com a esteira de 4 etapas |
+| `/gerenciar` | `pages/Gerenciar` | **gestor**: catálogo (Produtos) + todos os pedidos |
 
-Camada de dados/estado em `src/fundo/`:
-- `catalog.ts` / `schedule.ts` / `seed.ts` — **mock**, trocar por API
-- `types.ts` — contratos (`FundItem`, `FundOrder`, `FundHistoryEntry`…)
-- `format.ts` — `brl`, datas BR, `etaLabel` (o prazo muda por `mode`)
-- `useFundoWallet.ts` — saldo/resgatado/histórico/pedidos + `redeem()`/`advanceOrder()`
-- `useToast.ts` — toast do protótipo
+## Esteira do pedido
+
+`solicitacao → conferencia → solicitado → disponivel`. Definida no backend
+(`fundo_mkt_service.ETAPAS`) e espelhada em `fundo/meta.ts`. O servidor só
+aceita mover **uma etapa por vez** (pra frente ou pra trás): pular etapa
+esconderia do franqueado o que aconteceu com o pedido dele. Cada mudança grava
+uma linha em `fundo_mkt.pedido_eventos` — é dela que sai a data de cada passo no
+`StatusTrack`.
+
+## Regras que não são óbvias no código
+
+- **O pedido guarda snapshot** de nome/emoji/preço/modo da ação. O gestor edita
+  o catálogo e o pedido antigo não pode mudar de valor.
+- **Baixa de ação é lógica** (`ativo=false`). Não existe remoção: o pedido
+  referencia a ação. Reativar é só voltar o campo.
+- **`slug` é a chave estável** da ação. O cronograma (`fundo/schedule.ts`)
+  referencia ação por slug, não por id — o catálogo é editável.
+- **Saldo é validado no servidor** antes de gravar o pedido. O aviso no
+  checkout é conveniência; quem recusa é a API.
+- **Lojas do resgate** vêm de 3 camadas (`lojas_do_usuario`): `store_franqueado`
+  → `store_access` do JWT → todas, se o chamador é gestor e não caiu nas duas.
+  Por isso o checkout ganha busca quando passa de 8 lojas.
+- **Contribuições da carteira são seed manual** (`origem='manual'`,
+  `migration_fundo_mkt_seed_carteira_*.sql`). O 1% real vira worker gravando
+  com `origem='faturamento'`; os dois convivem na mesma tabela.
+
+## Acesso
+
+Gate real no backend: `role admin|manager` OU `auth.users.can_access_fundo_mkt`.
+Escrita do catálogo e avanço de etapa são **só do gestor**. `components/AccessGate`
+e o link "Gerenciar" na navbar repetem a checagem, mas isso é UI — o `user` do
+localStorage é forjável.
 
 ## Regras deste repo
 
-- Design system vem de `src/index.css` (cópia sincronizada do HRM). Ao editar o
-  bloco `PLATFORM THEMES`, sincronize com as outras cópias nos sub-apps.
-- FX/animações ficam em `src/fundo-mkt-fx.css` com prefixo `.fm-*` (aditivo).
 - **O design é o MESMO da vitrine do marketplace.** `src/styles/fundo.css` não
   tem paleta própria: consome os tokens `--mkt-*` do bloco "MARKETPLACE THEME
   LAYER" em `src/index.css` (cópia sincronizada de `marketplace/src/index.css`
-  — editou lá, sincronize aqui). Por isso claro/escuro alternam junto com a
-  plataforma (`hrm_theme` + `ThemeToggle` na navbar).
-  Idioma visual: card radius 10 · ação em pílula dourada com texto navy · chip
-  pílula (ativo = dourado) · grupo com título uppercase + contador + régua ·
-  modal `--mkt-modal-bg` radius 16 sobre overlay preto com blur.
+  — editou lá, sincronize aqui). Claro/escuro alternam com o `hrm_theme`.
 - Tudo escopado sob `.fundo-app`: os nomes são genéricos (`.btn`, `.chip`,
   `.modal-overlay`, `.empty`) e colidiriam com o design system do HRM. O
   arquivo também neutraliza o `button:hover{transform}` global do `index.css`.
 - **Ouro puro (#edb125) nunca como TEXTO em superfície clara** (~2:1 sobre
-  branco). Texto acentuado usa `var(--text-accent)`, que vira `#9c7210` no tema
-  claro; o ouro fica só em SUPERFÍCIE (botão, borda, pílula ativa).
-- Thumb das ações: `src/fundo/tile.ts` (`tileGradient`) — mesma regra do tile
-  sem foto da vitrine. Os pastéis do protótipo saíram: só funcionavam no claro.
-- Sessão/HTTP sempre por `src/lib/api.ts` (nunca `fetch` solto).
+  branco). Texto acentuado usa `var(--text-accent)` (`#9c7210` no claro); o
+  ouro fica só em SUPERFÍCIE (botão, borda, pílula ativa).
+- Thumb das ações: `fundo/tile.ts` (`tileGradient`) — mesma regra do tile sem
+  foto da vitrine.
+- HTTP sempre por `src/lib/api.ts`; sessão/papel por `src/lib/session.ts`.
+  Nunca `fetch` solto, nunca ler `localStorage.user` fora do session.ts.
 - Build: `npm run build` → `dist/` com base `/system/fundo-mkt/`.
   `npm run preview` NÃO funciona (o `base` do config só vale em `build`); use
   `npm run dev`.
-- Ao terminar uma entrega: commit + push imediato (o deploy faz
-  `git reset --hard origin` e apagaria commit local).
+- Commit + push imediato (o deploy faz `git reset --hard origin`).
 
-## Próximo passo (backend)
+## Pendências
 
-Nada aqui persiste. Para virar produto é preciso: endpoint de carteira
-(saldo/contribuições), catálogo de ações, e resgate (POST que debita e abre o
-pedido) — `useFundoWallet` é o único ponto a trocar.
-
-## Acesso (por enquanto: só admin)
-
-`src/components/AdminOnly.tsx` embrulha a rota: quem não é `role === 'admin'`
-na sessão do HRM vê "Em construção". É gate de **UI** (lê o `user` do
-localStorage, forjável) — vale como "ainda não é pra todo mundo", não como
-autorização. Quando existir API do fundo, o servidor é que tem que barrar,
-com a flag `can_access_fundo_mkt`.
-
-No hub `/system` o nó **FUNDO** está com `adminOnly: true`
-(`honesty/src/pages/system/HonestySystemPage.tsx`).
-
-## Plataforma (já wired)
-
-- nginx: slug `fundo-mkt` nas 5 regex de submódulo de `/etc/nginx/sites-enabled/behonest`
-- symlink `honesty/submodules/fundo-mkt` → este repo (é o que o deploy resolve)
-- deploy: `fundo-mkt` em `ALLOWED_TARGETS`/`TARGET_LABELS` de `auth/routes/build.py`
-  e no registry de `honesty/deploy/sync-submodules.sh` → dá pra enfileirar deploy
-  pelo Painel Administrativo
-
-Pendência: flag `can_access_fundo_mkt` no backend `auth` (hoje é adminOnly).
+- Worker do 1% (contribuição automática) — hoje a carteira é seed.
+- Notificar o franqueado quando o pedido muda de etapa.
+- Liberar a flag `can_access_fundo_mkt` para os franqueados (hoje só o time
+  interno entra).

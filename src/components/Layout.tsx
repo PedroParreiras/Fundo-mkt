@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { isGestor, readUser } from '../lib/session'
 import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
 
@@ -8,23 +9,21 @@ import ThemeToggle from './ThemeToggle'
    that slides the navbar down, brand, item links, and user + Sair on the right. */
 
 const ITEMS = [
-  { label: 'Fundo de Marketing', to: '/fundo' },
+  { label: 'Loja do Fundo', to: '/fundo' },
+  { label: 'Cronograma', to: '/cronograma' },
+  { label: 'Pedidos', to: '/pedidos' },
 ]
 
-function readHrmUser(): { name?: string; email?: string; role?: string } | null {
-  try {
-    const raw = localStorage.getItem('user')
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
+// Só admin/manager. Fora de ITEMS porque o link não pode aparecer para o
+// franqueado — o backend recusa as chamadas, mas a aba nem deve existir.
+const GESTOR_ITEMS = [{ label: 'Gerenciar', to: '/gerenciar' }]
 
 export function Layout() {
   const [isOpen, setIsOpen] = useState(false)
   const { pathname } = useLocation()
   const menuRef = useRef<HTMLDivElement>(null)
-  const user = readHrmUser()
+  const user = readUser()
+  const itens = isGestor(user) ? [...ITEMS, ...GESTOR_ITEMS] : ITEMS
 
   // Close the navbar whenever the route changes (same as HRM). Ajuste de
   // estado durante o render — evita o efeito em cascata do setState no effect.
@@ -65,7 +64,7 @@ export function Layout() {
         </div>
 
         <div className="navbar-menu" ref={menuRef}>
-          {ITEMS.map((item) => (
+          {itens.map((item) => (
             <Link key={item.label} to={item.to} className={`navbar-item ${isActive(item.to) ? 'active' : ''}`}>
               {item.label}
             </Link>

@@ -1,63 +1,93 @@
 import { useMemo, useState } from 'react'
-import { FUND_STORES } from '../catalog'
-import { brl, etaLabel, modeLabel } from '../format'
+import { brl, modoLabel, previsaoLabel } from '../format'
 import { tileGradient } from '../tile'
-import type { FundItem } from '../types'
-import type { StoreSelection } from '../useFundoWallet'
+import type { Acao, LojaOpcao } from '../types'
 import { Modal } from './Modal'
 import { Stepper } from './Stepper'
 
 interface CheckoutModalProps {
   /** null = modal fechada. */
-  item: FundItem | null
-  balance: number
+  acao: Acao | null
+  saldo: number
+  lojas: LojaOpcao[]
+  /** Erro devolvido pelo backend no resgate (saldo, ação desativada…). */
+  erro: string | null
+  enviando: boolean
   onClose: () => void
-  onConfirm: (selection: StoreSelection) => void
+  onConfirm: (lojas: { nome: string; store_unique_id?: string; quantidade: number }[]) => void
 }
 
-/** Primeira loja já vem marcada, como no protótipo.
- *  O estado é remontado a cada ação porque a página passa `key={item.id}`. */
-const initialSelection = (): StoreSelection => ({ [FUND_STORES[0].id]: 1 })
+/** Acima disso o checkbox vira lista com busca — o gestor enxerga centenas de
+ *  lojas e rolar tudo não é usável. */
+const LIMIAR_BUSCA = 8
 
-export function CheckoutModal({ item, balance, onClose, onConfirm }: CheckoutModalProps) {
-  const [selection, setSelection] = useState<StoreSelection>(initialSelection)
+export function CheckoutModal({
+  acao, saldo, lojas, erro, enviando, onClose, onConfirm,
+}: CheckoutModalProps) {
+  const [sel, setSel] = useState<Record<string, number>>({})
+  const [busca, setBusca] = useState('')
 
-  const totals = useMemo(() => {
-    const units = Object.values(selection).reduce((a, b) => a + b, 0)
-    return { units, price: units * (item?.price ?? 0), lojas: Object.keys(selection).length }
-  }, [selection, item])
+  const visiveis = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    const base = q ? lojas.filter((l) => `${l.nome} ${l.cidade}`.toLowerCase().includes(q)) : lojas
+    // Loja marcada nunca some do filtro — senão o usuário perde a seleção de vista.
+    const marcadas = lojas.filter((l) => sel[l.id] && !base.includes(l))
+    return [...marcadas, ...base].slice(0, 40)
+  }, [lojas, busca, sel])
 
-  const toggleStore = (id: string) =>
-    setSelection(({ [id]: current, ...rest }) => (current ? rest : { ...rest, [id]: 1 }))
+  const totais = useMemo(() => {
+    const unidades = Object.values(sel).reduce((a, b) => a + b, 0)
+    return { unidades, preco: unidades * (acao?.preco ?? 0), lojas: Object.keys(sel).length }
+  }, [sel, acao])
 
-  const setQty = (id: string, qty: number) =>
-    setSelection((sel) => (sel[id] ? { ...sel, [id]: qty } : sel))
+  const alterna = (id: string) =>
+    setSel(({ [id]: atual, ...resto }) => (atual ? resto : { ...resto, [id]: 1 }))
+  const qtd = (id: string, q: number) => setSel((s) => (s[id] ? { ...s, [id]: q } : s))
 
-  if (!item) return null
-  const afford = totals.price <= balance && totals.units > 0
+  if (!acao) return null
+  const cabe = totais.preco <= saldo && totais.unidades > 0
+
+  const confirmar = () =>
+    onConfirm(Object.entries(sel).map(([id, quantidade]) => ({
+      nome: lojas.find((l) => l.id === id)?.nome ?? id,
+      store_unique_id: id,
+      quantidade,
+    })))
 
   return (
-    <Modal open title="Resgatar ação" subtitle="Escolha as lojas e a quantidade" variant="co" onClose={onClose}>
+    <Modal open title="Resgatar ação" subtitle="Escolha as lojas e a quantidade"
+      variant="co" onClose={onClose}>
       <div className="co-item">
-        <div className="co-thumb" style={{ background: tileGradient(item.id) }}>{item.emoji}</div>
+        <div className="co-thumb" style={{ background: tileGradient(acao.slug) }}>{acao.emoji}</div>
         <div>
-          <div className="co-nm">{item.name}</div>
-          <div className="co-unit">{brl(item.price)} / unidade · debitado da carteira</div>
+          <div className="co-nm">{acao.nome}</div>
+          <div className="co-unit">{brl(acao.preco)} / unidade · debitado da carteira</div>
         </div>
       </div>
 
       <div className="co-sec-t">Para quais lojas?</div>
+      {lojas.length > LIMIAR_BUSCA && (
+        <div className="co-stores">
+          <input className="co-search" placeholder="Buscar loja…" value={busca}
+            onChange={(e) => setBusca(e.target.value)} />
+        </div>
+      )}
       <div className="co-stores">
-        {FUND_STORES.map((s) => {
-          const on = !!selection[s.id]
+        {lojas.length === 0 && (
+          <div className="co-store-ci" style={{ padding: '12px 0' }}>
+            Nenhuma loja vinculada ao seu usuário. Fale com o time para liberar as lojas.
+          </div>
+        )}
+        {visiveis.map((l) => {
+          const on = !!sel[l.id]
           return (
-            <div className={`co-store ${on ? 'on' : ''}`} key={s.id}>
-              <button className="co-check" onClick={() => toggleStore(s.id)} aria-pressed={on}>{on ? '✓' : ''}</button>
-              <div className="co-store-info" onClick={() => toggleStore(s.id)}>
-                <div className="co-store-nm">{s.name}</div>
-                <div className="co-store-ci">{s.city}</div>
+            <div className={`co-store ${on ? 'on' : ''}`} key={l.id}>
+              <button className="co-check" onClick={() => alterna(l.id)} aria-pressed={on}>{on ? '✓' : ''}</button>
+              <div className="co-store-info" onClick={() => alterna(l.id)}>
+                <div className="co-store-nm">{l.nome}</div>
+                <div className="co-store-ci">{l.cidade || l.id}</div>
               </div>
-              <Stepper value={selection[s.id] ?? 1} disabled={!on} onChange={(q) => setQty(s.id, q)} />
+              <Stepper value={sel[l.id] ?? 1} disabled={!on} onChange={(q) => qtd(l.id, q)} />
             </div>
           )
         })}
@@ -65,32 +95,29 @@ export function CheckoutModal({ item, balance, onClose, onConfirm }: CheckoutMod
 
       <div className="co-summary">
         <div className="co-row">
-          <span className="mut">{totals.units} unidade(s) · {totals.lojas} loja(s)</span>
-          <span>{brl(totals.price)}</span>
+          <span className="mut">{totais.unidades} unidade(s) · {totais.lojas} loja(s)</span>
+          <span>{brl(totais.preco)}</span>
         </div>
         <div className="co-row">
           <span className="mut">Saldo após o resgate</span>
-          <span>{brl(Math.max(0, balance - totals.price))}</span>
+          <span>{brl(Math.max(0, saldo - totais.preco))}</span>
         </div>
-        <div className="co-row total"><span>Total</span><span>{brl(totals.price)}</span></div>
+        <div className="co-row total"><span>Total</span><span>{brl(totais.preco)}</span></div>
       </div>
 
       <div className="co-eta">
-        🚚 <div><b>{modeLabel(item)}:</b> {etaLabel(item)}</div>
+        🚚 <div><b>{modoLabel(acao.modo)}:</b> {previsaoLabel(acao.modo, acao.prazo_dias)}</div>
       </div>
 
-      {!afford && totals.units > 0 && (
+      {erro && <div className="co-warn">{erro}</div>}
+      {!erro && !cabe && totais.unidades > 0 && (
         <div className="co-warn">Saldo insuficiente para essa quantidade. Ajuste as lojas ou a quantidade.</div>
       )}
-      {totals.units === 0 && <div className="co-warn">Selecione ao menos uma loja.</div>}
+      {!erro && totais.unidades === 0 && <div className="co-warn">Selecione ao menos uma loja.</div>}
 
       <div className="co-foot">
-        <button
-          className="btn btn-accent btn-block btn-lg"
-          disabled={!afford}
-          onClick={() => onConfirm(selection)}
-        >
-          Confirmar resgate · {brl(totals.price)}
+        <button className="btn btn-accent btn-block btn-lg" disabled={!cabe || enviando} onClick={confirmar}>
+          {enviando ? 'Registrando…' : `Confirmar resgate · ${brl(totais.preco)}`}
         </button>
       </div>
     </Modal>
