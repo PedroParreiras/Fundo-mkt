@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AdminOnly } from './components/AdminOnly'
 import { Layout } from './components/Layout'
 import { FundoMarketing } from './pages/FundoMarketing'
-import './styles/fundo-proto.css'
+import './styles/fundo.css'
 
 export default function App() {
   return (

@@ -32,14 +32,16 @@ Reaproveita a sessão do HRM: `auth_token` / `user` do `localStorage` na origem
 - `src/fundo/` — dados mock, tipos, formatação e o hook da carteira
 - `src/index.css` — design system do HRM (tokens, navbar, cards, grids)
 - `src/fundo-mkt-fx.css` — camada aditiva `.fm-*` de animação/FX
-- `src/styles/fundo-proto.css` — CSS portado do protótipo, escopado em `.fundo-app`
+- `src/styles/fundo.css` — estilo da tela (tokens `--mkt-*`), escopado em `.fundo-app`
 
 ## Tela do fundo
 
-Porta 1:1 da aba **"💰 Fundo de Marketing"** do protótipo
+Estrutura e conteúdo vieram da aba **"💰 Fundo de Marketing"** do protótipo
 `mockup-hub-fundo-marketing.html` (Hub de Abastecimento) — só essa aba; o resto
 do hub (marketplace, carrinho, pedidos, estoque CD, pedidos loja) ficou de fora.
-A topbar de abas do protótipo foi substituída pela navbar padrão do HRM.
+A topbar de abas do protótipo virou a navbar padrão do HRM, e o **visual segue a
+vitrine do marketplace**: mesmos tokens `--mkt-*`, então o botão de tema da
+navbar alterna claro/escuro aqui igual nas outras ferramentas `/system`.
 
 - **Loja do Fundo** — ações por categoria (Tração / Recorrência / Branding Local),
   card com preço por unidade e checkout de resgate (escolhe lojas + quantidade,

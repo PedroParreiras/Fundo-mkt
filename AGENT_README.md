@@ -28,13 +28,22 @@ Camada de dados/estado em `src/fundo/`:
 - Design system vem de `src/index.css` (cópia sincronizada do HRM). Ao editar o
   bloco `PLATFORM THEMES`, sincronize com as outras cópias nos sub-apps.
 - FX/animações ficam em `src/fundo-mkt-fx.css` com prefixo `.fm-*` (aditivo).
-- **`src/styles/fundo-proto.css` é CSS portado do protótipo, não redesenhado.**
-  Tudo escopado sob `.fundo-app` porque o protótipo usa nomes genéricos
-  (`.btn`, `.chip`, `.modal-overlay`, `.empty`) que colidem com o design system
-  do HRM. O arquivo também neutraliza o `button:hover{transform}` global do
-  `index.css`. Ao mexer no visual, altere lá — não redesenhe a partir da tela.
-- A paleta do protótipo é clara e fixa (`--navy/--bg` locais), independente do
-  `hrm_theme`. Consciente: é uma porta 1:1 do mockup.
+- **O design é o MESMO da vitrine do marketplace.** `src/styles/fundo.css` não
+  tem paleta própria: consome os tokens `--mkt-*` do bloco "MARKETPLACE THEME
+  LAYER" em `src/index.css` (cópia sincronizada de `marketplace/src/index.css`
+  — editou lá, sincronize aqui). Por isso claro/escuro alternam junto com a
+  plataforma (`hrm_theme` + `ThemeToggle` na navbar).
+  Idioma visual: card radius 10 · ação em pílula dourada com texto navy · chip
+  pílula (ativo = dourado) · grupo com título uppercase + contador + régua ·
+  modal `--mkt-modal-bg` radius 16 sobre overlay preto com blur.
+- Tudo escopado sob `.fundo-app`: os nomes são genéricos (`.btn`, `.chip`,
+  `.modal-overlay`, `.empty`) e colidiriam com o design system do HRM. O
+  arquivo também neutraliza o `button:hover{transform}` global do `index.css`.
+- **Ouro puro (#edb125) nunca como TEXTO em superfície clara** (~2:1 sobre
+  branco). Texto acentuado usa `var(--text-accent)`, que vira `#9c7210` no tema
+  claro; o ouro fica só em SUPERFÍCIE (botão, borda, pílula ativa).
+- Thumb das ações: `src/fundo/tile.ts` (`tileGradient`) — mesma regra do tile
+  sem foto da vitrine. Os pastéis do protótipo saíram: só funcionavam no claro.
 - Sessão/HTTP sempre por `src/lib/api.ts` (nunca `fetch` solto).
 - Build: `npm run build` → `dist/` com base `/system/fundo-mkt/`.
   `npm run preview` NÃO funciona (o `base` do config só vale em `build`); use

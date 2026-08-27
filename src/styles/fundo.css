@@ -1,0 +1,412 @@
+/* ============================================================================
+   FUNDO DE MARKETING — folha de estilo da tela.
+   ----------------------------------------------------------------------------
+   Segue o MESMO design da vitrine do marketplace: nada de paleta própria, tudo
+   sai dos tokens `--mkt-*` (bloco "MARKETPLACE THEME LAYER" em index.css), então
+   claro/escuro alternam junto com o resto da plataforma (`hrm_theme`).
+   Idioma visual copiado da vitrine:
+     · card    → radius 10, --mkt-card-bg, borda --mkt-card-border,
+                 hover translateY(-3px) + --mkt-border-hover
+     · ação    → pílula (radius 999) dourada com texto navy
+     · chip    → pílula com borda; ativo = dourado + navy
+     · grupo   → título uppercase .1em + contador em pílula + régua
+     · modal   → --mkt-modal-bg, radius 16, overlay preto com blur
+   Escopado em `.fundo-app` porque os nomes são genéricos (.btn/.chip/.modal-*)
+   e colidiriam com o design system do HRM em index.css.
+   ========================================================================== */
+
+.fundo-app{
+  --fm-navy:#0E2050;
+  --fm-gold:#edb125;
+  --fm-gold-edge:#d9a417;
+  --fm-ok:#16a34a;
+
+  min-height:100vh;
+  background:var(--mkt-page-bg);
+  color:var(--mkt-text);
+  font-family:var(--font-family);
+  font-size:14px; line-height:1.5;
+}
+.fundo-app *{box-sizing:border-box; margin:0; padding:0}
+.fundo-app button{font-family:inherit}
+
+/* O design system do HRM aplica transform/underline em `button`/`a` soltos —
+   aqui o hover é o do card/pílula da vitrine, então neutraliza. */
+.fundo-app button:hover:not(:disabled),
+.fundo-app button:active:not(:disabled),
+.fundo-app button:not(:disabled):hover,
+.fundo-app button:not(:disabled):active{transform:none}
+.fundo-app a::after{content:none; display:none}
+.fundo-app input:focus{outline:0}
+
+@keyframes fundo-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- PÁGINA ---------- */
+.fundo-app .wrap{max-width:1320px; margin:0 auto; padding:32px 32px 70px}
+.fundo-app .screen{animation:fundo-fade .25s ease}
+.fundo-app .page-head{margin-bottom:22px}
+.fundo-app .eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--text-accent); margin-bottom:4px;
+}
+.fundo-app h1.page-title{font-size:30px; font-weight:800; color:var(--mkt-strong); line-height:1.15}
+.fundo-app .page-desc{color:var(--mkt-text-muted); font-size:14px; margin-top:6px; max-width:680px}
+
+/* ---------- CHIPS DE CATEGORIA ---------- */
+.fundo-app .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:28px}
+.fundo-app .chips{display:flex; gap:8px; flex-wrap:wrap}
+.fundo-app .chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 14px; border-radius:999px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-card-bg);
+  color:var(--mkt-strong); font-weight:800; font-size:12px;
+  cursor:pointer; transition:background .12s, border-color .12s, color .12s;
+}
+.fundo-app .chip:hover{border-color:var(--mkt-border-hover)}
+.fundo-app .chip.active{background:var(--fm-gold); border-color:var(--fm-gold); color:var(--fm-navy)}
+.fundo-app .chip .dot{width:8px; height:8px; border-radius:50%}
+
+/* ---------- GRUPO DE CATEGORIA ---------- */
+.fundo-app .sup-group{margin-bottom:36px}
+.fundo-app .sup-head{display:flex; align-items:center; gap:10px; margin-bottom:16px}
+.fundo-app .sup-logo{
+  width:34px; height:34px; border-radius:9px; color:#fff; flex-shrink:0;
+  font-weight:800; font-size:12px;
+  display:flex; align-items:center; justify-content:center;
+}
+.fundo-app .sup-name{
+  font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mkt-strong);
+}
+.fundo-app .sup-tag{font-size:11.5px; color:var(--mkt-text-muted); letter-spacing:0; text-transform:none}
+.fundo-app .sup-count{
+  margin-left:auto; flex-shrink:0;
+  font-size:11px; font-weight:800; color:var(--mkt-text-muted);
+  background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  border-radius:999px; padding:2px 9px;
+}
+
+/* ---------- CARD DE AÇÃO ---------- */
+.fundo-app .pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px}
+.fundo-app .pcard{
+  position:relative; display:flex; flex-direction:column; overflow:hidden;
+  border-radius:10px; background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.fundo-app .pcard:hover{
+  transform:translateY(-3px); border-color:var(--mkt-border-hover);
+  box-shadow:0 8px 22px rgba(15,23,32,.14);
+}
+.fundo-app .thumb{
+  height:150px; display:flex; align-items:center; justify-content:center;
+  font-size:56px; position:relative; border-bottom:1px solid var(--mkt-card-border);
+}
+/* Etiqueta da categoria — pílula navy/dourada, canto superior direito (mesma
+   posição da etiqueta da vitrine). */
+.fundo-app .cat-tag{
+  position:absolute; top:6px; right:6px; z-index:3;
+  font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; background:var(--fm-navy); border:1px solid var(--fm-gold);
+  border-radius:999px; padding:2px 8px; box-shadow:0 1px 3px rgba(15,23,32,.25);
+}
+.fundo-app .pbody{display:flex; flex-direction:column; gap:4px; padding:10px 12px 12px; flex:1}
+.fundo-app .pname{font-size:13px; font-weight:600; color:var(--mkt-text); line-height:1.3; min-height:34px}
+.fundo-app .pdesc{font-size:11.5px; color:var(--mkt-text-muted); line-height:1.4; min-height:32px}
+.fundo-app .pprice-row{display:flex; align-items:baseline; gap:4px; color:var(--mkt-strong); margin-top:2px}
+.fundo-app .pprice{font-size:20px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
+.fundo-app .pprice small{font-size:11px; font-weight:800; opacity:.6}
+.fundo-app .pcard-foot{display:flex; gap:8px; align-items:center; margin-top:auto; padding-top:7px}
+
+/* ---------- STEPPER / BOTÕES ---------- */
+.fundo-app .stepper{display:flex; align-items:center; gap:5px; flex-shrink:0}
+.fundo-app .stepper button{
+  width:28px; height:28px; flex-shrink:0; border-radius:7px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg);
+  color:var(--mkt-text); font-size:14px; font-weight:700; line-height:1; cursor:pointer;
+}
+.fundo-app .stepper button:hover{border-color:var(--mkt-border-hover)}
+.fundo-app .stepper input{
+  width:44px; height:28px; text-align:center; border-radius:7px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-card-bg);
+  color:var(--mkt-text); font-size:13px; font-weight:600; outline:0; -moz-appearance:textfield;
+}
+.fundo-app .stepper input::-webkit-outer-spin-button,
+.fundo-app .stepper input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+
+.fundo-app .btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  border-radius:999px; border:1px solid transparent; cursor:pointer;
+  font-size:13px; font-weight:800; padding:9px 18px;
+  text-transform:none; letter-spacing:normal; box-shadow:none;
+  transition:background .14s, opacity .14s, border-color .14s;
+}
+.fundo-app .btn-primary{background:var(--fm-gold); border-color:var(--fm-gold-edge); color:var(--fm-navy)}
+.fundo-app .btn-primary:hover{background:#f0bd45}
+.fundo-app .btn-accent{background:var(--fm-gold); border-color:var(--fm-gold-edge); color:var(--fm-navy)}
+.fundo-app .btn-accent:hover{background:#f0bd45}
+.fundo-app .btn-ghost{background:transparent; border-color:var(--fm-gold); color:var(--mkt-strong)}
+.fundo-app .btn-block{width:100%; padding:10px 14px}
+.fundo-app .btn-lg{padding:13px 22px; font-size:14px}
+.fundo-app .btn:disabled{opacity:.5; cursor:not-allowed}
+
+/* ---------- EMPTY STATE ---------- */
+.fundo-app .empty{
+  background:var(--mkt-card-bg); border:1px dashed var(--mkt-border-dash);
+  border-radius:12px; padding:54px 24px; text-align:center;
+}
+.fundo-app .empty .ei{font-size:44px}
+.fundo-app .empty .et{font-weight:800; font-size:16px; color:var(--mkt-strong); margin-top:10px}
+.fundo-app .empty .ed{color:var(--mkt-text-muted); font-size:13px; margin-top:5px; margin-bottom:16px}
+
+/* ---------- TOAST ---------- */
+.fundo-app .toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--fm-navy); color:#fff; padding:12px 20px; border-radius:999px;
+  border:1px solid var(--fm-gold);
+  font-size:13px; font-weight:700; box-shadow:0 8px 30px rgba(15,23,32,.35);
+  opacity:0; pointer-events:none; transition:all .25s; z-index:1100;
+  display:flex; align-items:center; gap:9px;
+}
+.fundo-app .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+.fundo-app .toast .ti{color:var(--fm-gold); font-size:15px}
+
+/* ---------- CARTEIRA ---------- */
+/* Navy/dourado é chrome de marca: fica igual nos dois temas, como a navbar. */
+.fundo-app .wallet{
+  background:linear-gradient(135deg,#16203f 0%,#233060 100%);
+  border:1px solid rgba(237,177,37,.35);
+  box-shadow:0 10px 28px rgba(0,0,0,.28);
+  border-radius:16px; padding:24px 28px; color:#fff; margin-bottom:20px;
+  display:flex; justify-content:space-between; align-items:center; gap:22px; flex-wrap:wrap;
+}
+.fundo-app .w-hi{font-size:12.5px; color:rgba(245,247,250,.6); margin-bottom:10px; display:flex; align-items:center; gap:8px}
+.fundo-app .w-hi .wdot{width:7px;height:7px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.22)}
+.fundo-app .balance-btn{background:none; border:0; padding:0; cursor:pointer; text-align:left; color:#fff; display:block}
+.fundo-app .balance-btn .wl-label{
+  display:block; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fm-gold);
+}
+.fundo-app .balance-btn .balance{
+  display:block; font-size:38px; font-weight:800; line-height:1; margin:4px 0 4px;
+  font-variant-numeric:tabular-nums;
+}
+.fundo-app .balance-btn .wl-hint{display:block; font-size:12px; color:rgba(245,247,250,.6)}
+.fundo-app .balance-btn:hover .balance{color:var(--fm-gold)}
+.fundo-app .w-right{display:flex; gap:12px; flex-wrap:wrap}
+.fundo-app .w-stat{
+  background:rgba(255,255,255,.06); border:1px solid rgba(237,177,37,.25);
+  border-radius:12px; padding:12px 16px; min-width:140px;
+}
+.fundo-app .w-stat span{display:block; font-size:11px; color:rgba(245,247,250,.6); margin-bottom:4px}
+.fundo-app .w-stat b{font-size:16px; font-weight:800; font-variant-numeric:tabular-nums}
+.fundo-app .fund-note{
+  font-size:12.5px; color:var(--mkt-text-muted); margin:0 0 22px;
+  display:flex; gap:8px; align-items:flex-start;
+}
+.fundo-app .fund-note b{color:var(--mkt-strong)}
+
+/* ---------- SUB-NAV ---------- */
+.fundo-app .fund-subnav{display:inline-flex; gap:6px; flex-wrap:wrap; margin-bottom:24px}
+.fundo-app .fsub{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 16px; border-radius:999px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-card-bg);
+  color:var(--mkt-strong); font-weight:800; font-size:12.5px; cursor:pointer;
+  font-family:inherit; transition:background .12s, border-color .12s, color .12s;
+}
+.fundo-app .fsub:hover{border-color:var(--mkt-border-hover)}
+.fundo-app .fsub.active{background:var(--fm-gold); border-color:var(--fm-gold); color:var(--fm-navy)}
+.fundo-app .fsub-badge{
+  font-size:11px; font-weight:800; min-width:18px; padding:1px 7px; border-radius:999px;
+  color:var(--mkt-text-muted); background:var(--mkt-page-bg); border:1px solid var(--mkt-card-border);
+  font-variant-numeric:tabular-nums;
+}
+.fundo-app .fsub.active .fsub-badge{color:var(--fm-navy); background:rgba(255,255,255,.55); border-color:transparent}
+
+/* ---------- MODAIS ---------- */
+.fundo-app .modal-overlay{
+  position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.72);
+  backdrop-filter:blur(5px); display:none; align-items:flex-start; justify-content:center;
+  padding:70px 20px 30px; overflow-y:auto;
+}
+.fundo-app .modal-overlay.show{display:flex}
+.fundo-app .modal{
+  width:100%; max-width:520px; border-radius:16px; overflow:hidden;
+  background:var(--mkt-modal-bg); border:1px solid var(--mkt-card-border);
+  box-shadow:0 24px 70px rgba(0,0,0,.55); animation:fundo-fade .2s ease;
+}
+.fundo-app .modal-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  padding:20px 22px 14px;
+}
+.fundo-app .mh-title{font-size:17px; font-weight:800; color:var(--mkt-strong)}
+.fundo-app .mh-sub{font-size:12.5px; color:var(--mkt-text-muted); margin-top:2px}
+.fundo-app .modal-x{
+  flex-shrink:0; width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:13px;
+  border:1px solid var(--mkt-card-border); background:transparent; color:var(--mkt-text-muted);
+}
+.fundo-app .modal-x:hover{border-color:var(--mkt-border-hover); color:var(--mkt-text)}
+.fundo-app .modal-balance{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin:0 22px 8px; padding:13px 16px; border-radius:12px;
+  background:var(--mkt-modal-inset); border:1px solid var(--mkt-card-border);
+  font-size:13px; color:var(--mkt-text-muted); font-weight:700;
+}
+.fundo-app .modal-balance b{font-size:20px; font-weight:800; color:var(--mkt-strong); font-variant-numeric:tabular-nums}
+.fundo-app .hist-list{padding:6px 22px 22px; max-height:52vh; overflow-y:auto}
+.fundo-app .hist-row{display:flex; align-items:center; gap:13px; padding:12px 0; border-bottom:1px solid var(--mkt-card-border)}
+.fundo-app .hist-row:last-child{border-bottom:0}
+.fundo-app .hr-ico{
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800;
+}
+.fundo-app .hr-ico.in{background:rgba(22,163,74,.15); color:var(--fm-ok); border:1px solid rgba(22,163,74,.35)}
+.fundo-app .hr-ico.out{background:rgba(237,177,37,.15); color:var(--text-accent); border:1px solid rgba(237,177,37,.35)}
+.fundo-app .hr-info{flex:1; min-width:0}
+.fundo-app .hr-desc{font-weight:600; font-size:13.5px; color:var(--mkt-text)}
+.fundo-app .hr-date{font-size:11.5px; color:var(--mkt-text-muted)}
+.fundo-app .hr-val{font-weight:800; font-size:14px; white-space:nowrap; font-variant-numeric:tabular-nums}
+.fundo-app .hr-val.in{color:var(--fm-ok)}
+.fundo-app .hr-val.out{color:var(--mkt-strong)}
+
+/* ---------- CHECKOUT ---------- */
+.fundo-app .modal.co{max-width:544px}
+.fundo-app .co-item{
+  display:flex; gap:13px; align-items:center; padding:0 22px 15px; margin-bottom:8px;
+  border-bottom:1px solid var(--mkt-card-border);
+}
+.fundo-app .co-thumb{
+  width:52px; height:52px; border-radius:11px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+}
+.fundo-app .co-nm{font-weight:700; font-size:14.5px; color:var(--mkt-text)}
+.fundo-app .co-unit{font-size:12.5px; color:var(--mkt-text-muted); margin-top:2px}
+.fundo-app .co-sec-t{
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--mkt-text-muted); padding:4px 22px 6px;
+}
+.fundo-app .co-stores{padding:0 22px}
+.fundo-app .co-store{display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--mkt-card-border)}
+.fundo-app .co-store:last-child{border-bottom:0}
+.fundo-app .co-check{
+  width:21px; height:21px; border-radius:6px; flex-shrink:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:12px;
+  border:1.5px solid var(--mkt-border-dash); background:transparent; color:var(--fm-navy);
+  transition:.12s;
+}
+.fundo-app .co-store.on .co-check{background:var(--fm-gold); border-color:var(--fm-gold)}
+.fundo-app .co-store-info{flex:1; min-width:0; cursor:pointer}
+.fundo-app .co-store-nm{font-weight:600; font-size:13.5px; color:var(--mkt-text)}
+.fundo-app .co-store-ci{font-size:11.5px; color:var(--mkt-text-muted)}
+.fundo-app .co-store .stepper{opacity:.4; pointer-events:none}
+.fundo-app .co-store.on .stepper{opacity:1; pointer-events:auto}
+.fundo-app .co-summary{
+  margin:10px 22px 0; padding:13px 16px; border-radius:12px;
+  background:var(--mkt-modal-inset); border:1px solid var(--mkt-card-border);
+}
+.fundo-app .co-row{display:flex; justify-content:space-between; gap:12px; font-size:13px; margin-bottom:7px; color:var(--mkt-text)}
+.fundo-app .co-row .mut{color:var(--mkt-text-muted)}
+.fundo-app .co-row.total{
+  border-top:1px solid var(--mkt-card-border); padding-top:10px; margin:3px 0 0;
+  align-items:baseline; font-weight:800; font-size:17px; color:var(--mkt-strong);
+  font-variant-numeric:tabular-nums;
+}
+.fundo-app .co-eta{
+  display:flex; gap:9px; align-items:center; margin:12px 22px 0; padding:11px 14px;
+  border-radius:12px; line-height:1.4; font-size:12.5px;
+  color:var(--mkt-text); background:var(--mkt-modal-inset); border:1px solid var(--mkt-card-border);
+}
+.fundo-app .co-eta b{color:var(--mkt-strong)}
+.fundo-app .co-warn{color:#e5484d; font-size:12.5px; margin:11px 22px 0; font-weight:700}
+.fundo-app .co-foot{padding:16px 22px 22px}
+
+/* ---------- PEDIDOS ---------- */
+.fundo-app .fo-card{
+  background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  border-radius:10px; padding:16px 18px; margin-bottom:14px;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.fundo-app .fo-card:hover{border-color:var(--mkt-border-hover); box-shadow:0 8px 22px rgba(15,23,32,.14)}
+.fundo-app .fo-top{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.fundo-app .fo-thumb{
+  width:44px; height:44px; border-radius:10px; flex-shrink:0; font-size:22px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--mkt-input-bg); border:1px solid var(--mkt-card-border);
+}
+.fundo-app .fo-nm{font-weight:800; font-size:14px; color:var(--mkt-strong)}
+.fundo-app .fo-meta{font-size:11.5px; color:var(--mkt-text-muted); margin-top:1px}
+.fundo-app .fo-status{
+  margin-left:auto; flex-shrink:0; white-space:nowrap;
+  font-size:11px; font-weight:800; letter-spacing:.02em;
+  padding:4px 12px; border-radius:999px; border:1px solid transparent;
+}
+.fundo-app .st-prep{background:rgba(237,177,37,.15); color:var(--text-accent,#a86a12); border-color:rgba(237,177,37,.45)}
+.fundo-app .st-trans{background:var(--mkt-input-bg); color:var(--mkt-text); border-color:var(--mkt-border-hover)}
+.fundo-app .st-done{background:rgba(22,163,74,.15); color:var(--fm-ok); border-color:rgba(22,163,74,.4)}
+.fundo-app .fo-body{
+  display:flex; justify-content:space-between; align-items:flex-end; gap:14px; flex-wrap:wrap;
+  border-top:1px solid var(--mkt-card-border); padding-top:12px;
+}
+.fundo-app .fo-stores{display:flex; flex-wrap:wrap; gap:6px; flex:1}
+.fundo-app .fo-store-tag{
+  font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px;
+  background:var(--mkt-input-bg); border:1px solid var(--mkt-card-border); color:var(--mkt-text);
+}
+.fundo-app .fo-right{text-align:right}
+.fundo-app .fo-total{font-weight:800; font-size:16px; color:var(--mkt-strong); font-variant-numeric:tabular-nums}
+.fundo-app .fo-eta{font-size:11.5px; color:var(--mkt-text-muted); margin-top:2px}
+.fundo-app .fo-adv{
+  background:none; border:0; padding:0; margin-top:9px; font-family:inherit;
+  color:var(--text-accent); font-weight:800; font-size:12px; cursor:pointer;
+}
+.fundo-app .fo-adv:hover{text-decoration:underline}
+
+/* ---------- CRONOGRAMA ---------- */
+.fundo-app .q-group{margin-bottom:32px}
+.fundo-app .q-head{
+  display:flex; align-items:center; gap:12px; margin-bottom:16px;
+  font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mkt-strong);
+}
+.fundo-app .q-head:after{content:''; flex:1; height:1px; background:var(--mkt-card-border)}
+.fundo-app .month-card{
+  background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  border-radius:10px; padding:18px 20px; margin-bottom:13px;
+}
+.fundo-app .month-card.current{border-color:var(--fm-gold); box-shadow:0 0 0 3px rgba(237,177,37,.12)}
+.fundo-app .mc-when{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;
+  font-weight:800; font-size:16px; color:var(--mkt-strong);
+}
+.fundo-app .mc-theme{
+  font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+  background:var(--mkt-input-bg); border:1px solid var(--mkt-card-border);
+  color:var(--mkt-text); padding:3px 11px; border-radius:999px;
+}
+.fundo-app .month-card.current .mc-theme{background:var(--fm-gold); border-color:var(--fm-gold); color:var(--fm-navy)}
+.fundo-app .mc-badge-now{
+  font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text-accent); border:1px solid var(--fm-gold); border-radius:999px; padding:2px 9px;
+}
+.fundo-app .mc-desc{font-size:13px; color:var(--mkt-text-muted); line-height:1.5; margin-bottom:14px; max-width:700px}
+.fundo-app .mc-rec-label{
+  font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mkt-text-muted); margin-bottom:9px;
+}
+.fundo-app .mc-recs{display:flex; flex-wrap:wrap; gap:8px}
+.fundo-app .rec{
+  display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px;
+  background:var(--mkt-input-bg); border:1px solid var(--mkt-card-border);
+  color:var(--mkt-text); font-size:12.5px; font-weight:700; cursor:pointer;
+  font-family:inherit; transition:border-color .12s, background .12s;
+}
+.fundo-app .rec:hover{border-color:var(--fm-gold); background:var(--mkt-card-bg)}
+.fundo-app .rec .rec-emoji{font-size:15px}
+.fundo-app .rec .rec-price{color:var(--mkt-strong); font-weight:800; font-variant-numeric:tabular-nums}
+
+@media(max-width:640px){
+  .fundo-app .wrap{padding:20px 16px 60px}
+  .fundo-app h1.page-title{font-size:24px}
+  .fundo-app .wallet{padding:20px}
+  .fundo-app .balance-btn .balance{font-size:30px}
+}

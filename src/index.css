@@ -5909,6 +5909,93 @@ textarea[style]:focus {
 [data-theme="light"] ::-webkit-scrollbar-track {
   background: #eef0f2;
 }
+/* =============================================================================
+   MARKETPLACE THEME LAYER — CÓPIA SINCRONIZADA de marketplace/src/index.css.
+   O Fundo de Marketing segue o mesmo design da vitrine, então consome os
+   mesmos tokens --mkt-*. Se editar lá, sincronize aqui (e vice-versa).
+   -----------------------------------------------------------------------------
+   On top of the shared PLATFORM THEMES block above.
+   Dark (default) = the HRM look: navy gradient page, glass cards, white text.
+   [data-theme="light"] = the EXACT former always-light marketplace storefront.
+   Page code uses the --mkt-* tokens (and the shared --glass* / --text-* ones)
+   so both schemes come from here; brand navy/gold stay fixed in both.
+   ============================================================================= */
+
+:root {
+  /* Dark-scheme defaults (HRM look) for the marketplace page tokens. */
+  --border: var(--glass-border);           /* pages reference var(--border) */
+  --text: var(--text-primary);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.30);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.38);
+
+  --mkt-page-bg: transparent;              /* let the HRM navy gradient show */
+  --mkt-card-bg: rgba(255, 255, 255, 0.05);
+  --mkt-card-border: rgba(var(--secondary-rgb), 0.25);
+  --mkt-border-hover: rgba(var(--secondary-rgb), 0.55);
+  --mkt-border-dash: rgba(245, 247, 250, 0.30);
+  --mkt-text: #ffffff;
+  --mkt-text-muted: rgba(245, 247, 250, 0.6);
+  --mkt-strong: #ffffff;                   /* headings/prices: navy in light */
+  --mkt-input-bg: rgba(255, 255, 255, 0.08);
+  /* MODAL: superfície OPACA. Os tokens de card não servem aqui — --mkt-card-bg
+     é 5% de branco e --mkt-page-bg é transparent, porque no dark quem pinta o
+     fundo é o gradiente navy do body. Card sobre a página funciona; modal sobre
+     o overlay escuro vira vidro e o conteúdo some. --mkt-modal-inset é o fundo
+     de campo DENTRO do modal (precisa destacar da superfície, não da página). */
+  --mkt-modal-bg: #16203f;
+  --mkt-modal-inset: #1f2b4f;
+  --mkt-step-idle: rgba(245, 247, 250, 0.25);
+  --mkt-skel: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.14) 37%, rgba(255, 255, 255, 0.06) 63%);
+}
+
+[data-theme="light"] {
+  /* Former always-on light tokens — exact values, now scheme-scoped. */
+  --text-primary: #0f1720;
+  --text-secondary: #33404f;
+  --text-muted: #5b6675;
+  --text: #0f1720;
+
+  --glass: #ffffff;          /* cards / panels / modals */
+  --glass-bg: #f4f6f8;       /* subtle fills, inputs, ghost buttons */
+  --glass-border: #e3e6ea;   /* hairlines / borders */
+  --border: #e3e6ea;
+  --light: #f5f7fa;
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 32, 0.08);
+  --shadow-md: 0 4px 14px rgba(15, 23, 32, 0.10);
+  --shadow-lg: 0 10px 28px rgba(15, 23, 32, 0.14);
+
+  --mkt-page-bg: #f3f4f6;
+  --mkt-card-bg: #ffffff;
+  --mkt-card-border: #e3e6ea;
+  --mkt-border-hover: #d5dae0;
+  --mkt-border-dash: #c9cfd6;
+  --mkt-text: #0f1720;
+  --mkt-text-muted: #5b6675;
+  --mkt-strong: #0E2050;
+  --mkt-input-bg: #f7f8fa;
+  --mkt-modal-bg: #ffffff;
+  --mkt-modal-inset: #f3f5f8;
+  --mkt-step-idle: #d5dae0;
+  --mkt-skel: linear-gradient(90deg, #eef0f2 25%, #e2e5e8 37%, #eef0f2 63%);
+}
+
+[data-theme="light"] body {
+  background: #f3f4f6;
+  background-attachment: scroll;
+  color: var(--text-primary);
+}
+
+/* Navbar keeps the navy brand header in BOTH themes — pin its text/controls. */
+.navbar-user { color: rgba(255, 255, 255, 0.95); }
+.btn-logout-text { color: rgba(255, 255, 255, 0.65); }
+
+/* Scrollbars tuned for the light background. */
+[data-theme="light"] ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.30); }
+
 /* ==========================================================================
    LIGHT THEME — APP CONTRAST OVERRIDES (kept outside the verbatim-synced platform block)
    ==========================================================================

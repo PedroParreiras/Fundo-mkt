@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { FUND_STORES } from '../catalog'
 import { brl, etaLabel, modeLabel } from '../format'
+import { tileGradient } from '../tile'
 import type { FundItem } from '../types'
 import type { StoreSelection } from '../useFundoWallet'
 import { Modal } from './Modal'
@@ -38,7 +39,7 @@ export function CheckoutModal({ item, balance, onClose, onConfirm }: CheckoutMod
   return (
     <Modal open title="Resgatar ação" subtitle="Escolha as lojas e a quantidade" variant="co" onClose={onClose}>
       <div className="co-item">
-        <div className="co-thumb" style={{ background: item.tint }}>{item.emoji}</div>
+        <div className="co-thumb" style={{ background: tileGradient(item.id) }}>{item.emoji}</div>
         <div>
           <div className="co-nm">{item.name}</div>
           <div className="co-unit">{brl(item.price)} / unidade · debitado da carteira</div>

@@ -20,8 +20,6 @@ export interface FundItem {
   /** Preço por unidade, em reais. */
   price: number
   emoji: string
-  /** Cor de fundo do thumb. */
-  tint: string
   mode: FundMode
   /** Prazo em dias corridos usado para calcular a previsão. */
   lead: number

@@ -1,5 +1,6 @@
 import { findCat } from '../catalog'
 import { brl } from '../format'
+import { tileGradient } from '../tile'
 import type { FundItem } from '../types'
 
 interface FundItemCardProps {
@@ -11,7 +12,7 @@ interface FundItemCardProps {
 export function FundItemCard({ item, onSelect }: FundItemCardProps) {
   return (
     <div className="pcard">
-      <div className="thumb" style={{ background: item.tint }}>
+      <div className="thumb" style={{ background: tileGradient(item.id) }}>
         <span className="cat-tag">{findCat(item.cat).name}</span>
         {item.emoji}
       </div>
