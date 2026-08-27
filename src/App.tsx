@@ -1,13 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
-import { Dashboard } from './pages/Dashboard'
+import { FundoMarketing } from './pages/FundoMarketing'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/fundo" element={<FundoMarketing />} />
+        <Route path="*" element={<Navigate to="/fundo" replace />} />
       </Route>
     </Routes>
   )

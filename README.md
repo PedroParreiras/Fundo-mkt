@@ -27,9 +27,31 @@ Reaproveita a sessão do HRM: `auth_token` / `user` do `localStorage` na origem
 ## Layout
 
 - `src/main.tsx` — `BrowserRouter basename="/system/fundo-mkt"` (derivado de `BASE_URL`)
-- `src/App.tsx` — rotas (default `/dashboard`)
+- `src/App.tsx` — rotas (default `/fundo`)
+- `src/pages/FundoMarketing.tsx` — a tela do fundo (3 sub-abas)
+- `src/fundo/` — dados mock, tipos, formatação e o hook da carteira
 - `src/index.css` — design system do HRM (tokens, navbar, cards, grids)
 - `src/fundo-mkt-fx.css` — camada aditiva `.fm-*` de animação/FX
+- `src/styles/fundo-proto.css` — CSS portado do protótipo, escopado em `.fundo-app`
+
+## Tela do fundo
+
+Porta 1:1 da aba **"💰 Fundo de Marketing"** do protótipo
+`mockup-hub-fundo-marketing.html` (Hub de Abastecimento) — só essa aba; o resto
+do hub (marketplace, carrinho, pedidos, estoque CD, pedidos loja) ficou de fora.
+A topbar de abas do protótipo foi substituída pela navbar padrão do HRM.
+
+- **Loja do Fundo** — ações por categoria (Tração / Recorrência / Branding Local),
+  card com preço por unidade e checkout de resgate (escolhe lojas + quantidade,
+  valida saldo, mostra a previsão conforme o modo Entrega/Ativação/Evento).
+- **Cronograma** — campanhas do ano por trimestre, com as ações recomendadas
+  clicáveis (abrem o mesmo checkout).
+- **Meus Pedidos** — resgates feitos, com "simular avanço" (Em preparação → A
+  caminho → Entregue).
+- **Carteira** — saldo clicável abre o histórico (contribuições × resgates).
+
+> Os dados são **mock em memória** (`src/fundo/catalog.ts`, `schedule.ts`,
+> `seed.ts`), como no protótipo: nada persiste ao recarregar a página.
 
 ## Deploy
 

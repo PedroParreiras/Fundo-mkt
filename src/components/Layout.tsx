@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
@@ -8,7 +8,7 @@ import ThemeToggle from './ThemeToggle'
    that slides the navbar down, brand, item links, and user + Sair on the right. */
 
 const ITEMS = [
-  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'Fundo de Marketing', to: '/fundo' },
 ]
 
 function readHrmUser(): { name?: string; email?: string; role?: string } | null {
@@ -26,10 +26,13 @@ export function Layout() {
   const menuRef = useRef<HTMLDivElement>(null)
   const user = readHrmUser()
 
-  // Close the navbar whenever the route changes (same as HRM).
-  useEffect(() => {
+  // Close the navbar whenever the route changes (same as HRM). Ajuste de
+  // estado durante o render — evita o efeito em cascata do setState no effect.
+  const [lastPath, setLastPath] = useState(pathname)
+  if (lastPath !== pathname) {
+    setLastPath(pathname)
     setIsOpen(false)
-  }, [pathname])
+  }
 
   const isActive = (to: string) => pathname === to || pathname.startsWith(`${to}/`)
 
