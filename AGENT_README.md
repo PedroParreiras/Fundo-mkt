@@ -12,7 +12,7 @@ mock — o único dado semeado à mão são as contribuições da carteira.
 | `/fundo` | `pages/Loja` | vitrine das ações por categoria + carteira + resgate |
 | `/cronograma` | `pages/Cronograma` | campanhas do ano; a recomendação abre o mesmo resgate |
 | `/pedidos` | `pages/Pedidos` | **os próprios** pedidos, com a esteira de 4 etapas |
-| `/gerenciar` | `pages/Gerenciar` | **gestor**: catálogo (Produtos) + todos os pedidos |
+| `/gerenciar` | `pages/Gerenciar` | **gestor**: Produtos + Carteiras + todos os pedidos |
 
 ## Esteira do pedido
 
@@ -36,9 +36,20 @@ uma linha em `fundo_mkt.pedido_eventos` — é dela que sai a data de cada passo
 - **Lojas do resgate** vêm de 3 camadas (`lojas_do_usuario`): `store_franqueado`
   → `store_access` do JWT → todas, se o chamador é gestor e não caiu nas duas.
   Por isso o checkout ganha busca quando passa de 8 lojas.
-- **Contribuições da carteira são seed manual** (`origem='manual'`,
-  `migration_fundo_mkt_seed_carteira_*.sql`). O 1% real vira worker gravando
-  com `origem='faturamento'`; os dois convivem na mesma tabela.
+- **O banco nasce VAZIO.** Nem catálogo nem carteira têm seed: o gestor
+  cadastra as ações em *Gerenciar › Produtos* e credita o saldo em
+  *Gerenciar › Carteiras*.
+- **Lançar saldo é UPSERT** por (usuário, competência, `origem='manual'`):
+  relançar a mesma competência **substitui** o valor, não soma — era fácil
+  dobrar o saldo sem isso. O 1% real vira worker gravando com
+  `origem='faturamento'`; os dois convivem na mesma tabela.
+- **Remover lançamento não reverte resgate.** O saldo pode ficar negativo se o
+  valor removido já tinha sido gasto.
+- **O cronograma casa por slug.** Como o slug é derivado do NOME no servidor,
+  as recomendações de `fundo/schedule.ts` (`t1`, `r3`, `b2`…) não resolvem
+  contra um catálogo cadastrado do zero — o mês mostra "nenhuma ação ligada a
+  esta campanha". Ligar de novo = editar os slugs em `schedule.ts` ou tornar a
+  recomendação gerenciável.
 
 ## Acesso
 
@@ -70,7 +81,8 @@ localStorage é forjável.
 
 ## Pendências
 
-- Worker do 1% (contribuição automática) — hoje a carteira é seed.
+- Worker do 1% (contribuição automática) — hoje o saldo é lançado à mão.
+- Ligar o cronograma ao catálogo novo (ver a nota sobre slug acima).
 - Notificar o franqueado quando o pedido muda de etapa.
 - Liberar a flag `can_access_fundo_mkt` para os franqueados (hoje só o time
   interno entra).

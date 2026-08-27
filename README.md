@@ -48,7 +48,11 @@ Quatro rotas na navbar (o "Gerenciar" só aparece para admin/manager):
   Solicitação → Conferência → Solicitado → Disponível e a data de cada etapa.
 - **Gerenciar** (`/gerenciar`, gestor) — **Produtos**: cria/edita/desativa as
   ações (nome, preço, categoria, descrição, emoji, modo e prazo).
+  **Carteiras**: saldo de cada usuário e o lançamento manual de contribuição.
   **Pedidos**: todos os pedidos, filtro por etapa e o controle da esteira.
+
+> O banco nasce **vazio**: sem catálogo e sem saldo. O gestor cadastra as ações
+> e credita as carteiras pelo Gerenciar.
 
 ## Backend
 

@@ -65,19 +65,23 @@ export function Cronograma() {
                   {mo.n === mesAtual && <span className="mc-badge-now">mês atual</span>}
                 </div>
                 <div className="mc-desc">{mo.desc}</div>
-                {recs.length > 0 && (
-                  <>
-                    <div className="mc-rec-label">Ações recomendadas pra essa campanha</div>
-                    <div className="mc-recs">
-                      {recs.map((a) => (
-                        <button className="rec" key={a.id} onClick={() => { setErro(null); setAlvo(a) }}>
-                          <span className="rec-emoji">{a.emoji}</span>
-                          {a.nome}
-                          <span className="rec-price">{brl(a.preco)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
+                <div className="mc-rec-label">Ações recomendadas pra essa campanha</div>
+                {recs.length > 0 ? (
+                  <div className="mc-recs">
+                    {recs.map((a) => (
+                      <button className="rec" key={a.id} onClick={() => { setErro(null); setAlvo(a) }}>
+                        <span className="rec-emoji">{a.emoji}</span>
+                        {a.nome}
+                        <span className="rec-price">{brl(a.preco)}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  // O cronograma casa por SLUG. Catálogo vazio (ou ação com outro
+                  // slug) ⇒ sem recomendação — dizer isso é melhor que o branco.
+                  <div className="mc-rec-empty">
+                    Nenhuma ação do catálogo ligada a esta campanha ainda.
+                  </div>
                 )}
               </div>
             )

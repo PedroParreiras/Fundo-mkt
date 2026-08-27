@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { Toast } from '../fundo/components/Toast'
 import { useFundo } from '../fundo/fundoStore'
 import { useToast } from '../fundo/useToast'
-import { ProdutosTab } from './gerenciar/ProdutosTab'
+import { CarteirasTab } from './gerenciar/CarteirasTab'
 import { PedidosTab } from './gerenciar/PedidosTab'
+import { ProdutosTab } from './gerenciar/ProdutosTab'
 import { Page, PageHead } from './shared'
 
-type Aba = 'produtos' | 'pedidos'
+type Aba = 'produtos' | 'carteiras' | 'pedidos'
 
 const ABAS: { id: Aba; label: string }[] = [
   { id: 'produtos', label: '🗂️ Produtos' },
+  { id: 'carteiras', label: '💰 Carteiras' },
   { id: 'pedidos', label: '📦 Pedidos' },
 ]
 
@@ -23,7 +25,7 @@ export function Gerenciar() {
   return (
     <Page>
       <PageHead eyebrow="Fundo de Marketing" title="Gerenciar"
-        desc="Catálogo de ações que o franqueado pode resgatar e acompanhamento de todos os pedidos." />
+        desc="Catálogo de ações, saldo das carteiras e acompanhamento de todos os pedidos." />
 
       <div className="fund-subnav">
         {ABAS.map((a) => (
@@ -33,9 +35,9 @@ export function Gerenciar() {
         ))}
       </div>
 
-      {aba === 'produtos'
-        ? <ProdutosTab onChanged={refresh} />
-        : <PedidosTab onToast={toast} />}
+      {aba === 'produtos' && <ProdutosTab onChanged={refresh} />}
+      {aba === 'carteiras' && <CarteirasTab onToast={toast} />}
+      {aba === 'pedidos' && <PedidosTab onToast={toast} />}
 
       <Toast message={message} />
     </Page>

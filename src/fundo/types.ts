@@ -108,3 +108,25 @@ export interface ScheduleQuarter {
   q: string
   months: ScheduleMonth[]
 }
+
+export interface UsuarioCarteira {
+  id: number
+  nome: string
+  email: string
+  role: string
+  contribuido: number
+  resgatado: number
+  saldo: number
+}
+
+export interface Contribuicao {
+  id: number
+  usuario_id: number
+  usuario_nome: string
+  /** AAAA-MM — o formato que o <input type="month"> usa. */
+  competencia: string
+  competencia_br: string
+  valor: number
+  descricao: string
+  origem: 'manual' | 'faturamento'
+}

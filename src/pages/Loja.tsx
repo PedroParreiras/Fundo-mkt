@@ -10,8 +10,8 @@ import { CATEGORIAS } from '../fundo/meta'
 import type { Acao } from '../fundo/types'
 import { useToast } from '../fundo/useToast'
 import { api, ApiError } from '../lib/api'
-import { userName } from '../lib/session'
-import { Carregando, ErroBox, Page, PageHead } from './shared'
+import { isGestor, userName } from '../lib/session'
+import { Carregando, ErroBox, EstadoVazio, Page, PageHead } from './shared'
 
 /** Vitrine do fundo: carteira + ações por categoria + resgate. */
 export function Loja() {
@@ -70,7 +70,15 @@ export function Loja() {
       {error && <ErroBox mensagem={error} />}
       {loading && <Carregando texto="Carregando o catálogo…" />}
 
-      {!loading && !error && (
+      {!loading && !error && acoes.length === 0 && (
+        <EstadoVazio icone="🗂️" titulo="Nenhuma ação no catálogo ainda"
+          texto={isGestor()
+            ? 'Cadastre as ações em Gerenciar › Produtos para os franqueados poderem resgatar.'
+            : 'Assim que o time cadastrar as ações do fundo, elas aparecem aqui.'}
+          acao={isGestor() ? <a className="btn btn-primary" href="gerenciar">Ir para Gerenciar</a> : undefined} />
+      )}
+
+      {!loading && !error && acoes.length > 0 && (
         <>
           <CategoriaChips ativa={cat} onChange={setCat} />
           {grupos.map(({ meta, itens }) => (

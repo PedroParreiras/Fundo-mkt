@@ -2,7 +2,9 @@
 // origem behonest.com.br); 401/403 volta pro login do HRM, igual às outras
 // ferramentas /system/. Nenhuma tela faz `fetch` solto — tudo passa por aqui.
 
-import type { Acao, Carteira, LojaOpcao, Pedido, PedidosResposta } from '../fundo/types'
+import type {
+  Acao, Carteira, Contribuicao, LojaOpcao, Pedido, PedidosResposta, UsuarioCarteira,
+} from '../fundo/types'
 
 const TOKEN_KEY = 'auth_token'
 const BASE = '/api/fundo-mkt'
@@ -57,6 +59,16 @@ export const api = {
   // carteira + lojas
   carteira: () => get<Carteira>(`${BASE}/carteira`),
   lojas: () => get<{ lojas: LojaOpcao[] }>(`${BASE}/lojas`),
+
+  // carteiras (gestor)
+  usuarios: () => get<{ usuarios: UsuarioCarteira[] }>(`${BASE}/usuarios`),
+  contribuicoes: (usuarioId?: number) =>
+    get<{ contribuicoes: Contribuicao[] }>(
+      `${BASE}/contribuicoes${usuarioId ? `?usuario_id=${usuarioId}` : ''}`),
+  lancarContribuicao: (body: { usuario_id: number; competencia: string; valor: number; descricao?: string }) =>
+    send<{ contribuicoes: Contribuicao[] }>('POST', `${BASE}/contribuicoes`, body),
+  removerContribuicao: (id: number) =>
+    send<{ contribuicoes: Contribuicao[] }>('DELETE', `${BASE}/contribuicoes/${id}`),
 
   // pedidos
   pedidos: (todos = false) => get<PedidosResposta>(`${BASE}/pedidos${todos ? '?todos=1' : ''}`),
