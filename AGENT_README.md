@@ -93,6 +93,11 @@ que era o que quebrava quando o catálogo era recriado).
 
 Entrar no app: `role admin|manager` OU `auth.users.can_access_fundo_mkt`.
 
+A flag é concedida no HRM em **Administração → usuário → Acesso aos apps →
+FUNDO** (`AdminPage.tsx`), e é ela que também faz o nó FUNDO aparecer no hub
+(`HonestySystemPage.tsx`). Para admin/manager o toggle vem travado ligado: o
+papel já abre o app, revogar a coluna não fecharia nada.
+
 **Gerenciar é só de admin/manager** — catálogo, campanhas, carteiras e avanço
 de etapa. No backend isso é `_gestor_ou_403`; no front, `isGestor()` esconde a
 aba e a rota. O gate de UI é conveniência: o `user` do localStorage é forjável,
@@ -125,5 +130,3 @@ quem barra de verdade é o backend em todo endpoint.
 - Notificar o franqueado quando o pedido muda de etapa (principalmente na
   recusa, que hoje ele só vê se abrir a tela).
 - Notificar o franqueado quando o pedido muda de etapa.
-- Liberar a flag `can_access_fundo_mkt` para os franqueados (hoje só o time
-  interno entra).
