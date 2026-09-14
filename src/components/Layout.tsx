@@ -19,19 +19,12 @@ const ITEMS = [
 const GESTOR_ITEMS = [{ label: 'Gerenciar', to: '/gerenciar' }]
 
 export function Layout() {
-  const [isOpen, setIsOpen] = useState(false)
+  /* Navbar aberta por padrão; o botão fecha. */
+  const [isOpen, setIsOpen] = useState(true)
   const { pathname } = useLocation()
   const menuRef = useRef<HTMLDivElement>(null)
   const user = readUser()
   const itens = isGestor(user) ? [...ITEMS, ...GESTOR_ITEMS] : ITEMS
-
-  // Close the navbar whenever the route changes (same as HRM). Ajuste de
-  // estado durante o render — evita o efeito em cascata do setState no effect.
-  const [lastPath, setLastPath] = useState(pathname)
-  if (lastPath !== pathname) {
-    setLastPath(pathname)
-    setIsOpen(false)
-  }
 
   const isActive = (to: string) => pathname === to || pathname.startsWith(`${to}/`)
 
