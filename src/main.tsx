@@ -5,10 +5,15 @@ import './index.css'
 import './fundo-mkt-fx.css'
 import App from './App.tsx'
 import { initTheme } from './utils/theme'
+import { initUsageTracker } from './lib/usageTracker'
 
 // Apply the persisted platform theme (localStorage 'hrm_theme') before first
 // render and follow live changes made in other tabs / other /system apps.
 initTheme()
+
+// Telemetria de uso (/api/usage/track): páginas, tempo, cliques e
+// digitação deste sub-app — é o que alimenta Administração ▸ Usage.
+initUsageTracker()
 
 // Base vem do Vite: '/' no dev (localhost) e '/system/fundo-mkt/' no build.
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
