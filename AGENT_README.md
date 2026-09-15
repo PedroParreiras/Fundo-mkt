@@ -130,3 +130,27 @@ quem barra de verdade é o backend em todo endpoint.
 - Notificar o franqueado quando o pedido muda de etapa (principalmente na
   recusa, que hoje ele só vê se abrir a tela).
 - Notificar o franqueado quando o pedido muda de etapa.
+
+## Navbar overlay: o espaço do topo é do NavbarSpacer (15/09/2026)
+
+A navbar do HRM é um **overlay**: `position: fixed` com `translateY(-100%)`
+enquanto está fechada. Quando ela desce, cobre o topo da página — e cada tela
+tentava compensar com um `padding-top` chutado (8rem, 110px, 4.5rem…). Chute
+sempre erra: em tela estreita a navbar quebra em 2 ou 3 linhas.
+
+Agora quem paga o espaço é a navbar, via `src/components/NavbarSpacer.tsx`, renderizado por ela logo
+depois do `</nav>`. Ele mede a altura REAL do `<nav>` (ResizeObserver + resize,
+e soma o `top` quando há barra acima, ex.: impersonação) e publica em `:root`:
+
+- `--navbar-h` — altura ocupada pela navbar aberta (`0` quando fechada)
+- `--navbar-space` — idem + 56px de folga do logo/toggle → é a altura de
+  `.navbar-spacer` (`height: var(--navbar-space, 128px)`, com transição na mesma
+  curva do slide)
+
+Regras:
+- Página **não** leva `padding-top` para desviar da navbar. Os `7rem/8rem` de `.container`/`.dashboard-container` em `src/index.css` foram para `2rem`.
+- Precisa de offset em CSS (cabeçalho sticky, drawer, modal)? Use
+  `var(--navbar-h)`, nunca um valor fixo.
+- O espaçador tem de ficar **em fluxo antes do conteúdo** — é irmão do `<nav>`
+  no fragment que a navbar retorna. Se alguém renderizar a navbar dentro de um
+  container com `overflow` ou fora da ordem, o empurrão se perde.

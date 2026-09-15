@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { isGestor, readUser } from '../lib/session'
 import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
+import NavbarSpacer from './NavbarSpacer'
 
 /* Top navbar — mirrors the HRM main-app navbar exactly (same DOM + classes,
    styled by the HRM design system in index.css): a fixed logo "toggle arrow"
@@ -21,6 +22,8 @@ const GESTOR_ITEMS = [{ label: 'Gerenciar', to: '/gerenciar' }]
 export function Layout() {
   /* Navbar aberta por padrão; o botão fecha. */
   const [isOpen, setIsOpen] = useState(true)
+  /* Medido pelo NavbarSpacer, que empurra o topo da página. */
+  const navRef = useRef<HTMLElement | null>(null)
   const { pathname } = useLocation()
   const menuRef = useRef<HTMLDivElement>(null)
   const user = readUser()
@@ -49,7 +52,7 @@ export function Layout() {
         <img src={`${import.meta.env.BASE_URL}behonest-logo.svg`} alt="Be Honest Logo" className="toggle-logo" />
       </button>
 
-      <nav className={`navbar ${isOpen ? 'open' : ''}`}>
+      <nav ref={navRef} className={`navbar ${isOpen ? 'open' : ''}`}>
         <div className="navbar-brand">
           <a href="/system" className="navbar-brand-btn" aria-label="Ir para Honesty System">
             <span>H</span>onest<span className="logo-suffix">RM</span>
@@ -80,6 +83,9 @@ export function Layout() {
           </div>
         </div>
       </nav>
+
+      {/* Reserva, em fluxo, o espaço que a navbar-overlay ocupa. */}
+      <NavbarSpacer navRef={navRef} open={isOpen} />
 
       <Outlet />
     </>
