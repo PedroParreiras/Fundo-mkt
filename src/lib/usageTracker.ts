@@ -140,8 +140,16 @@ export function initUsageTracker(): void {
         push({ page_path: path, element_tag: '', element_text: '', element_id: '', event_type: 'page_view' });
     }
 
+    /** Fecha o trecho visível da página e manda o tempo.
+
+        O relógio zera AQUI, não em quem chama: ao fechar a aba o Chrome dispara
+        `visibilitychange` e `pagehide`, e as duas chamadas mandavam o MESMO
+        tempo (medido: 11798 ms e 11799 ms na mesma página), dobrando o tempo de
+        todo sub-app. Zerando aqui, a segunda chamada calcula 0 e não manda nada. */
     function pageLeave(path: string): void {
         const ms = visibleMs();
+        accumulated = 0;
+        visibleSince = document.visibilityState === 'visible' ? Date.now() : 0;
         if (ms > 0) {
             push({
                 page_path: path, element_tag: '', element_text: '', element_id: '',
@@ -154,10 +162,8 @@ export function initUsageTracker(): void {
     function rotate(): void {
         const novo = pagePath();
         if (novo === currentPath) return;
-        pageLeave(currentPath);
+        pageLeave(currentPath);   // já zera o relógio
         currentPath = novo;
-        accumulated = 0;
-        visibleSince = document.visibilityState === 'visible' ? Date.now() : 0;
         pageView(novo);
     }
 
@@ -222,10 +228,7 @@ export function initUsageTracker(): void {
         if (document.visibilityState === 'visible') {
             visibleSince = Date.now();
         } else {
-            accumulated = visibleMs();
-            visibleSince = 0;
             pageLeave(currentPath);   // fecha o trecho; o próximo retorno abre outro
-            accumulated = 0;
             flush(true);
         }
     });
