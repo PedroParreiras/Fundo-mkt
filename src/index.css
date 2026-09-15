@@ -878,7 +878,9 @@ svg.lucide {
 .container {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  /* Desconta o espaçador da navbar: ele é irmão ANTES deste bloco, então
+     100vh cheios dariam uma barra de rolagem fantasma em página curta. */
+  min-height: calc(100vh - var(--navbar-space, 0px));
   display: flex;
   flex-direction: column;
   align-items: center;
