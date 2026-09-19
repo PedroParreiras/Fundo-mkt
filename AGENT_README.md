@@ -34,6 +34,11 @@ sincronize as outras):
   tema e descrição valem para as três operações. O que se filtra é a lista de
   ações recomendadas da campanha. ES hoje só enxerga isso: ainda não tem
   catálogo nem carteira (nasce vazio, o gestor cadastra).
+  **Pegadinha que o desenho cria:** salvar a campanha substitui a lista de
+  ações — e o gestor de GO só ENXERGA as de GO. Por isso
+  `_sincronizar_acoes` apaga apenas os vínculos DA REGIÃO ativa e ignora id de
+  ação de outra (vínculo que o editor não viu não entra nem sai). Sem isso,
+  abrir a campanha em GO e salvar apagava em silêncio as recomendações de MG.
 - Contribuição NÃO tem região: ela é do usuário, e o usuário já tem uma.
   Duplicar ali só criaria divergência.
 - Migrations: `sql/migration_fundo_mkt_region_2026_09_19.sql` (colunas `region`,
