@@ -14,11 +14,15 @@
     right: 0;
     z-index: 100;
     display: grid;
-    /* Laterais elásticas e iguais, menu no meio pelo próprio tamanho: é o que
-       deixa o menu centrado NA BARRA e não no espaço que sobrou. Com
-       `auto | 1fr | auto` o centro escorregava para a esquerda em quem tem lado
-       direito mais largo (o painel, com o chip de papel). */
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    /* Laterais elásticas e IGUAIS, menu no meio pelo próprio tamanho: é o que
+       deixa o menu centrado NA BARRA e não no espaço que sobrou (com
+       `auto | 1fr | auto` o centro escorregava para o lado mais largo).
+       O `min-content` das laterais é o que impede o menu de atropelá-las: com
+       `minmax(0, 1fr)` um menu de 10 itens encolhia a marca e os ícones até
+       zero e passava POR CIMA deles. Agora quem cede é o menu — ele quebra em
+       duas linhas, que é feio mas legível, em vez de sobrepor. */
+    grid-template-columns:
+        minmax(min-content, 1fr) minmax(0, auto) minmax(min-content, 1fr);
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1.5rem;
