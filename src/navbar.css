@@ -1,0 +1,442 @@
+/* =============================================================================
+   NAVBAR — CÓPIA REPLICADA. Fonte:
+   honesty/src/components/layout/navbar/navbar.css (o hub).
+   Mexeu lá, sincroniza aqui: cada sub-app carrega a própria cópia porque os
+   repositórios são independentes — é a mesma convenção do bloco PLATFORM THEMES.
+
+   Estrutura: grid de três zonas — marca | menu | atalhos. O menu é a coluna
+   elástica, então fica centrado de verdade. No telefone vira uma coluna só.
+   ============================================================================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: grid;
+    /* Laterais elásticas e iguais, menu no meio pelo próprio tamanho: é o que
+       deixa o menu centrado NA BARRA e não no espaço que sobrou. Com
+       `auto | 1fr | auto` o centro escorregava para a esquerda em quem tem lado
+       direito mais largo (o painel, com o chip de papel). */
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(var(--primary-rgb), 0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--secondary);
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar.open { transform: translateY(0); }
+
+/* Espaçador em fluxo do NavbarSpacer: paga o espaço que a navbar-overlay ocupa
+   (altura medida, não chutada) e acompanha a curva do slide. */
+.navbar-spacer {
+    flex: 0 0 auto;
+    width: 100%;
+    height: var(--navbar-space, 110px);
+    pointer-events: none;
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Marca ──────────────────────────────────────────────────────────────── */
+.navbar-brand { display: flex; align-items: center; justify-self: start; min-width: 0; }
+
+.navbar-brand a,
+.navbar-brand .navbar-brand-btn {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--light);
+    text-decoration: none;
+    font-family: inherit;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.navbar-brand span { color: var(--secondary); }
+
+/* ── Menu ───────────────────────────────────────────────────────────────── */
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+/* Uma pílula por item, todas com a mesma altura e o mesmo respiro. O ícone tem
+   coluna de largura fixa: é isso que alinha os rótulos entre si em vez de deixar
+   cada um começar onde o emoji anterior terminou. */
+.navbar-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 40px;
+    padding: 0 0.85rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--white);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.navbar-item__icon {
+    width: 1.25em;
+    font-size: 1.05em;
+    line-height: 1;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.navbar-item__label { overflow: hidden; text-overflow: ellipsis; }
+
+.navbar-item:hover {
+    background: rgba(var(--secondary-rgb), 0.14);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.navbar-item.active {
+    color: var(--secondary);
+    background: rgba(var(--secondary-rgb), 0.18);
+    border-color: rgba(var(--secondary-rgb), 0.45);
+}
+
+.navbar-item:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--secondary-rgb), 0.6);
+}
+
+/* ── Submenu ────────────────────────────────────────────────────────────── */
+.navbar-dropdown { position: relative; }
+
+.navbar-caret { transition: transform 0.2s ease; flex-shrink: 0; }
+.navbar-caret--aberto { transform: rotate(180deg); }
+
+.navbar-dropdown-panel {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.4rem);
+    min-width: 220px;
+    z-index: 50;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--secondary-rgb), 0.3);
+    background: rgba(var(--primary-rgb), 0.98);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.navbar-dropdown-item {
+    display: block;
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-left: 2px solid transparent;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar-dropdown-item small {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.navbar-dropdown-item:hover {
+    background: rgba(var(--secondary-rgb), 0.1);
+    color: var(--secondary);
+}
+
+.navbar-dropdown-item.active {
+    background: rgba(var(--secondary-rgb), 0.15);
+    border-left-color: var(--secondary);
+    color: var(--secondary);
+}
+
+/* ── Atalhos e usuário ──────────────────────────────────────────────────── */
+.navbar-end {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-self: end;
+}
+
+.navbar-icons { display: flex; align-items: center; gap: 0.35rem; }
+
+/* Mesma caixa para TODO controle de ícone (admin, sino, tema). Cada um vinha de
+   um componente com padding próprio e a fileira ficava desencontrada. */
+.navbar-icon-btn,
+.navbar-icons .theme-toggle-btn,
+.navbar-icons button {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--secondary-rgb), 0.35);
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.navbar-icon-btn:hover,
+.navbar-icons .theme-toggle-btn:hover,
+.navbar-icons button:hover {
+    background: rgba(var(--secondary-rgb), 0.18);
+    border-color: var(--secondary);
+}
+
+.navbar-icon-btn.active {
+    background: rgba(var(--secondary-rgb), 0.22);
+    border-color: var(--secondary);
+}
+
+.navbar-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.15;
+    max-width: 180px;
+}
+
+.navbar-user {
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 600;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-logout-text {
+    background: none;
+    border: none;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    margin-top: 2px;
+    transition: color 0.2s;
+}
+
+.btn-logout-text:hover { color: var(--danger); text-decoration: underline; }
+
+/* ── Pílula de backup ───────────────────────────────────────────────────── */
+.navbar-backup-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 16px;
+    color: #60a5fa;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    animation: pill-pulse 2s ease-in-out infinite;
+}
+
+.backup-pill-spinner {
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(96, 165, 250, 0.3);
+    border-top-color: #60a5fa;
+    border-radius: 50%;
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+/* ── Aba MENU ───────────────────────────────────────────────────────────────
+   Encostada na borda de baixo da barra, centralizada com ela: mesma cor, mesma
+   borda, cantos arredondados só embaixo. Era o logo da marca flutuando num
+   gradiente elíptico — bonito e mudo: ninguém descobre que um logo esconde o
+   menu. Agora está escrito, e a seta aponta para o que o clique FAZ. */
+.navbar-toggle-dock {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Aberta: desce junto com a barra e encosta nela (a altura real vem medida do
+   <nav> pelo NavbarSpacer — chutar 72px quebrava quando o menu quebrava linha). */
+.navbar-toggle-dock.aberta { top: var(--navbar-h, 64px); }
+.navbar-toggle-dock.com-banner:not(.aberta) { top: 40px; }
+
+.navbar-toggle {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 1.1rem 0.4rem;
+    border: 1px solid var(--secondary);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: rgba(var(--primary-rgb), 0.97);
+    backdrop-filter: blur(20px);
+    color: var(--secondary);
+    font-family: var(--font-family);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transition: background 0.2s ease, color 0.2s ease, padding 0.2s ease;
+}
+
+/* Fechada, a aba encosta no topo da tela: um pouco mais de respiro em cima para
+   o rótulo não ficar colado na borda. */
+.navbar-toggle-dock:not(.aberta) .navbar-toggle { padding-top: 0.45rem; }
+
+.navbar-toggle:hover { background: rgba(var(--secondary-rgb), 0.2); color: var(--white); }
+
+.navbar-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--secondary-rgb), 0.6);
+}
+
+.navbar-toggle__seta { flex-shrink: 0; transition: transform 0.3s ease; }
+
+/* ── Telefone ───────────────────────────────────────────────────────────────
+   A barra deixa de ser grid de 3 colunas e vira duas linhas: marca + atalhos em
+   cima, menu em coluna embaixo. Antes os itens quebravam em fileiras centradas
+   e o resultado era um bloco de pílulas soltas, com a última sozinha no meio. */
+@media (max-width: 900px) {
+    /* Flex em vez de grid aqui — e min-width: 0 em toda a cadeia. Com grid, a
+       coluna do menu é dimensionada pelo CONTEÚDO, e um app que pendura algo
+       largo ali dentro (as abas de região do marketplace, 472px) empurrava a
+       barra para 509px num telefone de 390. Pior: no Chrome de celular isso
+       ESTICA o viewport de layout, então `width: 100%` passava a valer 509 e não
+       segurava nada. Com min-width: 0 o menu não força crescimento, a barra fica
+       na largura da tela e quem é largo rola dentro de si. */
+    .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        row-gap: 0.6rem;
+        padding: 0.6rem 0.9rem;
+        /* Menu grande não pode empurrar a página inteira para fora da tela. */
+        max-height: calc(100vh - 3rem);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .navbar-brand { flex: 0 0 auto; min-width: 0; }
+    .navbar-brand a,
+    .navbar-brand .navbar-brand-btn { font-size: 1.15rem; }
+
+    .navbar-menu {
+        order: 3;
+        flex: 1 1 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.2rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(var(--secondary-rgb), 0.2);
+    }
+
+    /* O que não é item de menu (abas de região, chips) rola dentro de si. */
+    .navbar-menu > *:not(.navbar-item):not(.navbar-dropdown) {
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Linha inteira, alvo de toque de 44px e rótulo alinhado pela coluna do
+       ícone — a lista fica legível de relance, que é o que uma gaveta precisa. */
+    .navbar-item {
+        justify-content: flex-start;
+        width: 100%;
+        min-width: 0;
+        height: 44px;
+        padding: 0 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .navbar-dropdown { width: 100%; min-width: 0; }
+    .navbar-dropdown .navbar-item--trigger { justify-content: space-between; }
+
+    /* Painel inline: flutuando, ele escapava da tela quando o item quebrava. */
+    .navbar-dropdown-panel {
+        position: static;
+        width: 100%;
+        margin-top: 0.25rem;
+        box-shadow: none;
+        border-color: rgba(var(--secondary-rgb), 0.2);
+    }
+
+    .navbar-end { flex: 0 1 auto; gap: 0.5rem; min-width: 0; }
+    .navbar-backup-pill { display: none; }
+    .navbar-user-info { max-width: 110px; }
+    .navbar-user { font-size: 0.8rem; }
+
+    .navbar-toggle { padding: 0.35rem 1.4rem 0.45rem; font-size: 0.7rem; }
+}
+
+@media (max-width: 420px) {
+    .navbar-brand a,
+    .navbar-brand .navbar-brand-btn { font-size: 1rem; }
+    /* Nome do usuário sai; o botão Sair fica — é o que se precisa no aperto. */
+    .navbar-user { display: none; }
+    .navbar-icons { gap: 0.25rem; }
+}
+
+/* Dedo: 40px nos três. O bloco de toque do index.css já força min-height 40 em
+   `button`, então sem igualar aqui a fileira saía 34 × 40 × 40 — o escudo do
+   admin é um link e não herdava a regra. */
+@media (hover: none) and (pointer: coarse) {
+    .navbar-icon-btn,
+    .navbar-icons .theme-toggle-btn,
+    .navbar-icons button {
+        width: 40px;
+        height: 40px;
+        min-height: 40px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar,
+    .navbar-spacer,
+    .navbar-toggle-dock,
+    .navbar-caret { transition: none; }
+}

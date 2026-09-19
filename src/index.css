@@ -515,7 +515,6 @@ h4,
   animation: countFade 0.3s ease-in-out;
 }
 
-
 /* ============================================
    MAP BLEED PREVENTION (Leaflet Z-Index Constraint)
    ============================================ */
@@ -539,7 +538,6 @@ svg.lucide {
   transform: scale(0.99);
   background-color: rgba(var(--secondary-rgb), 0.1);
 }
-
 
 .btn {
   display: inline-flex;
@@ -995,7 +993,6 @@ svg.lucide {
   transition: all var(--transition-base);
 }
 
-
 .form-group input:focus {
   outline: none;
   border-color: var(--secondary);
@@ -1101,13 +1098,11 @@ svg.lucide {
   line-height: 1.2;
 }
 
-
 .welcome-text {
   font-size: var(--text-lg);
   color: var(--text-secondary);
   margin-bottom: var(--space-xl);
 }
-
 
 /* Link styling */
 a {
@@ -1166,233 +1161,6 @@ a:hover {
 .impersonation-exit-btn:hover {
   background: rgba(26, 26, 46, 0.4);
   border-color: rgba(26, 26, 46, 0.6);
-}
-
-/* Navbar */
-/* Navbar */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: rgba(var(--primary-rgb), 0.95);
-  /* Primary Blue with slight transparency */
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--secondary);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateY(-100%);
-  /* Hidden by default */
-}
-
-.navbar.open {
-  transform: translateY(0);
-  /* Visible when open */
-}
-
-/* Espaçador em fluxo do NavbarSpacer: paga o espaço que a navbar-overlay
-   ocupa (altura medida, não chutada) e acompanha a curva do slide. */
-.navbar-spacer {
-  flex: 0 0 auto;
-  width: 100%;
-  /* Altura vem medida do <nav> (NavbarSpacer publica --navbar-space);
-     o fallback é a navbar padrão de uma linha + folga do logo. */
-  height: var(--navbar-space, 128px);
-  pointer-events: none;
-  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Giant Arrow Toggle */
-.navbar-toggle-arrow {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 80px;
-  /* Height of the curve in the center */
-  z-index: 101;
-  background: radial-gradient(ellipse at top center, rgba(var(--primary-rgb), 0.95) 0%, rgba(var(--primary-rgb), 0) 70%);
-  /* Blue Gradient */
-  border: none;
-  border-radius: 0;
-  /* Only the logo inside is clickable — ellipse is decorative. */
-  pointer-events: none;
-  display: flex;
-  align-items: flex-start;
-  /* Align arrow to top initially */
-  justify-content: center;
-  padding-top: 15px;
-  /* Adjusted padding for logo */
-  clip-path: ellipse(50% 100% at 50% 0%);
-  /* Tapers to zero at screen edges */
-  transition: all 0.4s ease;
-  transform: none;
-  /* Reset previous transform */
-  /* Remove text styles */
-  font-size: 0;
-  color: transparent;
-  text-shadow: none;
-}
-
-.toggle-logo {
-  width: 40px;
-  /* Increased from 32px */
-  height: 40px;
-  /* Increased from 32px */
-  filter: drop-shadow(0 0 8px rgba(var(--secondary-rgb), 0.3));
-  /* Broader but more subtle glow */
-  transition: transform 0.3s ease;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.navbar-toggle-arrow:focus,
-.navbar-toggle-arrow:focus-visible {
-  outline: none;
-}
-
-.navbar-toggle-arrow:focus-visible .toggle-logo {}
-
-.navbar-toggle-arrow:hover .toggle-logo {
-  transform: scale(1.1);
-}
-
-.navbar-toggle-arrow:hover {
-  height: 90px;
-  background: radial-gradient(ellipse at top center, rgba(var(--primary-rgb), 1) 0%, rgba(var(--primary-rgb), 0.2) 70%);
-}
-
-.navbar-toggle-arrow.open {
-  /* Stay visible & clickable when the navbar is open — the same button
-     closes it. Slide the toggle down to sit just below the navbar so it
-     doesn't overlap the menu content. */
-  top: 72px;
-  height: 60px;
-  background: transparent;
-  clip-path: none;
-  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    height 0.3s ease, background 0.3s ease, clip-path 0.3s ease;
-}
-
-.navbar-toggle-arrow.open .toggle-logo {
-  filter: none;
-}
-
-.navbar-brand a,
-.navbar-brand .navbar-brand-btn {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--light);
-  text-decoration: none;
-  font-family: inherit;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.navbar-brand span {
-  color: var(--secondary);
-}
-
-.navbar-menu {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.navbar-item {
-  color: var(--text-primary);
-  font-family: var(--font-family);
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-decoration: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.navbar-item:hover {
-  color: var(--text-primary);
-  background: rgba(var(--secondary-rgb), 0.15);
-  text-decoration: none;
-}
-
-.navbar-item.active {
-  color: var(--secondary);
-  background: rgba(var(--secondary-rgb), 0.2);
-  font-weight: 700;
-}
-
-.navbar-end {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* User Info Container */
-.navbar-user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  /* Align to right */
-  line-height: 1.1;
-}
-
-.navbar-user {
-  color: var(--text-primary);
-  font-family: var(--font-family);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-/* Logout Text Button */
-.btn-logout-text {
-  background: none;
-  border: none;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 0;
-  margin-top: 2px;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.btn-logout-text:hover {
-  color: var(--danger);
-  text-decoration: underline;
-}
-
-/* Backup Status Pill */
-.navbar-backup-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  border-radius: 16px;
-  color: #60a5fa;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  animation: pill-pulse 2s ease-in-out infinite;
-}
-
-.backup-pill-spinner {
-  width: 10px;
-  height: 10px;
-  border: 2px solid rgba(96, 165, 250, 0.3);
-  border-top-color: #60a5fa;
-  border-radius: 50%;
-  animation: spinner-rotate 0.8s linear infinite;
 }
 
 @keyframes pill-pulse {
@@ -2069,7 +1837,6 @@ a:hover {
   border-color: rgba(100, 160, 255, 0.6);
 }
 
-
 .stat-icon {
   font-size: 1.5rem;
   flex-shrink: 0;
@@ -2255,7 +2022,6 @@ a:hover {
   text-overflow: ellipsis;
 }
 
-
 .store-card-footer {
   text-align: center;
   margin-top: 0.75rem;
@@ -2403,7 +2169,6 @@ a:hover {
   margin: 0;
 }
 
-
 /* Items Grid */
 .items-grid {
   display: grid;
@@ -2472,8 +2237,6 @@ a:hover {
   padding: var(--space-xs) 0;
 }
 
-
-
 .item-stat .label {
   display: block;
   font-size: var(--text-xs);
@@ -2499,7 +2262,6 @@ a:hover {
   padding-top: var(--space-sm);
   border-top: 1px solid var(--glass-border);
 }
-
 
 /* Data Table */
 .data-table {
@@ -2575,7 +2337,6 @@ a:hover {
   white-space: nowrap;
 }
 
-
 .btn-view {
   display: inline-flex;
   align-items: center;
@@ -2630,8 +2391,6 @@ a:hover {
   opacity: 1;
   color: var(--text-accent);
 }
-
-
 
 /* Top Items */
 .top-items-grid {
@@ -3040,21 +2799,6 @@ select option:checked {
     padding: 1rem;
   }
 
-  .navbar {
-    padding: 0.75rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .navbar-menu {
-    gap: 0.5rem;
-  }
-
-  .navbar-item {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.85rem;
-  }
-
   .page-header h1 {
     font-size: 1.75rem;
   }
@@ -3173,14 +2917,6 @@ select option:checked {
   .stat-content .value {
     font-size: 1.2rem;
   }
-
-  .navbar-brand a {
-    font-size: 1.2rem;
-  }
-
-  .navbar-user {
-    display: none;
-  }
 }
 
 /* ============================================
@@ -3280,7 +3016,6 @@ select option:checked {
   color: var(--secondary);
   font-weight: 700;
 }
-
 
 .date-picker-dropdown {
   position: absolute;
@@ -4320,7 +4055,6 @@ textarea:focus {
   }
 }
 
-
 /* ============================================
    SIMULADOR DETALHADO PAGE
    ============================================ */
@@ -5077,7 +4811,10 @@ textarea[style]:focus {
   .search-container,
   .redirect-container,
   .swagger-container {
-    padding: 6.5rem 0.875rem 1.5rem !important;
+    /* Sem padding-top de navbar: a barra é overlay e quem paga o espaço dela é o
+       .navbar-spacer, que mede a altura real. O 6.5rem era o chute da navbar
+       antiga e sobrava ~100px de vazio no alto de toda tela de telefone. */
+    padding: 1rem 0.875rem 1.5rem !important;
   }
 
   /* Page headers stack their toolbars beneath the title */
@@ -5169,46 +4906,6 @@ textarea[style]:focus {
   .tab-list::-webkit-scrollbar,
   [role="tablist"]::-webkit-scrollbar { display: none; }
 
-  /* Navbar — let everything wrap; condense brand */
-  .navbar {
-    padding: 0.6rem 0.875rem !important;
-    flex-wrap: wrap !important;
-    row-gap: 0.5rem !important;
-  }
-  .navbar-brand a,
-  .navbar-brand .navbar-brand-btn {
-    font-size: 1.2rem !important;
-  }
-  .navbar-menu {
-    order: 3;
-    flex-basis: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem !important;
-  }
-  .navbar-end {
-    margin-left: auto;
-    gap: 0.4rem !important;
-  }
-  .navbar-item {
-    font-size: 0.9rem !important;
-    padding: 0.45rem 0.65rem !important;
-  }
-  .navbar-user-info { display: none; }
-  .navbar-backup-pill { display: none; }
-
-  /* Dropdown panels (Ferramentas etc.) — render inline so they don't escape
-     the viewport when the parent navbar item wraps. */
-  .navbar-dropdown { width: 100%; }
-  .navbar-dropdown > button { width: 100%; justify-content: space-between !important; }
-  .navbar-dropdown-panel {
-    position: static !important;
-    width: 100% !important;
-    margin-top: 0.25rem !important;
-    box-shadow: none !important;
-    border-color: rgba(237,177,37,0.2) !important;
-  }
-
   /* Date picker dropdown — width-constrain so it doesn't escape viewport */
   .date-picker-dropdown {
     position: fixed !important;
@@ -5279,15 +4976,6 @@ textarea[style]:focus {
 @media (max-width: 420px) {
   html { font-size: 14px; }
 
-  .navbar-brand a,
-  .navbar-brand .navbar-brand-btn {
-    font-size: 1.05rem !important;
-  }
-  .navbar-item {
-    font-size: 0.82rem !important;
-    padding: 0.4rem 0.5rem !important;
-  }
-
   .page-header h1 { font-size: 1.25rem !important; }
 
   /* Date button collapses to a tighter form to save room */
@@ -5322,7 +5010,6 @@ textarea[style]:focus {
 /* ==========================================================================
    END MOBILE RESPONSIVE LAYER
    ========================================================================== */
-
 
 /* ==========================================================================
    ADMIN VISUAL LAYER (v2)
@@ -5763,14 +5450,6 @@ textarea[style]:focus {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
 }
 
-/* The MG/GO region toggle reuses the .area-tabs pill inside the navbar. Its
-   Gerenciar styling (margin-bottom: 24px + tall padding) inflates the navbar
-   height — neutralize it here so the navbar keeps the HRM standard height. */
-.navbar .area-tabs { margin-bottom: 0; padding: 3px; }
-.navbar .area-tab { padding: 6px 14px; font-size: 13px; }
-
-
-
 /* ==========================================================================
    PLATFORM THEMES — dark (HRM navy/gold, default) + light (marketplace)
    ==========================================================================
@@ -5816,9 +5495,6 @@ textarea[style]:focus {
   box-shadow: 0 0 0 3px rgba(var(--secondary-rgb), 0.5);
 }
 
-/* Keep the navbar's right side clear of the fixed toggle */
-.navbar { padding-right: 4.25rem; }
-
 /* ---------- LIGHT THEME — marketplace palette ---------- */
 [data-theme="light"] {
   color-scheme: light;
@@ -5844,7 +5520,7 @@ textarea[style]:focus {
 /* The navbar (and everything inside it: bell dropdown, date picker, user menu)
    keeps the dark HRM chrome — re-pin the dark tokens on its subtree. */
 [data-theme="light"] .navbar,
-[data-theme="light"] .navbar-toggle-arrow,
+[data-theme="light"] .navbar-toggle,
 [data-theme="light"] .impersonation-banner {
   --text-primary: #ffffff;
   --text-secondary: rgba(245, 247, 250, 0.85);
@@ -6001,10 +5677,6 @@ textarea[style]:focus {
   color: var(--text-primary);
 }
 
-/* Navbar keeps the navy brand header in BOTH themes — pin its text/controls. */
-.navbar-user { color: rgba(255, 255, 255, 0.95); }
-.btn-logout-text { color: rgba(255, 255, 255, 0.65); }
-
 /* Scrollbars tuned for the light background. */
 [data-theme="light"] ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.18); }
@@ -6029,7 +5701,7 @@ textarea[style]:focus {
 }
 
 [data-theme="light"] .navbar,
-[data-theme="light"] .navbar-toggle-arrow,
+[data-theme="light"] .navbar-toggle,
 [data-theme="light"] .theme-toggle-btn,
 [data-theme="light"] .impersonation-banner {
   --secondary: #edb125;

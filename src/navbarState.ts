@@ -1,0 +1,24 @@
+/**
+ * Estado aberta/minimizada da navbar — CÓPIA REPLICADA (fonte: o hub).
+ *
+ * Vive no localStorage e não no componente porque CADA PÁGINA monta a sua barra:
+ * com estado só em memória, ela voltava aberta a cada navegação e quem minimizava
+ * via a barra reaparecer no clique seguinte. A chave é a mesma em toda a
+ * plataforma (mesma origem), então minimizar aqui vale no hub e nos outros
+ * sub-apps — a barra é uma só para quem usa.
+ */
+const CHAVE = 'hrm_navbar_aberta';
+
+export function lerNavbarAberta(): boolean {
+    try {
+        return localStorage.getItem(CHAVE) !== 'fechada';
+    } catch {
+        return true;
+    }
+}
+
+export function gravarNavbarAberta(aberta: boolean) {
+    try {
+        localStorage.setItem(CHAVE, aberta ? 'aberta' : 'fechada');
+    } catch { /* aba anônima: a barra só perde a memória */ }
+}

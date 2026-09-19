@@ -20,7 +20,7 @@ import type { RefObject } from 'react';
 
 /* O logo/toggle fica logo abaixo da navbar aberta (e no topo da tela quando
    fechada). Sem esta folga ele tampa a primeira linha da página. */
-const TOGGLE_CLEARANCE = 56;
+const TOGGLE_CLEARANCE = 34;
 
 /* Publica a altura da navbar em :root. Sem <nav> medido ainda, o CSS cai no
    fallback de `.navbar-spacer`. */
