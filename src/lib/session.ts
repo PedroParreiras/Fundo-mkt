@@ -7,6 +7,11 @@ export interface SessionUser {
   email?: string
   role?: string
   can_access_fundo_mkt?: boolean
+  /** Região da operação (MG · GO · ES). As colunas nasceram no marketplace,
+   *  mas hoje dizem de qual operação o usuário é — ver lib/region.ts. */
+  can_access_marketplace_mg?: boolean
+  can_access_marketplace_go?: boolean
+  can_access_marketplace_es?: boolean
 }
 
 export function readUser(): SessionUser | null {

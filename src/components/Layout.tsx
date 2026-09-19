@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useRegiao } from '../fundo/regiaoStore'
+import { REGIAO_NOME, REGIOES } from '../lib/region'
 import { isGestor, readUser } from '../lib/session'
 import NotificationBell from './NotificationBell'
 import ThemeToggle from './ThemeToggle'
@@ -35,6 +37,9 @@ export function Layout() {
   const menuRef = useRef<HTMLDivElement>(null)
   const user = readUser()
   const itens = isGestor(user) ? [...ITEMS, ...GESTOR_ITEMS] : ITEMS
+  /* Operação ativa. Só o gestor troca — o franqueado é travado na dele pelo
+     backend, e um toggle que não muda nada só confunde. */
+  const { regiao, definir, podeTrocar } = useRegiao()
 
   const isActive = (to: string) => pathname === to || pathname.startsWith(`${to}/`)
 
@@ -58,6 +63,22 @@ export function Layout() {
         </div>
 
         <div className="navbar-menu" ref={menuRef}>
+          {podeTrocar && (
+            <div className="area-tabs" role="group" aria-label="Operação"
+              style={{ marginRight: 12, marginBottom: 0 }}>
+              {REGIOES.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  className={`area-tab ${regiao === r ? 'area-tab--active' : ''}`}
+                  title={`Fundo de Marketing · ${REGIAO_NOME[r]}`}
+                  onClick={() => definir(r)}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          )}
           {itens.map((item) => (
             <Link key={item.label} to={item.to} className={`navbar-item ${isActive(item.to) ? 'active' : ''}`}>
               <span className="navbar-item__icon" aria-hidden="true">{item.icon}</span>

@@ -1,4 +1,7 @@
 /** Contratos do Fundo de Marketing — espelham o JSON de /api/fundo-mkt/*. */
+import type { Region } from '../lib/region'
+
+export type { Region }
 
 /** `documento` é a categoria em que o franqueado informa o valor e anexa
  *  boleto ou nota fiscal — não tem preço de tabela nem quantidade. */
@@ -32,6 +35,8 @@ export interface Acao {
   tem_imagem: boolean
   /** Carimbo da imagem — entra na URL p/ o navegador não servir a antiga. */
   imagem_v: number
+  /** Operação dona da ação (MG · GO · ES). */
+  region: Region
 }
 
 export interface CategoriaMeta {
@@ -100,6 +105,8 @@ export interface Pedido {
   motivo_recusa: string | null
   tem_documento: boolean
   documento_nome: string | null
+  /** Região em que o resgate foi feito — snapshot, não segue a ação. */
+  region: Region
   lojas: PedidoLoja[]
   eventos: PedidoEvento[]
 }
@@ -129,6 +136,8 @@ export interface UsuarioCarteira {
   nome: string
   email: string
   role: string
+  /** Operação do usuário (gestor aparece em todas as regiões). */
+  region: Region
   contribuido: number
   resgatado: number
   saldo: number

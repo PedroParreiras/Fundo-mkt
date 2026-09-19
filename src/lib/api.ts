@@ -6,6 +6,7 @@ import type {
   Acao, Campanha, Carteira, Contribuicao, LojaOpcao, Pedido, PedidosResposta,
   TipoDocumento, UsuarioCarteira,
 } from '../fundo/types'
+import { regiaoAtiva, type Region } from './region'
 
 const TOKEN_KEY = 'auth_token'
 const BASE = '/api/fundo-mkt'
@@ -24,9 +25,30 @@ export class ApiError extends Error {
   }
 }
 
+/** Toda chamada JSON do fundo carrega a REGIÃO ativa: catálogo, resgates e
+ *  carteiras são por operação (MG · GO · ES). Fica aqui, e não em cada método,
+ *  pra não existir chamada "sem região" por esquecimento — o backend ignora o
+ *  parâmetro de quem não é gestor e resolve pelas flags do usuário. */
+function comRegiao(path: string): string {
+  if (!path.startsWith(BASE) || /[?&]region=/.test(path)) return path
+  return `${path}${path.includes('?') ? '&' : '?'}region=${regiaoAtiva()}`
+}
+
+/** Monta a query ignorando o que veio vazio. As LEITURAS de tela passam
+ *  `region` explícito — é o que faz o React refazer a busca quando o gestor
+ *  troca de operação (dependência de verdade, não um localStorage escondido).
+ *  Quem não passa cai na região ativa, em `comRegiao`. */
+function query(params: Record<string, string | number | undefined>): string {
+  const q = Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== '')
+    .map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`)
+    .join('&')
+  return q ? `?${q}` : ''
+}
+
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem(TOKEN_KEY)
-  const res = await fetch(path, {
+  const res = await fetch(comRegiao(path), {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -52,7 +74,8 @@ const send = <T>(method: string, path: string, body?: unknown) =>
 
 export const api = {
   // catálogo
-  acoes: (todas = false) => get<{ acoes: Acao[] }>(`${BASE}/acoes${todas ? '?todas=1' : ''}`),
+  acoes: (todas = false, region?: Region) =>
+    get<{ acoes: Acao[] }>(`${BASE}/acoes${query({ todas: todas ? 1 : undefined, region })}`),
   criarAcao: (body: Partial<Acao>) => send<Acao>('POST', `${BASE}/acoes`, body),
   editarAcao: (id: number, body: Partial<Acao>) => send<Acao>('PUT', `${BASE}/acoes/${id}`, body),
   desativarAcao: (id: number) => send<Acao>('DELETE', `${BASE}/acoes/${id}`),
@@ -71,8 +94,8 @@ export const api = {
   removerImagemAcao: (id: number) => send<Acao>('DELETE', `${BASE}/acoes/${id}/imagem`),
 
   // campanhas do cronograma
-  campanhas: (todas = false) =>
-    get<{ campanhas: Campanha[] }>(`${BASE}/campanhas${todas ? '?todas=1' : ''}`),
+  campanhas: (todas = false, region?: Region) =>
+    get<{ campanhas: Campanha[] }>(`${BASE}/campanhas${query({ todas: todas ? 1 : undefined, region })}`),
   criarCampanha: (body: Partial<Campanha> & { acao_ids?: number[] }) =>
     send<{ campanhas: Campanha[] }>('POST', `${BASE}/campanhas`, body),
   editarCampanha: (id: number, body: Partial<Campanha> & { acao_ids?: number[] }) =>
@@ -81,17 +104,19 @@ export const api = {
     send<{ campanhas: Campanha[] }>('DELETE', `${BASE}/campanhas/${id}`),
 
   // carteiras (gestor)
-  usuarios: () => get<{ usuarios: UsuarioCarteira[] }>(`${BASE}/usuarios`),
-  contribuicoes: (usuarioId?: number) =>
+  usuarios: (region?: Region) =>
+    get<{ usuarios: UsuarioCarteira[] }>(`${BASE}/usuarios${query({ region })}`),
+  contribuicoes: (usuarioId?: number, region?: Region) =>
     get<{ contribuicoes: Contribuicao[] }>(
-      `${BASE}/contribuicoes${usuarioId ? `?usuario_id=${usuarioId}` : ''}`),
+      `${BASE}/contribuicoes${query({ usuario_id: usuarioId, region })}`),
   lancarContribuicao: (body: { usuario_id: number; competencia: string; valor: number; descricao?: string }) =>
     send<{ contribuicoes: Contribuicao[] }>('POST', `${BASE}/contribuicoes`, body),
   removerContribuicao: (id: number) =>
     send<{ contribuicoes: Contribuicao[] }>('DELETE', `${BASE}/contribuicoes/${id}`),
 
   // pedidos
-  pedidos: (todos = false) => get<PedidosResposta>(`${BASE}/pedidos${todos ? '?todos=1' : ''}`),
+  pedidos: (todos = false, region?: Region) =>
+    get<PedidosResposta>(`${BASE}/pedidos${query({ todos: todos ? 1 : undefined, region })}`),
   resgatar: (body: {
     acao_id: number
     lojas: { nome: string; store_unique_id?: string; quantidade: number }[]

@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { api, ApiError } from '../lib/api'
 import { CARTEIRA_VAZIA, FundoCtx, type FundoState } from './fundoStore'
+import { useRegiao } from './regiaoStore'
 import type { Acao, Carteira, LojaOpcao } from './types'
 
 export function FundoProvider({ children }: { children: ReactNode }) {
+  // O catálogo é POR REGIÃO: trocar de operação no toggle refaz as buscas.
+  const { regiao } = useRegiao()
   const [acoes, setAcoes] = useState<Acao[]>([])
   const [carteira, setCarteira] = useState<Carteira | null>(null)
   const [lojas, setLojas] = useState<LojaOpcao[]>([])
@@ -12,7 +15,7 @@ export function FundoProvider({ children }: { children: ReactNode }) {
 
   const load = useCallback(async () => {
     try {
-      const [a, c, l] = await Promise.all([api.acoes(), api.carteira(), api.lojas()])
+      const [a, c, l] = await Promise.all([api.acoes(false, regiao), api.carteira(), api.lojas()])
       setAcoes(a.acoes)
       setCarteira(c)
       setLojas(l.lojas)
@@ -22,7 +25,7 @@ export function FundoProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [regiao])
 
   // Busca inicial. A regra set-state-in-effect não distingue fetch-on-mount de
   // cascata de render: o setState acontece depois do await, não no corpo do

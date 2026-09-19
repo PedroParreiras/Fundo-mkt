@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CheckoutModal } from '../fundo/components/CheckoutModal'
 import { Toast } from '../fundo/components/Toast'
 import { useFundo } from '../fundo/fundoStore'
+import { useRegiao } from '../fundo/regiaoStore'
 import { brl } from '../fundo/format'
 import type { Acao, Campanha, TipoDocumento } from '../fundo/types'
 import { useToast } from '../fundo/useToast'
@@ -13,6 +14,8 @@ import { Carregando, ErroBox, EstadoVazio, Page, PageHead } from './shared'
  *  O calendário vem do banco (Gerenciar › Campanhas), não do código. */
 export function Cronograma() {
   const { carteira, lojas, refresh } = useFundo()
+  // A campanha é global, mas as ações recomendadas são da região ativa.
+  const { regiao } = useRegiao()
   const { message, toast } = useToast()
   const [campanhas, setCampanhas] = useState<Campanha[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,14 +26,14 @@ export function Cronograma() {
 
   const load = useCallback(async () => {
     try {
-      setCampanhas((await api.campanhas()).campanhas)
+      setCampanhas((await api.campanhas(false, regiao)).campanhas)
       setError(null)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Não consegui carregar o cronograma')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [regiao])
 
   // Ver a nota em fundo/usePedidos.ts sobre esta regra.
   // eslint-disable-next-line react-hooks/set-state-in-effect

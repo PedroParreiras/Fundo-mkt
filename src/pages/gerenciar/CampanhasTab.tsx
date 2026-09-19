@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useFundo } from '../../fundo/fundoStore'
+import { useRegiao } from '../../fundo/regiaoStore'
 import { catMeta, MESES } from '../../fundo/meta'
 import type { Campanha } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
@@ -33,6 +34,8 @@ const draftDe = (c: Campanha): Draft => ({
  */
 export function CampanhasTab({ onToast }: { onToast: (m: string) => void }) {
   const { acoes } = useFundo()
+  // Campanha é global; as ações que dá pra vincular são as da região ativa.
+  const { regiao } = useRegiao()
   const [campanhas, setCampanhas] = useState<Campanha[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -44,14 +47,14 @@ export function CampanhasTab({ onToast }: { onToast: (m: string) => void }) {
 
   const load = useCallback(async () => {
     try {
-      setCampanhas((await api.campanhas(true)).campanhas)
+      setCampanhas((await api.campanhas(true, regiao)).campanhas)
       setError(null)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Não consegui carregar as campanhas')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [regiao])
 
   // Ver a nota em fundo/usePedidos.ts sobre esta regra.
   // eslint-disable-next-line react-hooks/set-state-in-effect

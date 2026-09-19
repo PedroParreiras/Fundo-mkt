@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useRegiao } from '../../fundo/regiaoStore'
 import { draftParaApi, type AcaoDraft } from '../../fundo/acaoDraft'
 import { AcaoForm } from '../../fundo/components/AcaoForm'
 import { AcaoThumb } from '../../fundo/components/AcaoThumb'
@@ -11,6 +12,8 @@ import { Carregando, ErroBox, EstadoVazio } from '../shared'
 /** Catálogo de ações: criar, editar, reativar e dar baixa.
  *  Lista com `todas=1` porque o gestor precisa ver as desativadas. */
 export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
+  // Catálogo é por operação: o toggle da navbar troca a região listada.
+  const { regiao } = useRegiao()
   const [acoes, setAcoes] = useState<Acao[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -21,14 +24,14 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
 
   const load = useCallback(async () => {
     try {
-      setAcoes((await api.acoes(true)).acoes)
+      setAcoes((await api.acoes(true, regiao)).acoes)
       setError(null)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Não consegui carregar o catálogo')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [regiao])
 
   // Ver a nota em fundo/usePedidos.ts sobre esta regra.
   // eslint-disable-next-line react-hooks/set-state-in-effect

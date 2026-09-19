@@ -5,6 +5,41 @@ App do fundo de marketing (arrecadação × investimento por loja/franqueado).
 (`auth/routes/fundo_mkt.py` + `auth/services/fundo_mkt_service.py`). Nada aqui é
 mock — o único dado semeado à mão são as contribuições da carteira.
 
+## Região: MG · GO · ES (19/09/2026)
+
+O fundo é dividido por **operação**, igual ao marketplace. A régua é a MESMA
+para os dois apps — `auth/services/regioes.py` no backend e `src/lib/region.ts`
+aqui (cópia espelhada de `marketplace/src/lib/region.ts`; editou uma,
+sincronize as outras):
+
+- A região do usuário sai das flags `auth.users.can_access_marketplace_<uf>`,
+  com precedência **ES > GO > MG**. O nome das colunas nasceu no marketplace,
+  mas hoje elas dizem de qual operação o usuário é — por isso o `AdminPage` do
+  HRM chama a seção de "Região da operação" e **não zera mais** as flags quando
+  o acesso ao Marketplace é revogado (isso apagava a região do franqueado aqui).
+- **Gestor** troca no toggle `[ MG | GO | ES ]` à esquerda da navbar
+  (`fundo/RegiaoContext` + `regiaoStore`, guardado em `localStorage.fundo_region`).
+  **Franqueado** não tem toggle: o backend ignora `?region=` de quem não é
+  gestor e resolve pelas flags.
+- `lib/api.ts` carimba `region=` em TODA chamada JSON (`comRegiao`), pra não
+  existir chamada "sem região" por esquecimento. As LEITURAS de tela passam a
+  região explícita (`api.acoes(true, regiao)`) — é o que faz o React refazer a
+  busca quando o gestor troca de operação.
+- **O que é regional:** catálogo (`fundo_mkt.acoes.region`), pedidos
+  (`fundo_mkt.pedidos.region`, snapshot — mover a ação de região depois não
+  reescreve histórico) e a lista de carteiras. Resgatar ação de outra região é
+  recusado no servidor ("Ação não encontrada ou desativada"), não só escondido
+  na vitrine.
+- **O que é GLOBAL: o cronograma.** `fundo_mkt.campanhas` não tem região — mês,
+  tema e descrição valem para as três operações. O que se filtra é a lista de
+  ações recomendadas da campanha. ES hoje só enxerga isso: ainda não tem
+  catálogo nem carteira (nasce vazio, o gestor cadastra).
+- Contribuição NÃO tem região: ela é do usuário, e o usuário já tem uma.
+  Duplicar ali só criaria divergência.
+- Migrations: `sql/migration_fundo_mkt_region_2026_09_19.sql` (colunas `region`,
+  default MG = tudo que existia) e `sql/migration_regiao_es_2026_09_19.sql`
+  (flag `can_access_marketplace_es`).
+
 ## Telas (rotas na navbar)
 
 | Rota | Página | O quê |
@@ -60,7 +95,9 @@ formulário de criação. O catálogo NUNCA traz os bytes: só `tem_imagem` e
 ## Campanhas (cronograma)
 
 `fundo_mkt.campanhas` + `campanha_acoes`: uma campanha por (ano, mês) com tema,
-descrição e as ações recomendadas. Substituiu o `schedule.ts` chumbado — o
+descrição e as ações recomendadas. **Campanha é GLOBAL** (sem região); só as
+ações recomendadas são filtradas pela operação de quem lê — ver a seção
+"Região" no topo. Substituiu o `schedule.ts` chumbado — o
 gestor monta o calendário sem deploy, e o vínculo é por **id** (não por slug,
 que era o que quebrava quando o catálogo era recriado).
 
@@ -127,6 +164,7 @@ quem barra de verdade é o backend em todo endpoint.
 ## Pendências
 
 - Worker do 1% (contribuição automática) — hoje o saldo é lançado à mão.
+- ES: catálogo e carteiras vazios (só o cronograma aparece, porque é global).
 - Notificar o franqueado quando o pedido muda de etapa (principalmente na
   recusa, que hoje ele só vê se abrir a tela).
 - Notificar o franqueado quando o pedido muda de etapa.

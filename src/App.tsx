@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AccessGate } from './components/AccessGate'
 import { Layout } from './components/Layout'
 import { FundoProvider } from './fundo/FundoContext'
+import { RegiaoProvider } from './fundo/RegiaoContext'
 import { isGestor } from './lib/session'
 import { Cronograma } from './pages/Cronograma'
 import { Gerenciar } from './pages/Gerenciar'
@@ -12,6 +13,8 @@ import './styles/fundo.css'
 export default function App() {
   return (
     <AccessGate>
+      {/* Região por fora: trocar de operação refaz catálogo, carteira e lojas. */}
+      <RegiaoProvider>
       <FundoProvider>
         <Routes>
           <Route element={<Layout />}>
@@ -25,6 +28,7 @@ export default function App() {
           </Route>
         </Routes>
       </FundoProvider>
+      </RegiaoProvider>
     </AccessGate>
   )
 }

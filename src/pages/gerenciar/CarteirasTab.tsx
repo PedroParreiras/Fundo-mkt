@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRegiao } from '../../fundo/regiaoStore'
 import { brl } from '../../fundo/format'
 import type { Contribuicao, UsuarioCarteira } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
@@ -28,9 +29,12 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
   const [erroForm, setErroForm] = useState<string | null>(null)
   const [busca, setBusca] = useState('')
 
+  // A lista de carteiras é da região ativa (o gestor aparece em todas).
+  const { regiao } = useRegiao()
+
   const load = useCallback(async () => {
     try {
-      const [u, c] = await Promise.all([api.usuarios(), api.contribuicoes()])
+      const [u, c] = await Promise.all([api.usuarios(regiao), api.contribuicoes(undefined, regiao)])
       setUsuarios(u.usuarios)
       setLancamentos(c.contribuicoes)
       setError(null)
@@ -39,7 +43,7 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [regiao])
 
   // Ver a nota em fundo/usePedidos.ts sobre esta regra.
   // eslint-disable-next-line react-hooks/set-state-in-effect

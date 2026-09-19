@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, ApiError } from '../lib/api'
+import { useRegiao } from './regiaoStore'
 import type { Pedido } from './types'
 
 /**
@@ -8,20 +9,23 @@ import type { Pedido } from './types'
  * recusa com 403 quem não é gestor.
  */
 export function usePedidos(todos = false) {
+  // A fila do gestor (`todos`) é da região ativa; a lista do próprio usuário o
+  // backend não filtra (o histórico é dele), mas recarregar não faz mal.
+  const { regiao } = useRegiao()
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
-      setPedidos((await api.pedidos(todos)).pedidos)
+      setPedidos((await api.pedidos(todos, regiao)).pedidos)
       setError(null)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Não consegui carregar os pedidos')
     } finally {
       setLoading(false)
     }
-  }, [todos])
+  }, [todos, regiao])
 
   // Busca inicial. A regra set-state-in-effect não distingue fetch-on-mount de
   // cascata de render: o setState acontece depois do await, não no corpo do
