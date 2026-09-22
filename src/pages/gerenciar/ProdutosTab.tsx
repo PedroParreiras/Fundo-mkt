@@ -112,7 +112,7 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
 
       {acoes.length > 0 && (
         <div className="ger-table-wrap">
-          <table className="ger-table">
+          <table className="ger-table ger-table--cards">
             <thead>
               <tr>
                 <th>Ação</th><th>Categoria</th><th>Preço</th><th>Modo</th>
@@ -131,17 +131,17 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Categoria">
                     <span className="cat-pill" style={{ background: catMeta(a.categoria).color }}>
                       {catMeta(a.categoria).name}
                     </span>
                   </td>
-                  <td className="num">
+                  <td className="num" data-label="Preço">
                     {a.categoria === CATEGORIA_DOCUMENTO ? '—' : brl(a.preco)}
                   </td>
-                  <td>{a.modo}</td>
-                  <td className="num">{a.prazo_dias}d</td>
-                  <td>
+                  <td data-label="Modo">{a.modo}</td>
+                  <td className="num" data-label="Prazo">{a.prazo_dias}d</td>
+                  <td data-label="Status">
                     <span className={`fo-status ${a.ativo ? 'st-disponivel' : 'st-off'}`}>
                       {a.ativo ? 'Ativa' : 'Desativada'}
                     </span>

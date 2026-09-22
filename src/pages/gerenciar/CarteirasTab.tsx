@@ -148,7 +148,7 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
       </div>
 
       <div className="ger-table-wrap">
-        <table className="ger-table">
+        <table className="ger-table ger-table--cards">
           <thead>
             <tr><th>Usuário</th><th>Papel</th><th>Contribuído</th><th>Resgatado</th><th>Saldo</th><th /></tr>
           </thead>
@@ -159,10 +159,10 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
                   <div className="td-nome">{u.nome}</div>
                   <div className="td-sub">{u.email}</div>
                 </td>
-                <td>{u.role}</td>
-                <td className="num">{brl(u.contribuido)}</td>
-                <td className="num">{brl(u.resgatado)}</td>
-                <td className="num"><b>{brl(u.saldo)}</b></td>
+                <td data-label="Papel">{u.role}</td>
+                <td className="num" data-label="Contribuído">{brl(u.contribuido)}</td>
+                <td className="num" data-label="Resgatado">{brl(u.resgatado)}</td>
+                <td className="num" data-label="Saldo"><b>{brl(u.saldo)}</b></td>
                 <td className="acoes-col">
                   <button className="link-btn" onClick={() => setAlvo(u.id)}>Lançar</button>
                 </td>
@@ -181,7 +181,7 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
           texto="Use o formulário acima para creditar a carteira do franqueado." />
       ) : (
         <div className="ger-table-wrap">
-          <table className="ger-table">
+          <table className="ger-table ger-table--cards">
             <thead>
               <tr><th>Competência</th><th>Usuário</th><th>Descrição</th><th>Origem</th><th>Valor</th><th /></tr>
             </thead>
@@ -189,10 +189,10 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
               {doAlvo.map((l) => (
                 <tr key={l.id}>
                   <td>{l.competencia}</td>
-                  <td>{l.usuario_nome}</td>
-                  <td className="td-sub">{l.descricao}</td>
-                  <td>{l.origem}</td>
-                  <td className="num">{brl(l.valor)}</td>
+                  <td data-label="Usuário">{l.usuario_nome}</td>
+                  <td className="td-sub td-block" data-label="Descrição">{l.descricao}</td>
+                  <td data-label="Origem">{l.origem}</td>
+                  <td className="num" data-label="Valor">{brl(l.valor)}</td>
                   <td className="acoes-col">
                     <button className="link-btn danger" onClick={() => remover(l.id)}>Remover</button>
                   </td>

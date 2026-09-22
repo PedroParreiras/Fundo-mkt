@@ -9,6 +9,8 @@ import { Gerenciar } from './pages/Gerenciar'
 import { Loja } from './pages/Loja'
 import { Pedidos } from './pages/Pedidos'
 import './styles/fundo.css'
+// Recorte de telefone — carrega DEPOIS de fundo.css, que é o desenho grande.
+import './styles/mobile.css'
 
 export default function App() {
   return (

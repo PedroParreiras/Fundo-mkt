@@ -68,7 +68,9 @@ export function PedidosTab({ onToast }: { onToast: (m: string) => void }) {
           <div className="fo-card" key={p.id}>
             <div className="fo-top">
               <div className="fo-thumb">{p.emoji}</div>
-              <div>
+              {/* `fo-info` (min-width: 0) é o que deixa este bloco encolher no
+                  telefone em vez de empurrar a miniatura para uma linha só. */}
+              <div className="fo-info">
                 <div className="fo-nm">{p.nome}</div>
                 <div className="fo-meta">
                   {p.codigo} · {p.usuario_nome} · {p.date} · {p.unidades} unidade(s)

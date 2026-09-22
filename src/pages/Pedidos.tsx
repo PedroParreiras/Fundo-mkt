@@ -28,7 +28,9 @@ export function Pedidos() {
         <div className="fo-card" key={p.id}>
           <div className="fo-top">
             <div className="fo-thumb">{p.emoji}</div>
-            <div>
+            {/* `fo-info` existe para o telefone: é o bloco que fica com a
+                largura que sobra quando a etiqueta de status desce de linha. */}
+            <div className="fo-info">
               <div className="fo-nm">{p.nome}</div>
               <div className="fo-meta">Pedido {p.codigo} · {p.date} · {p.unidades} unidade(s)</div>
             </div>

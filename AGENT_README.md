@@ -149,12 +149,60 @@ de etapa. No backend isso é `_gestor_ou_403`; no front, `isGestor()` esconde a
 aba e a rota. O gate de UI é conveniência: o `user` do localStorage é forjável,
 quem barra de verdade é o backend em todo endpoint.
 
+## O telefone: `src/styles/mobile.css` (22/09/2026)
+
+Todo o recorte de telefone mora NESTE arquivo (mesma convenção do
+`marketplace/src/mobile.css`) e é carregado no fim de `App.tsx`, depois de
+`styles/fundo.css` — que continua sendo o desenho grande. Quem mexe no layout
+mexe nos dois: `fundo.css` para o desktop, `mobile.css` para o aperto.
+
+Três cortes, e o motivo de cada um:
+
+- **≤ 760px — a tabela do Gerenciar vira lista de cartões.** `.ger-table` tem
+  `min-width: 760px`: no telefone dava para ver a coluna "Ação" e mais nada —
+  Preço, Status e os botões Editar/Desativar ficavam atrás de uma rolagem
+  horizontal DENTRO de um quadro que já rolava na vertical. Cada linha vira um
+  cartão "rótulo → valor". Depende de marcação: a tabela leva
+  `ger-table--cards` e **cada `<td>` leva `data-label`** (o rótulo sai de
+  `content: attr(data-label)`). Sem o `data-label` a célula aparece sem nome.
+  Célula de texto longo (descrição, ações recomendadas) leva também `td-block`:
+  rótulo em cima, valor embaixo, os dois à esquerda — alinhada à direita, uma
+  frase de três linhas ficava com as três pontas soltas. O `<td>` das ações
+  (`acoes-col`) e o primeiro (título do cartão) não levam rótulo.
+- **≤ 640px — telefone.** Vitrine em DUAS colunas (coluna fixa, não `minmax`:
+  com `minmax`, quanto maior o telefone menor o card), etiqueta de status do
+  pedido em linha própria, abas do Gerenciar em grade 2×2, cronograma em coluna
+  com o preço à direita, alvos de toque de 40-44px e **fonte 16px em tudo que
+  recebe digitação** (abaixo disso o Safari do iOS dá zoom no foco e não volta).
+- **≤ 380px** — só o aperto final.
+- **`@media (hover: none) and (pointer: coarse)`** — fora dos cortes de largura
+  porque quem decide é o PONTEIRO: no toque não existe "sair do hover", e o card
+  levantado ficava preso para cima depois do tap.
+
+**Modal vira folha de baixo (bottom sheet).** No telefone o resgate sobe da
+borda de baixo, com o cabeçalho grudado no topo e o rodapé do botão grudado
+embaixo; o que rola é só o miolo. Antes o "Confirmar resgate" ficava depois de
+duas telas de rolagem. **Este é o único lugar com `!important`**, e é
+obrigatório: `index.css` tem, no mesmo corte de telefone, um
+`.modal { width: calc(100vw - .75rem); margin: .5rem auto; max-height: calc(100vh - 1rem); border-radius: 12px }`
+TODO com `!important` — escrito para o `.modal` genérico do HRM, que não sabe
+que o fundo usa o mesmo nome de classe (ver a colisão de nomes logo abaixo).
+
+**O que NÃO se resolve aqui:** a navbar aberta ocupa ~470px dos 844 de um
+telefone, porque ela nasce aberta (`navbarState.ts`, chave
+`hrm_navbar_aberta`) e no ≤900px vira uma lista de linha inteira. Isso é
+comportamento de PLATAFORMA, replicado em todos os sub-apps — mudar só aqui
+dessincroniza. Quem minimiza uma vez fica minimizado em todo lugar.
+
 ## Regras deste repo
 
 - **O design é o MESMO da vitrine do marketplace.** `src/styles/fundo.css` não
   tem paleta própria: consome os tokens `--mkt-*` do bloco "MARKETPLACE THEME
   LAYER" em `src/index.css` (cópia sincronizada de `marketplace/src/index.css`
   — editou lá, sincronize aqui). Claro/escuro alternam com o `hrm_theme`.
+- **Mexeu no layout? confira nos dois tamanhos.** O recorte de telefone está em
+  `src/styles/mobile.css` (ver a seção acima) e não é opcional: o franqueado
+  abre este app no celular.
 - Tudo escopado sob `.fundo-app`: os nomes são genéricos (`.btn`, `.chip`,
   `.modal-overlay`, `.empty`) e colidiriam com o design system do HRM. O
   arquivo também neutraliza o `button:hover{transform}` global do `index.css`.

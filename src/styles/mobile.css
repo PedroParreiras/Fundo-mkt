@@ -1,0 +1,409 @@
+/* =============================================================================
+   FUNDO DE MARKETING NO TELEFONE
+   =============================================================================
+   Mesma convenção do marketplace (`marketplace/src/mobile.css`): o recorte de
+   telefone mora TODO neste arquivo, e cada bloco diz o que estava quebrado.
+   A diferença é que aqui as telas são feitas de CLASSES, não de estilo inline —
+   então só precisa de `!important` onde o DESIGN SYSTEM do HRM já usa um (as
+   duas ocorrências estão marcadas com o motivo). Basta carregar depois de
+   `styles/fundo.css` — ver o import no fim de `App.tsx`.
+
+   Cortes:
+     ≤ 760px → as tabelas do Gerenciar viram lista de cartões (a tabela tem
+               min-width 760: num tablet estreito ela já rolava no eixo X).
+     ≤ 640px → telefone: a casca, a vitrine, os modais e os alvos de toque.
+     ≤ 380px → aparelho estreito, só o aperto final.
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TABELAS DO GERENCIAR → LISTA DE CARTÕES
+   A tabela tem 6-7 colunas e `min-width: 760px`: no telefone dava para ver a
+   coluna "Ação" e mais nada — Preço, Status e os botões Editar/Desativar
+   ficavam fora da tela, atrás de uma rolagem horizontal DENTRO de um quadro
+   que já rola na vertical. Cada linha vira um cartão "rótulo → valor".
+   Só vale para a tabela marcada com `ger-table--cards`, porque depende de cada
+   <td> trazer o `data-label`.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  /* O quadro só existia para segurar a rolagem horizontal; sem tabela, sem
+     quadro — senão os cartões ficam numa moldura dentro de outra. */
+  .fundo-app .ger-table-wrap {
+    overflow-x: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .fundo-app .ger-table--cards { display: block; width: 100%; min-width: 0 }
+  .fundo-app .ger-table--cards thead { display: none }
+  .fundo-app .ger-table--cards tbody { display: block }
+
+  .fundo-app .ger-table--cards tbody tr {
+    display: block;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--mkt-card-border);
+    border-radius: 12px;
+    background: var(--mkt-card-bg);
+  }
+
+  .fundo-app .ger-table--cards tbody td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 5px 0;
+    border: 0;
+    text-align: right;
+    font-size: 13px;
+  }
+
+  .fundo-app .ger-table--cards tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--mkt-text-muted);
+  }
+
+  /* A primeira célula é o nome (com miniatura): vira o título do cartão, linha
+     inteira e sem rótulo. */
+  .fundo-app .ger-table--cards tbody td:first-child {
+    display: block;
+    padding: 0 0 10px;
+    text-align: left;
+  }
+  .fundo-app .ger-table--cards tbody td:first-child::before { display: none }
+
+  /* Sem a coluna estreita, a descrição pode ocupar as linhas que precisar. */
+  .fundo-app .ger-table--cards .td-sub {
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .fundo-app .ger-table--cards .td-acao { min-width: 0 }
+
+  /* Célula de texto longo (descrição, lista de ações recomendadas): rótulo em
+     cima e valor embaixo, os dois à esquerda. Alinhado à direita, uma frase de
+     três linhas ficava com as três pontas soltas e ninguém achava o começo. */
+  .fundo-app .ger-table--cards tbody td.td-block {
+    display: block;
+    padding: 7px 0;
+    text-align: left;
+  }
+  .fundo-app .ger-table--cards tbody td.td-block::before {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Editar/Desativar: rodapé do cartão, separado por uma régua. */
+  .fundo-app .ger-table--cards tbody td.acoes-col {
+    justify-content: flex-end;
+    gap: 2px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--mkt-card-border);
+  }
+  .fundo-app .ger-table--cards tbody td.acoes-col::before { display: none }
+
+  /* Linha desativada/selecionada: o realce agora é do cartão inteiro. */
+  .fundo-app .ger-table--cards tbody tr.row-off { opacity: .55 }
+  .fundo-app .ger-table--cards tbody tr.row-off td { opacity: 1 }
+  .fundo-app .ger-table--cards tbody tr.row-on { border-color: var(--fm-gold) }
+  .fundo-app .ger-table--cards tbody tr.row-on td { background: transparent }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TELEFONE
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* ── Casca da página ──────────────────────────────────────────────────────
+     32px de cada lado comiam 64 dos 390 da tela. O respiro de baixo cresce: é
+     onde a barra do navegador e o toast ficam. */
+  .fundo-app .wrap { padding: 16px 14px 96px }
+  .fundo-app .page-head { margin-bottom: 16px }
+  .fundo-app h1.page-title { font-size: 23px }
+  .fundo-app .page-desc { font-size: 13px; margin-top: 4px }
+  .fundo-app .fund-note { font-size: 12px; margin-bottom: 18px }
+  .fundo-app .empty { padding: 36px 18px }
+  .fundo-app .empty .ei { font-size: 36px }
+
+  /* ── Carteira ─────────────────────────────────────────────────────────────
+     "Conectado como <nome> · N lojas" numa linha só quebrava o nome no meio e
+     deixava "· 4 lojas" pendurado em duas linhas. Os dois totais passam a
+     dividir a largura em duas colunas iguais em vez de `min-width: 140px`, que
+     num aparelho de 360 empurrava o segundo para baixo sozinho. */
+  .fundo-app .wallet { padding: 18px 16px; gap: 14px; border-radius: 14px }
+  .fundo-app .w-left { width: 100% }
+  .fundo-app .w-hi { flex-wrap: wrap; row-gap: 2px; font-size: 12px; margin-bottom: 8px }
+  .fundo-app .balance-btn .balance { font-size: 31px }
+  .fundo-app .balance-btn .wl-hint { font-size: 11.5px }
+  .fundo-app .w-right {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+  .fundo-app .w-stat { min-width: 0; padding: 10px 12px }
+  .fundo-app .w-stat b { font-size: 15px }
+
+  /* ── Filtro de categoria ──────────────────────────────────────────────── */
+  .fundo-app .toolbar { margin-bottom: 20px }
+  .fundo-app .chip { padding: 8px 12px; font-size: 11.5px }
+
+  /* ── Cabeçalho do grupo ───────────────────────────────────────────────── */
+  .fundo-app .sup-head { gap: 8px; margin-bottom: 12px }
+  .fundo-app .sup-logo { width: 28px; height: 28px; font-size: 11px; border-radius: 8px }
+  .fundo-app .sup-name { font-size: 12px }
+  .fundo-app .sup-tag { font-size: 11px }
+  .fundo-app .sup-group { margin-bottom: 26px }
+
+  /* ── Vitrine: DOIS cards por linha ────────────────────────────────────────
+     `minmax(220px, 1fr)` dava UM card de 358px com 150px só de miniatura — o
+     catálogo inteiro virava uma fita de 5 telas de rolagem. Coluna fixa (e não
+     minmax) mantém a proporção: com minmax, quanto maior o telefone, menor o
+     card. Mesma decisão da grade do marketplace. */
+  .fundo-app .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px }
+  .fundo-app .thumb { height: 104px; font-size: 40px }
+  .fundo-app .pbody { padding: 8px 9px 10px; gap: 3px }
+  .fundo-app .pname { font-size: 12px; min-height: 30px }
+  /* A descrição continua, mas presa em 2 linhas: solta, ela empurrava o preço
+     e o botão para fora do alinhamento entre cards vizinhos. */
+  .fundo-app .pdesc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    min-height: 0;
+    font-size: 11px;
+  }
+  /* "R$ 1.250,00 / unidade" não cabia em card de 170px: o `/ unidade` quebrava
+     no meio e a palavra sobrava sozinha, encostada à direita. */
+  .fundo-app .pprice-row { flex-wrap: wrap; gap: 0 4px }
+  .fundo-app .pprice { font-size: 15px }
+  .fundo-app .pprice small { font-size: 10px; white-space: nowrap }
+  .fundo-app .pprice-doc { font-size: 12px }
+  .fundo-app .pcard-foot { padding-top: 6px }
+  .fundo-app .btn-block { padding: 9px 8px; font-size: 12px }
+  /* Em card de 170px o nome inteiro da categoria cobria a miniatura. */
+  .fundo-app .cat-tag {
+    max-width: 82%;
+    padding: 1px 6px;
+    font-size: 8.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Pedidos ──────────────────────────────────────────────────────────────
+     Miniatura + nome + etiqueta de status na mesma linha espremiam o nome em 3
+     linhas de duas palavras. A etiqueta desce para a linha de baixo, alinhada
+     com o texto (56px = 44 da miniatura + 12 do gap). */
+  .fundo-app .fo-card { padding: 14px 15px }
+  .fundo-app .fo-top { flex-wrap: wrap; row-gap: 8px }
+  .fundo-app .fo-info { flex: 1 1 auto; min-width: 0 }
+  .fundo-app .fo-status { order: 3; margin-left: 56px }
+  .fundo-app .fo-nm { font-size: 13.5px }
+
+  /* Totais embaixo das lojas, e não numa coluna estreita à direita. */
+  .fundo-app .fo-body { flex-direction: column; align-items: stretch; gap: 10px }
+  .fundo-app .fo-right {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+  .fundo-app .fo-right .fo-eta { margin-top: 0 }
+  .fundo-app .fo-right .fo-adv,
+  .fundo-app .fo-right .doc-link { flex-basis: 100%; margin-top: 0 }
+
+  /* Esteira: 4 passos em 358px. */
+  .fundo-app .tstep .tlabel { font-size: 9.5px; padding: 0 2px }
+  .fundo-app .tstep .tdate { font-size: 10px }
+
+  /* ── Cronograma ───────────────────────────────────────────────────────────
+     As pílulas de ação recomendada ficavam centradas e de larguras diferentes,
+     uma por linha mesmo assim. Em coluna, com o preço encostado à direita,
+     viram uma lista que se lê de relance. */
+  .fundo-app .month-card { padding: 15px 16px }
+  .fundo-app .mc-desc { font-size: 12.5px; margin-bottom: 12px }
+  .fundo-app .mc-recs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px }
+  .fundo-app .rec { justify-content: flex-start; min-height: 44px; text-align: left }
+  .fundo-app .rec .rec-price { margin-left: auto; padding-left: 8px }
+  .fundo-app .q-group { margin-bottom: 24px }
+
+  /* ── Gerenciar: abas e barra ──────────────────────────────────────────────
+     As 4 abas quebravam 2 + 2 com larguras diferentes e a última sobrava no
+     meio. Grade de 2 colunas iguais. */
+  .fundo-app .fund-subnav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .fundo-app .fsub { justify-content: center; min-height: 44px; padding: 8px 10px; font-size: 12px }
+
+  .fundo-app .ger-bar { gap: 10px }
+  .fundo-app .ger-bar .btn { flex: 1 1 auto }
+  /* ÚNICO `!important` do arquivo: o campo de busca das Carteiras leva
+     `style={{ maxWidth: 260 }}` inline, e inline ganha de folha de estilo. */
+  .fundo-app .ger-bar .co-search { max-width: 100% !important }
+
+  .fundo-app .ger-panel { padding: 16px 15px }
+  .fundo-app .ger-grid { grid-template-columns: minmax(0, 1fr); gap: 12px }
+  .fundo-app .fld-narrow { max-width: none }
+  .fundo-app .pick-list { grid-template-columns: minmax(0, 1fr); max-height: 240px }
+
+  /* ── Modais viram FOLHA DE BAIXO ──────────────────────────────────────────
+     O resgate tem cabeçalho + item + lista de lojas + resumo + botão: numa tela
+     de 844 o "Confirmar resgate" ficava depois de duas telas de rolagem, e o ✕
+     subia junto com o conteúdo. Agora a folha sobe da borda de baixo (o polegar
+     alcança), o cabeçalho gruda no topo e o rodapé do botão gruda embaixo — o
+     que rola é só o miolo. */
+  .fundo-app .modal-overlay { align-items: flex-end; padding: 0 }
+  /* Os `!important` daqui são para VENCER o design system: `index.css` tem, no
+     mesmo corte de telefone, um `.modal { width: calc(100vw - .75rem);
+     margin: .5rem auto; max-height: calc(100vh - 1rem); border-radius: 12px }`
+     TODO com !important — feito para o `.modal` genérico do HRM, que não sabe
+     que o fundo usa o mesmo nome de classe (ver a nota sobre colisão de nomes
+     no AGENT_README). Sem isto a folha nascia flutuando, com 6px de página
+     aparecendo embaixo e os cantos de baixo arredondados. */
+  .fundo-app .modal,
+  .fundo-app .modal.co {
+    width: 100% !important;
+    max-width: none !important;
+    max-height: 92vh !important;
+    margin: 0 !important;
+    border-radius: 18px 18px 0 0 !important;
+    border-bottom: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .fundo-app .modal-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 16px 16px 12px;
+    background: var(--mkt-modal-bg);
+    border-bottom: 1px solid var(--mkt-card-border);
+  }
+  /* Alça da folha, como em qualquer bottom sheet: diz que dá para arrastar/
+     fechar e separa do que está atrás. */
+  .fundo-app .modal-head::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--mkt-border-dash);
+    transform: translateX(-50%);
+  }
+  .fundo-app .mh-title { font-size: 16px }
+
+  /* O miolo já não precisa da altura própria: quem rola é a folha. */
+  .fundo-app .hist-list { max-height: none; padding: 6px 16px 22px }
+
+  /* 22px de cada lado em 390 de tela: as linhas de loja ficavam sem ar. */
+  .fundo-app .modal-balance { margin: 0 16px 8px; padding: 12px 14px }
+  .fundo-app .co-item { gap: 11px; padding: 0 16px 14px }
+  .fundo-app .co-thumb { width: 46px; height: 46px; font-size: 23px }
+  .fundo-app .co-sec-t { padding: 4px 16px 6px }
+  .fundo-app .co-stores { padding: 0 16px }
+  .fundo-app .co-store { gap: 10px }
+  .fundo-app .co-summary,
+  .fundo-app .co-eta { margin-left: 16px; margin-right: 16px }
+  .fundo-app .co-warn { margin-left: 16px; margin-right: 16px }
+
+  .fundo-app .co-foot {
+    position: sticky;
+    bottom: 0;
+    padding: 14px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+    background: var(--mkt-modal-bg);
+    border-top: 1px solid var(--mkt-card-border);
+  }
+
+  /* Formulário do gestor: os dois botões em coluna, o de confirmar em cima. */
+  .fundo-app .ger-form-foot { flex-direction: column-reverse; gap: 8px }
+  .fundo-app .ger-form-foot .btn { width: 100% }
+  .fundo-app .ger-move { justify-content: stretch }
+  .fundo-app .ger-move .btn { flex: 1 1 auto }
+  .fundo-app .recusa-form input { min-width: 0; flex: 1 1 100% }
+
+  /* ── Aviso flutuante ──────────────────────────────────────────────────────
+     Centrado e do tamanho do texto, uma mensagem longa ("FM-0043 solicitado —
+     acompanhe em Pedidos") passava das duas bordas. Vira faixa. */
+  .fundo-app .toast {
+    left: 12px;
+    right: 12px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    justify-content: center;
+    border-radius: 14px;
+    text-align: left;
+    transform: translateY(20px);
+  }
+  .fundo-app .toast.show { transform: translateY(0) }
+
+  /* ── Alvos de toque ───────────────────────────────────────────────────────
+     Os passos de quantidade eram 28px e os dois botões de linha da tabela
+     ficavam colados: 44px é o mínimo de dedo. */
+  .fundo-app .stepper button { width: 32px; height: 32px }
+  .fundo-app .stepper input { width: 46px; height: 32px }
+  .fundo-app .co-check { width: 24px; height: 24px }
+  .fundo-app .link-btn { min-height: 40px; padding: 0 10px }
+  .fundo-app .modal-x { width: 34px; height: 34px }
+  .fundo-app .btn { min-height: 42px }
+  .fundo-app .btn-sm { min-height: 36px }
+
+  /* ── iOS: campo com fonte < 16px faz o Safari DAR ZOOM no foco ────────────
+     E o zoom não volta sozinho — o franqueado digitava o valor e ficava com a
+     tela ampliada pelo resto da sessão. 16px em tudo que recebe digitação. */
+  .fundo-app .fld input,
+  .fundo-app .fld select,
+  .fundo-app .fld textarea,
+  .fundo-app .co-search,
+  .fundo-app .stepper input,
+  .fundo-app .recusa-form input { font-size: 16px }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APARELHO ESTREITO (≤380px)
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .fundo-app .wrap { padding: 14px 12px 96px }
+  .fundo-app h1.page-title { font-size: 21px }
+  .fundo-app .balance-btn .balance { font-size: 28px }
+  .fundo-app .pgrid { gap: 8px }
+  .fundo-app .pname { font-size: 11.5px }
+  .fundo-app .thumb { height: 94px; font-size: 34px }
+  .fundo-app .fsub { font-size: 11.5px; padding: 8px 6px }
+  /* Alinhada com a miniatura menor do card do pedido. */
+  .fundo-app .fo-status { margin-left: 0 }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DEDO, NÃO MOUSE — vale pelo PONTEIRO, não pela largura
+   No toque não existe "sair do hover": o card levantado (`translateY(-4px)`)
+   fica preso para cima depois do tap, até a próxima navegação.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .fundo-app .pcard:hover,
+  .fundo-app .fo-card:hover,
+  .fundo-app .fm-card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--mkt-card-border);
+  }
+  .fundo-app .fm-card:hover .fm-card-img { transform: none }
+}

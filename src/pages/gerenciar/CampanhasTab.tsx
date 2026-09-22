@@ -191,7 +191,7 @@ export function CampanhasTab({ onToast }: { onToast: (m: string) => void }) {
 
       {campanhas.length > 0 && (
         <div className="ger-table-wrap">
-          <table className="ger-table">
+          <table className="ger-table ger-table--cards">
             <thead>
               <tr><th>Quando</th><th>Tema</th><th>Descrição</th><th>Ações</th><th /></tr>
             </thead>
@@ -199,9 +199,9 @@ export function CampanhasTab({ onToast }: { onToast: (m: string) => void }) {
               {campanhas.map((c) => (
                 <tr key={c.id} className={c.ativo ? '' : 'row-off'}>
                   <td><b>{c.mes_nome}</b> {c.ano}<div className="td-sub">{c.trimestre}º trimestre</div></td>
-                  <td><span className="mc-theme">{c.tema}</span></td>
-                  <td className="td-sub">{c.descricao || '—'}</td>
-                  <td>
+                  <td data-label="Tema"><span className="mc-theme">{c.tema}</span></td>
+                  <td className="td-sub td-block" data-label="Descrição">{c.descricao || '—'}</td>
+                  <td className="td-block" data-label="Ações">
                     {c.acoes.length === 0
                       ? <span className="td-sub">nenhuma</span>
                       : <div className="fo-stores">
