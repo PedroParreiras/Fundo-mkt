@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './fundo-mkt-fx.css'
+/* Guarda de telefone genérica — cópia replicada do hub (honesty/src/styles/mobile-guard.css). */
+import './styles/mobile-guard.css'
 import App from './App.tsx'
 import { initTheme } from './utils/theme'
 import { initUsageTracker } from './lib/usageTracker'

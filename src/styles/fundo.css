@@ -87,7 +87,7 @@
 }
 
 /* ---------- CARD DE AÇÃO ---------- */
-.fundo-app .pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px}
+.fundo-app .pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%, 220px), 1fr)); gap:14px}
 .fundo-app .pcard{
   position:relative; display:flex; flex-direction:column; overflow:hidden;
   border-radius:10px; background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
@@ -462,7 +462,7 @@
   border-radius:12px; padding:20px; margin-bottom:22px;
 }
 .fundo-app .ger-panel-title{font-size:14px; font-weight:800; color:var(--mkt-strong); margin-bottom:16px}
-.fundo-app .ger-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px}
+.fundo-app .ger-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%, 190px), 1fr)); gap:14px}
 .fundo-app .fld{display:flex; flex-direction:column; gap:5px; min-width:0}
 .fundo-app .fld-wide{grid-column:1 / -1}
 .fundo-app .fld-narrow{max-width:120px}
@@ -600,7 +600,7 @@
 
 /* ---------- SELEÇÃO DE AÇÕES DA CAMPANHA ---------- */
 .fundo-app .pick-list{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%, 260px), 1fr)); gap:8px;
   max-height:280px; overflow-y:auto; padding:2px;
 }
 .fundo-app .pick{

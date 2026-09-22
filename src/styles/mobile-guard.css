@@ -1,0 +1,107 @@
+/* ============================================
+   MOBILE GUARD (≤768px / ≤640px) — CANONICAL COPY
+   Loaded after the app stylesheet. Generic guards that keep every page inside the
+   viewport on phones: grid tracks may shrink, fixed widths cap at 100%,
+   wide tables/tab strips scroll inside their own box instead of the page.
+   `!important` only where pages set layout via inline style={{}}.
+   Canonical: honesty/src/styles/mobile-guard.css. Each sub-app carries an
+   identical copy (src/styles/mobile-guard.css) — edit here, re-sync there.
+   App-specific phone fixes live in each app's own mobile.css, never here.
+   ============================================ */
+
+@media (max-width: 768px) {
+  html, body { overflow-x: clip; }
+
+  /* grid/flex children may shrink below their content width */
+  [class*="grid"] > *, [style*="grid"] > *, [style*="flex"] > * { min-width: 0; }
+
+  img, video, canvas, svg:not([width]), iframe { max-width: 100%; }
+  .recharts-responsive-container, .leaflet-container { max-width: 100%; }
+
+  /* long unbroken strings (emails, codes, URLs) wrap instead of pushing */
+  h1, h2, h3, h4, p, li, label, .card-title { overflow-wrap: anywhere; }
+
+  /* containers */
+  .container, .dashboard-container, .page-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+  }
+  .glass-card, .section-box, .card { max-width: 100%; }
+
+  /* headers: title block + actions stack */
+  .admin-header, .page-header, .section-header, .dashboard-header, .header-actions {
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+  .admin-header > *, .page-header > * { max-width: 100%; }
+
+  /* tab strips / pill groups scroll horizontally */
+  .inline-tabs, .tabs, .tab-list, .tabs-row, [role="tablist"] {
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .inline-tabs > *, .tabs > *, [role="tablist"] > * { flex-shrink: 0; }
+
+  /* tables never widen the page: their direct parent scrolls instead */
+  :where(div, section, article, form, main):has(> table) {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* modals / dialogs fit the screen */
+  .modal, .modal-content, .modal-container, [role="dialog"] {
+    max-width: calc(100vw - 1.5rem) !important;
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+  }
+
+  /* form controls: full width, 16px prevents iOS zoom-on-focus */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select, textarea {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  /* inline-style grids built for desktop */
+  [style*="repeat(4"], [style*="repeat(5"], [style*="repeat(6"],
+  [style*="grid-template-columns: 1fr 1fr 1fr"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* inline fixed widths/min-widths ≥ 300px cap at the container */
+  [style*="width: 3"][style*="px"], [style*="width: 4"][style*="px"],
+  [style*="width: 5"][style*="px"], [style*="width: 6"][style*="px"],
+  [style*="width: 7"][style*="px"], [style*="width: 8"][style*="px"],
+  [style*="width: 9"][style*="px"] {
+    max-width: 100% !important;
+  }
+
+}
+
+@media (max-width: 640px) {
+  [style*="repeat(3"], [style*="repeat(4"], [style*="repeat(5"], [style*="repeat(6"],
+  [style*="grid-template-columns: 1fr 1fr 1fr"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  /* inline flex rows wrap when they don't fit (rows that fit are unaffected) */
+  [style*="display: flex"]:not([style*="nowrap"]):not([style*="column"]) { flex-wrap: wrap; }
+  /* inputs sized for desktop (minWidth: 260px…) take the row instead */
+  input[style*="min-width"], select[style*="min-width"], textarea[style*="min-width"] {
+    min-width: 0 !important;
+    width: 100%;
+  }
+  .search-input-wrap { flex: 1 1 200px; min-width: 0; }
+  .btn-premium, .btn-primary, .btn-secondary { max-width: 100%; }
+}
+
+/* flex-column containers that center children shrink-wrap them to content
+   (a wide table then drags the card past the screen) — stretch on phones */
+@media (max-width: 768px) {
+  .container, .page-content, .dashboard-container { align-items: stretch !important; }
+  .container > *, .page-content > *, .dashboard-container > * { max-width: 100%; }
+}

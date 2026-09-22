@@ -164,7 +164,7 @@
   .fundo-app .sup-group { margin-bottom: 26px }
 
   /* ── Vitrine: DOIS cards por linha ────────────────────────────────────────
-     `minmax(220px, 1fr)` dava UM card de 358px com 150px só de miniatura — o
+     `minmax(min(100%, 220px), 1fr)` dava UM card de 358px com 150px só de miniatura — o
      catálogo inteiro virava uma fita de 5 telas de rolagem. Coluna fixa (e não
      minmax) mantém a proporção: com minmax, quanto maior o telefone, menor o
      card. Mesma decisão da grade do marketplace. */

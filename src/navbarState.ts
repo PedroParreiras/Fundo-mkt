@@ -11,7 +11,11 @@ const CHAVE = 'hrm_navbar_aberta';
 
 export function lerNavbarAberta(): boolean {
     try {
-        return localStorage.getItem(CHAVE) !== 'fechada';
+        const salvo = localStorage.getItem(CHAVE);
+        /* Sem escolha salva: no telefone a barra é gaveta e nasce FECHADA —
+           aberta, a coluna de links ocupava a primeira tela inteira. */
+        if (salvo === null) return window.innerWidth > 900;
+        return salvo !== 'fechada';
     } catch {
         return true;
     }
