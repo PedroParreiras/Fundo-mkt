@@ -249,3 +249,15 @@ Regras:
 - O espaçador tem de ficar **em fluxo antes do conteúdo** — é irmão do `<nav>`
   no fragment que a navbar retorna. Se alguém renderizar a navbar dentro de um
   container com `overflow` ou fora da ordem, o empurrão se perde.
+
+## Telefone (mobile) — guarda genérica + ajustes do app (2026-09-22)
+- `styles/mobile-guard.css` é **cópia replicada** do hub (`honesty/src/styles/mobile-guard.css`,
+  a fonte). Não editar aqui: edite no hub e recopie para todos os sub-apps. Ele só age em
+  ≤768/≤640px: tabela rola dentro do pai (`:has(> table)`), abas rolam na horizontal, grid/flex
+  inline de desktop encolhem, inputs 16px (sem zoom no iOS), modais cabem na tela.
+- Ajustes que dependem das classes deste app ficam no CSS do próprio app (nunca no guard).
+- Grades usam `minmax(min(100%, Npx), 1fr)` — idêntico no desktop, não estoura 390px. Ao criar
+  grade nova, siga o padrão (ou `minmax(0, 1fr)` em trilha única).
+- `navbarState`: sem escolha salva, a navbar nasce **fechada** em ≤900px.
+- Verificação: auditoria Playwright a 390px (`scrollWidth` + elemento que passa da borda) em
+  todas as rotas; 0 rotas com overflow de página após o passe.
