@@ -17,8 +17,12 @@ sincronize as outras):
   mas hoje elas dizem de qual operação o usuário é — por isso o `AdminPage` do
   HRM chama a seção de "Região da operação" e **não zera mais** as flags quando
   o acesso ao Marketplace é revogado (isso apagava a região do franqueado aqui).
-- **Gestor** troca no toggle `[ MG | GO | ES ]` à esquerda da navbar
-  (`fundo/RegiaoContext` + `regiaoStore`, guardado em `localStorage.fundo_region`).
+- **Gestor** troca no toggle `[ MG | GO | ES ]` da **doca** `.mkt-area-dock` —
+  flutua colada embaixo da navbar, à esquerda, e continua visível com a barra
+  minimizada (idêntica à do marketplace: mesmo CSS em `src/index.css`, mesmas
+  classes `area-tabs`/`area-tab`; o aperto para telas estreitas está em
+  `src/fundo-mkt-fx.css`, espelho de `marketplace/src/mobile.css`). Estado em
+  `fundo/RegiaoContext` + `regiaoStore`, guardado em `localStorage.fundo_region`.
   **Franqueado** não tem toggle: o backend ignora `?region=` de quem não é
   gestor e resolve pelas flags.
 - `lib/api.ts` carimba `region=` em TODA chamada JSON (`comRegiao`), pra não

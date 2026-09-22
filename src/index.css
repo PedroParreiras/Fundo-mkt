@@ -5414,6 +5414,41 @@ textarea[style]:focus {
 /* ==========================================================================
    AREA TAB SWITCHER (Gerenciar / Inventário) — segmented-control look
    ========================================================================== */
+/* ── DOCA DO SELETOR DE REGIÃO ───────────────────────────────────────────────
+   Flutua colada embaixo da navbar, à esquerda, e continua no lugar com a barra
+   minimizada. `--navbar-h` é a altura REAL da barra, publicada pelo
+   NavbarSpacer (0 quando fechada), então a doca acompanha os dois estados sem
+   número mágico — é a mesma referência que a aba "Menu" usa, que fica no centro
+   e por isso não colide com esta. */
+.mkt-area-dock {
+  position: fixed;
+  top: var(--navbar-h, 0px);
+  left: 12px;
+  z-index: 99;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mkt-area-dock .area-tabs {
+  margin-bottom: 0;
+  background: rgba(var(--primary-rgb), 0.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--secondary-rgb), 0.45);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  padding: 4px;
+  gap: 2px;
+}
+
+.mkt-area-dock .area-tab {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-area-dock { transition: none; }
+}
+
 .area-tabs {
   display: inline-flex;
   flex-wrap: wrap;

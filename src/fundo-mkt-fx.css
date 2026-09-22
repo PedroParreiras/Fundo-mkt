@@ -125,3 +125,22 @@
 [data-theme="light"] .area-tab--active {
   box-shadow: 0 3px 10px rgba(14, 32, 80, 0.18);
 }
+
+/* ── DOCA DO SELETOR DE REGIÃO: telas estreitas ─────────────────────────────
+   Espelho de marketplace/src/mobile.css. A doca divide a faixa de baixo da
+   navbar com a aba "Menu", que é CENTRAL — com o tamanho de desktop as siglas
+   passavam por baixo dela num aparelho de 360. */
+@media (max-width: 640px) {
+  .mkt-area-dock { left: 6px; }
+  .mkt-area-dock .area-tabs { padding: 2px; gap: 1px; }
+  .mkt-area-dock .area-tab {
+    padding: 5px 7px;
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .mkt-area-dock { left: 4px; }
+  .mkt-area-dock .area-tab { padding: 5px 5px; font-size: 9px; }
+}

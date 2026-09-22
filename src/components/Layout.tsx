@@ -63,22 +63,6 @@ export function Layout() {
         </div>
 
         <div className="navbar-menu" ref={menuRef}>
-          {podeTrocar && (
-            <div className="area-tabs" role="group" aria-label="Operação"
-              style={{ marginRight: 12, marginBottom: 0 }}>
-              {REGIOES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`area-tab ${regiao === r ? 'area-tab--active' : ''}`}
-                  title={`Fundo de Marketing · ${REGIAO_NOME[r]}`}
-                  onClick={() => definir(r)}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          )}
           {itens.map((item) => (
             <Link key={item.label} to={item.to} className={`navbar-item ${isActive(item.to) ? 'active' : ''}`}>
               <span className="navbar-item__icon" aria-hidden="true">{item.icon}</span>
@@ -109,6 +93,30 @@ export function Layout() {
       </nav>
 
       <MenuToggle aberta={isOpen} onAlternar={() => setIsOpen(!isOpen)} />
+
+      {/* SELETOR DE OPERAÇÃO — mesma doca do marketplace: flutua colada embaixo
+          da navbar, à esquerda, e continua visível com a barra minimizada.
+          Dentro do menu ele sumia junto com a barra, e trocar de MG para GO é a
+          primeira coisa que o gestor faz ao abrir a tela. A doca segue
+          `--navbar-h` (altura REAL publicada pelo NavbarSpacer, 0 com a barra
+          fechada), então cola embaixo nos dois estados sozinha. */}
+      {podeTrocar && (
+        <div className="mkt-area-dock">
+          <div className="area-tabs" role="group" aria-label="Operação">
+            {REGIOES.map((r) => (
+              <button
+                key={r}
+                type="button"
+                className={`area-tab ${regiao === r ? 'area-tab--active' : ''}`}
+                title={`Fundo de Marketing · ${REGIAO_NOME[r]}`}
+                onClick={() => definir(r)}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Reserva, em fluxo, o espaço que a navbar-overlay ocupa. */}
       <NavbarSpacer navRef={navRef} open={isOpen} />
