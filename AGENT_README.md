@@ -261,3 +261,11 @@ Regras:
 - `navbarState`: sem escolha salva, a navbar nasce **fechada** em ≤900px.
 - Verificação: auditoria Playwright a 390px (`scrollWidth` + elemento que passa da borda) em
   todas as rotas; 0 rotas com overflow de página após o passe.
+
+
+## Sininho = `<bh-sino>` da plataforma (25/09/2026)
+O `NotificationBell` deste repo agora só renderiza o web component `<bh-sino>`
+(`honesty/public/bh-sino.js` + `bh-sino.css`, carregado pelo nginx em todo sub-app
+via `sub_filter`). Poll (60 s, pausado com a aba escondida), painel, folha inferior no
+celular e visual (marinho/dourado, segue `data-theme`) vivem lá, iguais em todos os apps —
+não reintroduzir implementação local. Em `vite dev` (sem nginx) o sino não aparece.
