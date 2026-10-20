@@ -118,7 +118,7 @@ export function CheckoutModal({
           <FileField
             label="Arquivo"
             accept="application/pdf,image/png,image/jpeg,image/gif,image/webp"
-            hint="PDF ou imagem até 8 MB. O time confere antes de aprovar."
+            hint="PDF ou imagem até 20 MB. O time confere antes de aprovar."
             atual={arquivo?.nome}
             onPick={(dataUrl, nome) => setArquivo({ dataUrl, nome })}
             onClear={() => setArquivo(null)}

@@ -77,7 +77,7 @@ valem mais.
 `tracao`, `recorrencia`, `branding` — preço de tabela × quantidade × lojas.
 
 `documento` é diferente: **não tem preço**. O franqueado informa o valor do
-boleto/NF, escolhe UMA loja e anexa o arquivo (PDF ou imagem, 8 MB); o pedido
+boleto/NF, escolhe UMA loja e anexa o arquivo (PDF ou imagem, 20 MB); o pedido
 nasce em Solicitação e o gestor aprova ou recusa na Conferência. O formulário
 do gestor esconde o campo de preço nessa categoria, e o card da vitrine mostra
 "Valor do documento" em vez de um valor.

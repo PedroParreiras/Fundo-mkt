@@ -88,7 +88,7 @@ export function AcaoForm({
                 <FileField
                   label=""
                   accept="image/png,image/jpeg,image/gif,image/webp"
-                  hint="JPG, PNG, GIF ou WEBP até 8 MB. Com imagem, ela substitui o emoji no card."
+                  hint="JPG, PNG, GIF ou WEBP até 20 MB. Com imagem, ela substitui o emoji no card."
                   atual={inicial.tem_imagem ? 'imagem salva' : null}
                   onPick={(dataUrl) => onImagem(dataUrl)}
                   onClear={inicial.tem_imagem ? onRemoverImagem : undefined}

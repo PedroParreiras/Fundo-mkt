@@ -11,9 +11,9 @@ interface FileFieldProps {
   onClear?: () => void
 }
 
-/** Máx. 8 MB — o mesmo limite que o backend recusa, para o usuário descobrir
+/** Máx. 20 MB — o mesmo limite que o backend recusa, para o usuário descobrir
  *  antes de subir o arquivo inteiro. */
-const LIMITE = 8 * 1024 * 1024
+const LIMITE = 20 * 1024 * 1024
 
 export function FileField({ label, hint, accept, atual, onPick, onClear }: FileFieldProps) {
   const ref = useRef<HTMLInputElement>(null)
@@ -22,7 +22,7 @@ export function FileField({ label, hint, accept, atual, onPick, onClear }: FileF
   const escolher = (file?: File) => {
     if (!file) return
     if (file.size > LIMITE) {
-      setErro('Arquivo muito grande (máx. 8 MB)')
+      setErro('Arquivo muito grande (máx. 20 MB)')
       return
     }
     setErro(null)
