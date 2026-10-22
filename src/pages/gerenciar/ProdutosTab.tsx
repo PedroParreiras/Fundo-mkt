@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { REGIAO_NOME, REGIOES, type Region } from '../../lib/region'
 import { useRegiao } from '../../fundo/regiaoStore'
 import { draftParaApi, type AcaoDraft } from '../../fundo/acaoDraft'
 import { AcaoForm } from '../../fundo/components/AcaoForm'
@@ -9,8 +10,19 @@ import type { Acao } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
 import { Carregando, ErroBox, EstadoVazio } from '../shared'
 
+/** "GO R$ 210,00 · ES R$ 199,00" — o preço da ação nas OUTRAS regiões em que
+ *  está à venda, para o gestor comparar sem trocar o toggle. */
+function outrasRegioes(a: Acao, regiao: Region): string {
+  return REGIOES
+    .filter((r) => r !== regiao && a.precos?.[r]?.ativo)
+    .map((r) => (a.categoria === CATEGORIA_DOCUMENTO ? r : `${r} ${brl(a.precos![r]!.preco)}`))
+    .join(' · ')
+}
+
 /** Catálogo de ações: criar, editar, reativar e dar baixa.
- *  Lista com `todas=1` porque o gestor precisa ver as desativadas. */
+ *  Lista com `todas=1` porque o gestor precisa ver as desativadas. A lista é
+ *  a da região do toggle; a ação em si é uma só e vende em várias regiões,
+ *  cada uma com o seu preço (o formulário edita o quadro inteiro). */
 export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
   // Catálogo é por operação: o toggle da navbar troca a região listada.
   const { regiao } = useRegiao()
@@ -88,7 +100,7 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
 
       {!criando && !editando && (
         <div className="ger-bar">
-          <div className="ger-bar-count">{acoes.length} ações no catálogo</div>
+          <div className="ger-bar-count">{acoes.length} ações em {REGIAO_NOME[regiao]}</div>
           <button className="btn btn-primary" onClick={() => { setErroForm(null); setCriando(true) }}>
             + Nova ação
           </button>
@@ -98,7 +110,8 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
       {(criando || editando) && (
         <div className="ger-panel">
           <div className="ger-panel-title">{editando ? `Editando · ${editando.nome}` : 'Nova ação'}</div>
-          <AcaoForm inicial={editando ?? undefined} salvando={salvando} erro={erroForm}
+          <AcaoForm key={editando?.id ?? 'nova'} inicial={editando ?? undefined} regiao={regiao}
+            salvando={salvando} erro={erroForm}
             onCancel={fechar} onSubmit={salvar}
             onImagem={editando ? (d) => void mudarImagem(editando.id, d) : undefined}
             onRemoverImagem={editando ? () => void mudarImagem(editando.id, null) : undefined} />
@@ -115,7 +128,7 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
           <table className="ger-table ger-table--cards">
             <thead>
               <tr>
-                <th>Ação</th><th>Categoria</th><th>Preço</th><th>Modo</th>
+                <th>Ação</th><th>Categoria</th><th>Preço {regiao}</th><th>Modo</th>
                 <th>Prazo</th><th>Status</th><th />
               </tr>
             </thead>
@@ -136,8 +149,11 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
                       {catMeta(a.categoria).name}
                     </span>
                   </td>
-                  <td className="num" data-label="Preço">
+                  <td className="num" data-label={`Preço ${regiao}`}>
                     {a.categoria === CATEGORIA_DOCUMENTO ? '—' : brl(a.preco)}
+                    {outrasRegioes(a, regiao) && (
+                      <div className="td-sub td-regioes">também {outrasRegioes(a, regiao)}</div>
+                    )}
                   </td>
                   <td data-label="Modo">{a.modo}</td>
                   <td className="num" data-label="Prazo">{a.prazo_dias}d</td>
@@ -150,7 +166,8 @@ export function ProdutosTab({ onChanged }: { onChanged: () => void }) {
                     <button className="link-btn" onClick={() => { setErroForm(null); setCriando(false); setEditando(a) }}>
                       Editar
                     </button>
-                    <button className="link-btn danger" onClick={() => alternarAtivo(a)}>
+                    <button className="link-btn danger" onClick={() => alternarAtivo(a)}
+                      title={`Só em ${REGIAO_NOME[regiao]} — as outras regiões não mudam`}>
                       {a.ativo ? 'Desativar' : 'Reativar'}
                     </button>
                   </td>

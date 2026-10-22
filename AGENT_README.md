@@ -29,25 +29,59 @@ sincronize as outras):
   existir chamada "sem região" por esquecimento. As LEITURAS de tela passam a
   região explícita (`api.acoes(true, regiao)`) — é o que faz o React refazer a
   busca quando o gestor troca de operação.
-- **O que é regional:** catálogo (`fundo_mkt.acoes.region`), pedidos
-  (`fundo_mkt.pedidos.region`, snapshot — mover a ação de região depois não
-  reescreve histórico) e a lista de carteiras. Resgatar ação de outra região é
-  recusado no servidor ("Ação não encontrada ou desativada"), não só escondido
-  na vitrine.
+- **O que é regional:** a vitrine do catálogo (o que está à venda e por quanto
+  — ver "Mesma ação, preço por região" abaixo), pedidos
+  (`fundo_mkt.pedidos.region`, snapshot — mudar o preço depois não reescreve
+  histórico) e a lista de carteiras. Resgatar ação que não está à venda na
+  região é recusado no servidor ("Ação não encontrada ou desativada"), não só
+  escondido na vitrine.
 - **O que é GLOBAL: o cronograma.** `fundo_mkt.campanhas` não tem região — mês,
   tema e descrição valem para as três operações. O que se filtra é a lista de
   ações recomendadas da campanha. ES hoje só enxerga isso: ainda não tem
   catálogo nem carteira (nasce vazio, o gestor cadastra).
   **Pegadinha que o desenho cria:** salvar a campanha substitui a lista de
-  ações — e o gestor de GO só ENXERGA as de GO. Por isso
-  `_sincronizar_acoes` apaga apenas os vínculos DA REGIÃO ativa e ignora id de
-  ação de outra (vínculo que o editor não viu não entra nem sai). Sem isso,
-  abrir a campanha em GO e salvar apagava em silêncio as recomendações de MG.
+  ações — e o gestor de GO só ENXERGA as à venda em GO. Por isso
+  `_sincronizar_acoes` apaga apenas os vínculos de ações à venda NA REGIÃO
+  ativa e ignora id de ação que não está à venda nela (vínculo que o editor não
+  viu não entra nem sai). Sem isso, abrir a campanha em GO e salvar apagava em
+  silêncio as recomendações exclusivas de MG. Ação vendida em MG e GO é UMA:
+  tirá-la da campanha em GO tira das duas.
 - Contribuição NÃO tem região: ela é do usuário, e o usuário já tem uma.
   Duplicar ali só criaria divergência.
 - Migrations: `sql/migration_fundo_mkt_region_2026_09_19.sql` (colunas `region`,
   default MG = tudo que existia) e `sql/migration_regiao_es_2026_09_19.sql`
   (flag `can_access_marketplace_es`).
+
+## Mesma ação, preço por região (22/10/2026)
+
+Antes a ação tinha UMA região e UM preço — vender o mesmo kit em MG, GO e ES
+era cadastrar três ações (três imagens, três slugs, três vínculos no
+cronograma). Agora a ação é UMA e a oferta é por região:
+
+- Backend: `fundo_mkt.acao_precos (acao_id, region, preco, ativo)`;
+  `acoes.region/preco/ativo` foram removidas (migrations
+  `migration_fundo_mkt_preco_por_regiao_2026_10_22.sql` → expandir,
+  `migration_fundo_mkt_acoes_sem_regiao_2026_10_22.sql` → contrair). Nome,
+  descrição, categoria, imagem, prazo e `slug` são do PRODUTO; preço e "à venda"
+  são da REGIÃO.
+- Contrato: `Acao.preco`/`ativo`/`region` são os da região consultada (a
+  vitrine não mudou). O gestor (`?todas=1`, criar, editar, imagem) recebe
+  também `precos` {UF: {preco, ativo}}. Criar/editar mandam `precos`
+  {UF: preço} = conjunto COMPLETO de regiões à venda (`AcaoPayload` em
+  `fundo/types.ts`); `preco` solto é recusado com 400 ("recarregue a página"),
+  para a aba antiga aberta não perder edição calada.
+- Formulário (`fundo/components/PrecosRegiaoField.tsx`): um cartão por região
+  com checkbox + preço. Ação nova nasce só com a região do toggle marcada.
+  Desmarcar tira de venda ali e o backend **guarda o preço** (a linha nunca é
+  apagada) — remarcar traz o último valor. Em `documento` não há preço, só onde
+  aparece.
+- Lista do Gerenciar › Produtos: é a da região do toggle; coluna "Preço <UF>" +
+  "também GO R$ … · ES R$ …". **Desativar/Reativar vale só na região do
+  toggle** (`PUT {ativo}` / `DELETE` usam o `?region=`); as outras seguem
+  vendendo. Ação sem preço numa região não aparece na lista dela — para
+  incluir, edite a partir de outra região e marque.
+- Resgate cobra o preço DA REGIÃO de quem resgata; o pedido carimba preço e
+  região (snapshot).
 
 ## Telas (rotas na navbar)
 
@@ -74,12 +108,12 @@ valem mais.
 
 ## As 4 categorias
 
-`tracao`, `recorrencia`, `branding` — preço de tabela × quantidade × lojas.
+`tracao`, `recorrencia`, `branding` — preço de tabela (da região) × quantidade × lojas.
 
 `documento` é diferente: **não tem preço**. O franqueado informa o valor do
 boleto/NF, escolhe UMA loja e anexa o arquivo (PDF ou imagem, 20 MB); o pedido
 nasce em Solicitação e o gestor aprova ou recusa na Conferência. O formulário
-do gestor esconde o campo de preço nessa categoria, e o card da vitrine mostra
+do gestor esconde os campos de preço nessa categoria (só escolhe as regiões), e o card da vitrine mostra
 "Valor do documento" em vez de um valor.
 
 ## Imagem × emoji

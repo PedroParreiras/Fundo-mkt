@@ -18,6 +18,15 @@ export type Etapa = 'solicitacao' | 'conferencia' | 'solicitado' | 'disponivel'
 /** `recusado` é terminal e fica FORA da esteira (etapa = -1). */
 export type Status = Etapa | 'recusado'
 
+/** A oferta da ação numa região: preço e se está à venda ali. */
+export interface PrecoRegiao {
+  preco: number
+  ativo: boolean
+}
+
+/** Quadro de ofertas por região. Região ausente = a ação nunca foi vendida ali. */
+export type PrecosPorRegiao = Partial<Record<Region, PrecoRegiao>>
+
 export interface Acao {
   id: number
   /** Chave estável usada pelo cronograma de campanhas (o id serial não serve). */
@@ -25,18 +34,29 @@ export interface Acao {
   nome: string
   descricao: string
   categoria: Categoria
+  /** Preço NA REGIÃO consultada (cada operação tem o seu). */
   preco: number
   emoji: string
   modo: Modo
   prazo_dias: number
+  /** À venda NA REGIÃO consultada — desativar em GO não tira de MG. */
   ativo: boolean
   ordem: number
   /** Imagem substitui o emoji na vitrine quando presente. */
   tem_imagem: boolean
   /** Carimbo da imagem — entra na URL p/ o navegador não servir a antiga. */
   imagem_v: number
-  /** Operação dona da ação (MG · GO · ES). */
-  region: Region
+  /** Região a que `preco` e `ativo` se referem; null = sem oferta nela. */
+  region: Region | null
+  /** Só na resposta do gestor: o quadro de todas as regiões, p/ o formulário. */
+  precos?: PrecosPorRegiao
+}
+
+/** Corpo de criar/editar ação. `precos` é o conjunto COMPLETO de regiões à
+ *  venda — região fora do mapa sai de venda (o preço fica guardado). */
+export type AcaoPayload = Partial<Pick<Acao,
+  'nome' | 'descricao' | 'categoria' | 'emoji' | 'modo' | 'prazo_dias' | 'ativo' | 'ordem'>> & {
+  precos?: Partial<Record<Region, number>>
 }
 
 export interface CategoriaMeta {

@@ -1,12 +1,16 @@
 import { useState } from 'react'
+import type { Region } from '../../lib/region'
 import { draftDe, type AcaoDraft } from '../acaoDraft'
 import { CATEGORIA_DOCUMENTO, CATEGORIAS, MODOS } from '../meta'
 import type { Acao, Categoria, Modo } from '../types'
 import { AcaoThumb } from './AcaoThumb'
 import { FileField } from './FileField'
+import { PrecosRegiaoField } from './PrecosRegiaoField'
 
 interface AcaoFormProps {
   inicial?: Acao
+  /** Região do toggle — a única marcada quando a ação é nova. */
+  regiao: Region
   salvando: boolean
   erro: string | null
   onCancel: () => void
@@ -20,9 +24,9 @@ interface AcaoFormProps {
 /** Formulário de ação. Não valida regra de negócio: quem valida preço,
  *  categoria e modo é o backend, e a mensagem dele é a que aparece. */
 export function AcaoForm({
-  inicial, salvando, erro, onCancel, onSubmit, onImagem, onRemoverImagem,
+  inicial, regiao, salvando, erro, onCancel, onSubmit, onImagem, onRemoverImagem,
 }: AcaoFormProps) {
-  const [d, setD] = useState<AcaoDraft>(draftDe(inicial))
+  const [d, setD] = useState<AcaoDraft>(() => draftDe(inicial, regiao))
   const set = <K extends keyof AcaoDraft>(k: K, v: AcaoDraft[K]) => setD((p) => ({ ...p, [k]: v }))
   const ehDocumento = d.categoria === CATEGORIA_DOCUMENTO
 
@@ -41,19 +45,6 @@ export function AcaoForm({
             {CATEGORIAS.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
-
-        {ehDocumento ? (
-          <div className="fld">
-            <span>Preço por unidade (R$)</span>
-            <div className="fld-static">Definido pelo documento que o franqueado envia</div>
-          </div>
-        ) : (
-          <label className="fld">
-            <span>Preço por unidade (R$)</span>
-            <input type="number" min={0} step="0.01" value={d.preco}
-              onChange={(e) => set('preco', e.target.value)} placeholder="180,00" />
-          </label>
-        )}
 
         <label className="fld fld-wide">
           <span>Descrição</span>
@@ -79,6 +70,9 @@ export function AcaoForm({
           <input value={d.emoji} onChange={(e) => set('emoji', e.target.value)} maxLength={4} />
         </label>
 
+        <PrecosRegiaoField precos={d.precos} semPreco={ehDocumento}
+          onChange={(r, v) => set('precos', { ...d.precos, [r]: v })} />
+
         {inicial && onImagem && (
           <div className="fld fld-wide">
             <span>Imagem do card</span>
@@ -100,6 +94,8 @@ export function AcaoForm({
       </div>
 
       <div className="ger-hint">
+        Marque as <b>regiões</b> em que a ação aparece — cada uma tem o seu preço. Desmarcar
+        tira de venda ali e guarda o preço para quando voltar.{' '}
         O <b>modo</b> define o texto de prazo que o franqueado vê: Entrega → "entrega prevista",
         Ativação → "no ar em até", Evento → "planejamento em até".
         {ehDocumento && (

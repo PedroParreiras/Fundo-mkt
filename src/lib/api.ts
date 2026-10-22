@@ -3,7 +3,7 @@
 // ferramentas /system/. Nenhuma tela faz `fetch` solto — tudo passa por aqui.
 
 import type {
-  Acao, Campanha, Carteira, Contribuicao, LojaOpcao, Pedido, PedidosResposta,
+  Acao, AcaoPayload, Campanha, Carteira, Contribuicao, LojaOpcao, Pedido, PedidosResposta,
   TipoDocumento, UsuarioCarteira,
 } from '../fundo/types'
 import { regiaoAtiva, type Region } from './region'
@@ -76,8 +76,9 @@ export const api = {
   // catálogo
   acoes: (todas = false, region?: Region) =>
     get<{ acoes: Acao[] }>(`${BASE}/acoes${query({ todas: todas ? 1 : undefined, region })}`),
-  criarAcao: (body: Partial<Acao>) => send<Acao>('POST', `${BASE}/acoes`, body),
-  editarAcao: (id: number, body: Partial<Acao>) => send<Acao>('PUT', `${BASE}/acoes/${id}`, body),
+  criarAcao: (body: AcaoPayload) => send<Acao>('POST', `${BASE}/acoes`, body),
+  /** `ativo` vale só na região do toggle (vai no `?region=` automático). */
+  editarAcao: (id: number, body: AcaoPayload) => send<Acao>('PUT', `${BASE}/acoes/${id}`, body),
   desativarAcao: (id: number) => send<Acao>('DELETE', `${BASE}/acoes/${id}`),
 
   // carteira + lojas

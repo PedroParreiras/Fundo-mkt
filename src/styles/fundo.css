@@ -572,6 +572,26 @@
   padding:9px 12px; border-radius:9px; font-size:12.5px; color:var(--mkt-text-muted);
   border:1px dashed var(--mkt-border-dash); background:var(--mkt-input-bg);
 }
+
+/* Quadro de regiões do formulário de ação: a mesma ação em MG · GO · ES,
+   cada uma com o seu preço. Cartão marcado = à venda naquela região. */
+.fundo-app .reg-precos{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%, 170px), 1fr)); gap:10px}
+.fundo-app .reg-preco{
+  display:flex; flex-direction:column; gap:8px; min-width:0; padding:10px 12px; border-radius:10px;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg);
+}
+.fundo-app .reg-preco.on{border-color:var(--fm-gold); background:rgba(237,177,37,.08)}
+.fundo-app .reg-preco-head{display:flex; align-items:center; gap:8px; min-width:0; cursor:pointer; font-size:13px}
+.fundo-app .reg-preco-head input[type="checkbox"]{
+  width:16px; height:16px; padding:0; margin:0; flex:none; accent-color:var(--fm-gold); cursor:pointer;
+}
+.fundo-app .reg-uf{font-weight:800; color:var(--mkt-strong)}
+.fundo-app .reg-nome{
+  font-size:12px; color:var(--mkt-text-muted); min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.fundo-app .reg-preco input[type="number"]:disabled{opacity:.45; cursor:not-allowed}
+.fundo-app .td-regioes{max-width:none; margin-top:2px}
 .fundo-app .co-doc{padding-bottom:6px}
 
 /* ---------- RECUSA ---------- */

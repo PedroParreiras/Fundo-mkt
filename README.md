@@ -47,8 +47,9 @@ Quatro rotas na navbar (o "Gerenciar" só aparece para admin/manager):
 - **Pedidos** (`/pedidos`) — os pedidos **do usuário logado**, com a esteira
   Solicitação → Conferência → Solicitado → Disponível e a data de cada etapa.
 - **Gerenciar** (`/gerenciar`, **só admin/manager**) — **Produtos**:
-  cria/edita/desativa as ações (nome, preço, categoria, descrição, emoji **ou
-  imagem**, modo e prazo). **Campanhas**: monta o cronograma do ano e escolhe
+  cria/edita/desativa as ações (nome, categoria, descrição, emoji **ou
+  imagem**, modo e prazo) e escolhe **em quais regiões (MG · GO · ES) cada uma
+  aparece, com um preço para cada**. Desativar vale só na região do toggle. **Campanhas**: monta o cronograma do ano e escolhe
   quais ações entram em cada data. **Carteiras**: saldo de cada usuário e o
   lançamento manual de contribuição. **Pedidos**: todos os pedidos, filtro por
   etapa, avanço da esteira e a recusa com motivo.
