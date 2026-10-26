@@ -91,6 +91,30 @@ cronograma). Agora a ação é UMA e a oferta é por região:
 | `/cronograma` | `pages/Cronograma` | campanhas do ano; a recomendação abre o mesmo resgate |
 | `/pedidos` | `pages/Pedidos` | **os próprios** pedidos, com a esteira de 4 etapas |
 | `/gerenciar` | `pages/Gerenciar` | **gestor**: Produtos + Campanhas + Carteiras + Pedidos |
+| `/financeiro` | `pages/Financeiro` | **gestor**: Usuários + Valores (cobrança do fundo × carteira) |
+
+## Financeiro (26/10/2026)
+
+Liga a COBRANÇA do fundo (1% do faturamento, boleto na Omie, sub-app Financeiro) à
+CARTEIRA deste app. Só admin/manager (rota e item da navbar somem para o resto;
+backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
+
+- **Usuários** (`pages/financeiro/UsuariosTab`): franqueados do fechamento da
+  competência (seletor; padrão = a mais recente com boleto), e-mail do cadastro de
+  contatos do Financeiro e o usuário do HRM com o MESMO e-mail. Sem usuário = linha
+  **vermelha**. Status de recebimento é **só leitura** (quem edita é o Financeiro).
+  Adimplente → coluna Crédito (85%) e "Na carteira" / "Aguardando conexão".
+  "conectado · sem acesso ao app" = o saldo existe, mas falta a flag
+  `can_access_fundo_mkt`. Botão **Sincronizar créditos** = `POST …/financeiro/sincronizar`.
+- **Valores** (`pages/financeiro/ValoresTab`): KPIs, 2 gráficos SVG
+  (`GraficoColunas`, sem lib) e as tabelas "Mês a mês" e "Carteira de cada franqueado".
+  Boleto/crédito contam no mês da competência; utilizado, no mês do resgate.
+- Cores por PAPEL em `styles/financeiro.css` (`--fin-credito/taxa/aberto/utilizado`),
+  validadas contra as duas superfícies; a tabela "Mês a mês" é o alívio do verde-água
+  abaixo de 3:1 no claro.
+- Crédito automático = contribuição `origem=faturamento`; em Gerenciar › Carteiras ele
+  não tem "Remover" (a reconciliação recriaria). Regra e gatilhos no backend:
+  `auth/services/fundo_mkt_service/creditos.py`.
 
 ## Esteira do pedido
 

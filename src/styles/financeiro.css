@@ -1,0 +1,123 @@
+/* ============================================================================
+   FINANCEIRO (gestor) — aba Usuários + aba Valores (gráficos em SVG).
+   ----------------------------------------------------------------------------
+   Mesmos tokens --mkt-* do resto do app; o escuro é o padrão da plataforma e o
+   claro entra por [data-theme="light"] (ver o bloco PLATFORM THEMES em
+   index.css). As cores dos gráficos são por PAPEL (crédito, taxa, em aberto,
+   utilizado) e foram validadas contra as duas superfícies: CVD ΔE ≥ 9,2 entre
+   vizinhas, normal ≥ 26. No claro, o verde-água fica abaixo de 3:1 — a tabela
+   "Mês a mês" logo abaixo é o alívio exigido.
+   ========================================================================== */
+
+.fundo-app{
+  --fin-credito:#3987e5;
+  --fin-taxa:#d95926;
+  --fin-aberto:#199e70;
+  --fin-utilizado:#008300;
+  --fin-grid:rgba(255,255,255,.08);
+  --fin-erro:#ff7477;
+  --fin-erro-bg:rgba(229,72,77,.10);
+}
+[data-theme="light"] .fundo-app{
+  --fin-credito:#2a78d6;
+  --fin-taxa:#eb6834;
+  --fin-aberto:#1baf7a;
+  --fin-utilizado:#008300;
+  --fin-grid:#eceef1;
+  --fin-erro:#c62828;
+  --fin-erro-bg:rgba(229,72,77,.07);
+}
+
+/* ---------- USUÁRIOS ---------- */
+.fundo-app .fin-select{display:flex; align-items:center; gap:8px}
+.fundo-app .fin-select > span{
+  font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--mkt-text-muted);
+}
+.fundo-app .fin-select select{
+  padding:8px 12px; border-radius:9px; font-family:inherit; font-size:13px; font-weight:700;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg); color:var(--mkt-text);
+}
+.fundo-app .fin-busca{max-width:260px; margin:0 0 0 auto}
+
+.fundo-app .fin-resumo{
+  display:flex; flex-wrap:wrap; gap:8px 18px; margin:-4px 0 16px;
+  font-size:12.5px; color:var(--mkt-text-muted);
+}
+.fundo-app .fin-resumo b{color:var(--mkt-strong); font-variant-numeric:tabular-nums}
+
+.fundo-app .fin-status{
+  display:inline-block; white-space:nowrap; font-size:11px; font-weight:800;
+  padding:3px 11px; border-radius:999px; border:1px solid transparent;
+}
+
+/* Não conectado = vermelho: faixa à esquerda + fundo leve + texto. */
+.fundo-app .ger-table tr.row-sem-conexao td{background:var(--fin-erro-bg)}
+.fundo-app .ger-table tr.row-sem-conexao td:first-child{box-shadow:inset 3px 0 0 var(--fin-erro)}
+.fundo-app .ger-table tr.row-sem-conexao .td-nome{color:var(--fin-erro)}
+.fundo-app .fin-sem-conexao{color:var(--fin-erro); font-weight:800}
+.fundo-app .fin-sem-conexao b{color:var(--fin-erro)}
+.fundo-app .fin-alerta{color:var(--text-accent); font-weight:700; font-size:12px; white-space:nowrap}
+.fundo-app .fin-ok{color:var(--fm-ok); font-weight:800; font-size:12px; white-space:nowrap}
+
+/* ---------- VALORES ---------- */
+.fundo-app .fin-kpis{
+  display:grid; gap:12px; margin-bottom:22px;
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+}
+.fundo-app .fin-kpi{
+  background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  border-radius:12px; padding:14px 16px;
+}
+.fundo-app .fin-kpi-label{font-size:12px; font-weight:700; color:var(--mkt-text-muted)}
+.fundo-app .fin-kpi-valor{font-size:22px; font-weight:800; color:var(--mkt-strong); margin-top:4px}
+.fundo-app .fin-kpi-sub{font-size:11.5px; color:var(--mkt-text-muted); margin-top:2px}
+
+.fundo-app .fin-charts{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:26px}
+.fundo-app .fin-chart{
+  background:var(--mkt-card-bg); border:1px solid var(--mkt-card-border);
+  border-radius:12px; padding:16px 16px 8px; min-width:0;
+}
+.fundo-app .fin-chart-title{font-size:14px; font-weight:800; color:var(--mkt-strong)}
+.fundo-app .fin-legend{
+  display:flex; flex-wrap:wrap; gap:4px 16px; list-style:none; margin:8px 0 6px;
+  font-size:12px; color:var(--mkt-text-muted);
+}
+.fundo-app .fin-legend li{display:inline-flex; align-items:center; gap:6px}
+.fundo-app .fin-swatch{width:10px; height:10px; border-radius:3px; flex-shrink:0}
+.fundo-app .fin-chart-area{position:relative; width:100%}
+.fundo-app .fin-chart-area svg{display:block; overflow:visible}
+.fundo-app .fin-grid{stroke:var(--fin-grid); stroke-width:1; shape-rendering:crispEdges}
+.fundo-app .fin-tick{fill:var(--mkt-text-muted); font-size:11px; font-variant-numeric:tabular-nums}
+.fundo-app .fin-cap{fill:var(--mkt-text); font-size:11px; font-weight:700}
+.fundo-app .fin-hit{fill:transparent; cursor:default; outline:none}
+.fundo-app .fin-col path{transition:opacity .12s}
+.fundo-app .fin-chart-area:has(.fin-col.on) .fin-col:not(.on) path{opacity:.45}
+
+.fundo-app .fin-tip{
+  position:absolute; top:4px; pointer-events:none; z-index:2;
+  width:max-content; max-width:min(320px, 80vw); padding:10px 12px; border-radius:10px;
+  background:var(--mkt-modal-bg, var(--mkt-card-bg)); border:1px solid var(--mkt-card-border);
+  box-shadow:var(--shadow-md); font-size:12px; color:var(--mkt-text-muted);
+}
+.fundo-app .fin-tip-head{font-weight:800; color:var(--mkt-strong); margin-bottom:6px}
+.fundo-app .fin-tip-row{display:grid; grid-template-columns:12px auto 1fr; align-items:center; gap:8px; padding:2px 0}
+.fundo-app .fin-tip-row b{color:var(--mkt-strong); font-variant-numeric:tabular-nums}
+.fundo-app .fin-tip-key{width:12px; height:3px; border-radius:2px; flex-shrink:0}
+.fundo-app .fin-tip-total{
+  border-top:1px solid var(--mkt-card-border); margin-top:6px; padding-top:6px;
+}
+.fundo-app .fin-tip-total b{color:var(--mkt-strong)}
+
+.fundo-app .fin-secao{margin:26px 0 12px}
+
+@media (max-width: 900px){
+  .fundo-app .fin-charts{grid-template-columns:1fr}
+}
+@media (max-width: 760px){
+  .fundo-app .fin-busca{max-width:none; margin:0; flex:1 1 100%}
+  .fundo-app .ger-table--cards tbody tr.row-sem-conexao{border-color:var(--fin-erro)}
+  .fundo-app .ger-table--cards tbody tr.row-sem-conexao td{background:transparent}
+  .fundo-app .ger-table--cards tbody tr.row-sem-conexao td:first-child{box-shadow:none}
+  .fundo-app .ger-table--cards tbody tr.row-sem-conexao{background:var(--fin-erro-bg)}
+}

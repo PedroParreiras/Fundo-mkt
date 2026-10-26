@@ -174,3 +174,81 @@ export interface Contribuicao {
   descricao: string
   origem: 'manual' | 'faturamento'
 }
+
+// ---------------------------------------------------------------- financeiro
+/** Status de recebimento que o Financeiro grava na cobrança do fundo. */
+export type StatusRecebimento = 'No prazo' | 'Cobrado' | 'Adimplente' | 'Inadimplente'
+
+/** Usuário do HRM ligado ao franqueado pelo e-mail do cadastro do financeiro. */
+export interface UsuarioConectado {
+  id: number
+  nome: string
+  email: string
+  /** false = conectado, mas sem a flag do app: o saldo existe e ele não entra. */
+  acesso_app: boolean
+}
+
+/** Um franqueado da cobrança do fundo numa competência. */
+export interface FranqueadoFinanceiro {
+  competencia: string
+  franqueado_norm: string
+  franqueado: string
+  /** E-mail do cadastro de contatos do financeiro (null = sem cadastro). */
+  email: string | null
+  usuario: UsuarioConectado | null
+  status: StatusRecebimento | null
+  adimplente: boolean
+  /** Soma das OS faturadas (boletos) da competência. */
+  boleto: number
+  /** 85% do boleto quando adimplente; 0 no resto. */
+  credito: number
+  /** O lançamento automático já está na carteira. */
+  creditado: boolean
+}
+
+export interface FinanceiroUsuariosResposta {
+  competencias: string[]
+  competencia: string | null
+  usuarios: FranqueadoFinanceiro[]
+  resumo: { franqueados: number; conectados: number; sem_conexao: number; adimplentes: number; credito: number }
+}
+
+export interface FluxoMes {
+  /** AAAA-MM. Boleto/crédito = mês da competência; utilizado = mês do resgate. */
+  mes: string
+  boletos: number
+  adimplente: number
+  nao_adimplente: number
+  credito: number
+  /** Pagou e não está conectado: crédito devido que ainda não tem dono. */
+  credito_a_liberar: number
+  taxa_adm: number
+  utilizado: number
+}
+
+export interface FluxoCarteira {
+  usuario_id: number
+  nome: string
+  email: string
+  franqueado: string
+  creditos: number
+  creditos_fundo: number
+  utilizado: number
+  saldo: number
+}
+
+export interface FluxoResposta {
+  meses: FluxoMes[]
+  totais: Omit<FluxoMes, 'mes'>
+  carteiras: FluxoCarteira[]
+  pct_credito: number
+  pct_taxa_adm: number
+}
+
+export interface SincronizacaoCreditos {
+  criados: number
+  atualizados: number
+  removidos: number
+  creditos: number
+  valor_total: number
+}

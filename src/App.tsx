@@ -5,10 +5,12 @@ import { FundoProvider } from './fundo/FundoContext'
 import { RegiaoProvider } from './fundo/RegiaoContext'
 import { isGestor } from './lib/session'
 import { Cronograma } from './pages/Cronograma'
+import { Financeiro } from './pages/Financeiro'
 import { Gerenciar } from './pages/Gerenciar'
 import { Loja } from './pages/Loja'
 import { Pedidos } from './pages/Pedidos'
 import './styles/fundo.css'
+import './styles/financeiro.css'
 // Recorte de telefone — carrega DEPOIS de fundo.css, que é o desenho grande.
 import './styles/mobile.css'
 
@@ -26,6 +28,7 @@ export default function App() {
             {/* O backend recusa as chamadas de quem não é gestor; a rota some
                 para não oferecer uma tela que ia falhar em 403. */}
             {isGestor() && <Route path="/gerenciar" element={<Gerenciar />} />}
+            {isGestor() && <Route path="/financeiro" element={<Financeiro />} />}
             <Route path="*" element={<Navigate to="/fundo" replace />} />
           </Route>
         </Routes>

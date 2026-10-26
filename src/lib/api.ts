@@ -3,8 +3,8 @@
 // ferramentas /system/. Nenhuma tela faz `fetch` solto — tudo passa por aqui.
 
 import type {
-  Acao, AcaoPayload, Campanha, Carteira, Contribuicao, LojaOpcao, Pedido, PedidosResposta,
-  TipoDocumento, UsuarioCarteira,
+  Acao, AcaoPayload, Campanha, Carteira, Contribuicao, FinanceiroUsuariosResposta, FluxoResposta,
+  LojaOpcao, Pedido, PedidosResposta, SincronizacaoCreditos, TipoDocumento, UsuarioCarteira,
 } from '../fundo/types'
 import { regiaoAtiva, type Region } from './region'
 
@@ -139,4 +139,10 @@ export const api = {
   },
   mudarStatus: (id: number, status: string, nota?: string) =>
     send<Pedido>('PATCH', `${BASE}/pedidos/${id}/status`, { status, nota }),
+
+  // financeiro (gestor) — global: o backend ignora a região aqui
+  financeiroUsuarios: (competencia?: string) =>
+    get<FinanceiroUsuariosResposta>(`${BASE}/financeiro/usuarios${query({ competencia })}`),
+  financeiroFluxo: () => get<FluxoResposta>(`${BASE}/financeiro/fluxo`),
+  sincronizarCreditos: () => send<SincronizacaoCreditos>('POST', `${BASE}/financeiro/sincronizar`),
 }

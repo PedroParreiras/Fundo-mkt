@@ -22,7 +22,10 @@ const ITEMS = [
 
 // Só admin/manager. Fora de ITEMS porque o link não pode aparecer para o
 // franqueado — o backend recusa as chamadas, mas a aba nem deve existir.
-const GESTOR_ITEMS = [{ label: 'Gerenciar', icon: '🧭', to: '/gerenciar' }]
+const GESTOR_ITEMS = [
+  { label: 'Gerenciar', icon: '🧭', to: '/gerenciar' },
+  { label: 'Financeiro', icon: '💵', to: '/financeiro' },
+]
 
 export function Layout() {
   /* Navbar aberta por padrão; o botão fecha. */

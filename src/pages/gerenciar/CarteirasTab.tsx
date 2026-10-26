@@ -127,8 +127,9 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
 
           <div className="ger-hint">
             Um lançamento por <b>usuário + competência</b>. Relançar a mesma competência
-            <b> substitui</b> o valor — não soma. O cálculo automático de 1% do faturamento,
-            quando existir, entra como origem <b>faturamento</b> e convive com estes.
+            <b> substitui</b> o valor — não soma. O crédito automático (85% do boleto do fundo
+            pago, aba <b>Financeiro</b>) entra como origem <b>faturamento</b>, convive com estes e
+            não se remove aqui: ele segue o status de recebimento do Financeiro.
           </div>
 
           {erroForm && <div className="co-warn" style={{ margin: '10px 0 0' }}>{erroForm}</div>}
@@ -194,7 +195,10 @@ export function CarteirasTab({ onToast }: { onToast: (m: string) => void }) {
                   <td data-label="Origem">{l.origem}</td>
                   <td className="num" data-label="Valor">{brl(l.valor)}</td>
                   <td className="acoes-col">
-                    <button className="link-btn danger" onClick={() => remover(l.id)}>Remover</button>
+                    {/* O automático volta na próxima sincronização: remover aqui não teria efeito. */}
+                    {l.origem === 'manual' && (
+                      <button className="link-btn danger" onClick={() => remover(l.id)}>Remover</button>
+                    )}
                   </td>
                 </tr>
               ))}
