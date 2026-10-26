@@ -3,6 +3,7 @@ import { brl, mesCurto } from '../../fundo/format'
 import type { FinanceiroUsuariosResposta, FranqueadoFinanceiro, StatusRecebimento } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
 import { Carregando, ErroBox, EstadoVazio } from '../shared'
+import { ConectarModal } from './ConectarModal'
 
 type Filtro = 'todos' | 'conectados' | 'sem_conexao'
 
@@ -34,7 +35,28 @@ function SituacaoCredito({ f }: { f: FranqueadoFinanceiro }) {
     : <span className="td-sub">Sincronizar</span>
 }
 
-function LinhaFranqueado({ f }: { f: FranqueadoFinanceiro }) {
+interface AcoesLinha {
+  onConectar: (f: FranqueadoFinanceiro) => void
+  onDesconectar: (f: FranqueadoFinanceiro) => void
+}
+
+function UsuarioConectado({ f, onDesconectar }: { f: FranqueadoFinanceiro } & Pick<AcoesLinha, 'onDesconectar'>) {
+  const u = f.usuario!
+  const como = f.vinculo_manual ? 'conectado manualmente' : 'conectado pelo e-mail'
+  return (
+    <>
+      <div className="td-nome">{u.nome}</div>
+      <div className="td-sub">{u.acesso_app ? como : `${como} · sem acesso ao app`}</div>
+      {f.vinculo_manual && (
+        <button type="button" className="link-btn danger fin-link" onClick={() => onDesconectar(f)}>
+          Desconectar
+        </button>
+      )}
+    </>
+  )
+}
+
+function LinhaFranqueado({ f, onConectar, onDesconectar }: { f: FranqueadoFinanceiro } & AcoesLinha) {
   return (
     <tr className={f.usuario ? '' : 'row-sem-conexao'}>
       <td>
@@ -42,14 +64,14 @@ function LinhaFranqueado({ f }: { f: FranqueadoFinanceiro }) {
         <div className="td-sub">{f.email ?? 'sem e-mail no financeiro'}</div>
       </td>
       <td data-label="Usuário do HRM">
-        {f.usuario ? (
-          <>
-            <div className="td-nome">{f.usuario.nome}</div>
-            <div className="td-sub">
-              {f.usuario.acesso_app ? 'conectado' : 'conectado · sem acesso ao app'}
-            </div>
-          </>
-        ) : <span className="fin-sem-conexao">✕ Não conectado</span>}
+        {f.usuario ? <UsuarioConectado f={f} onDesconectar={onDesconectar} /> : (
+          <div className="fin-conectar-cel">
+            <span className="fin-sem-conexao">✕ Não conectado</span>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => onConectar(f)}>
+              Conectar e-mail
+            </button>
+          </div>
+        )}
       </td>
       <td data-label="Status"><StatusPill status={f.status} /></td>
       <td className="num" data-label="Boleto">{f.boleto ? brl(f.boleto) : '—'}</td>
@@ -78,6 +100,7 @@ export function UsuariosTab({ onToast }: { onToast: (m: string) => void }) {
   const [busca, setBusca] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [sincronizando, setSincronizando] = useState(false)
+  const [conectando, setConectando] = useState<FranqueadoFinanceiro | null>(null)
 
   const load = useCallback(async () => {
     try {
@@ -104,6 +127,24 @@ export function UsuariosTab({ onToast }: { onToast: (m: string) => void }) {
       setError(e instanceof ApiError ? e.message : 'Não consegui sincronizar os créditos')
     } finally {
       setSincronizando(false)
+    }
+  }
+
+  const conectado = async (mensagem: string) => {
+    setConectando(null)
+    await load()
+    onToast(mensagem)
+  }
+
+  const desconectar = async (f: FranqueadoFinanceiro) => {
+    if (!window.confirm(`Desconectar ${f.franqueado} de ${f.usuario?.nome}? ` +
+      'Ele volta a casar só pelo e-mail do financeiro, e o crédito sai da carteira desse usuário.')) return
+    try {
+      await api.desconectarFranqueado(f.franqueado_norm)
+      await load()
+      onToast(`${f.franqueado} desconectado`)
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Não consegui desconectar')
     }
   }
 
@@ -154,7 +195,11 @@ export function UsuariosTab({ onToast }: { onToast: (m: string) => void }) {
               <tr><th>Franqueado (financeiro)</th><th>Usuário do HRM</th><th>Status</th>
                 <th>Boleto</th><th>Crédito (85%)</th><th>Carteira</th></tr>
             </thead>
-            <tbody>{visiveis.map((f) => <LinhaFranqueado key={f.franqueado_norm} f={f} />)}</tbody>
+            <tbody>
+              {visiveis.map((f) => (
+                <LinhaFranqueado key={f.franqueado_norm} f={f} onConectar={setConectando} onDesconectar={desconectar} />
+              ))}
+            </tbody>
           </table>
         </div>
       )}
@@ -163,8 +208,12 @@ export function UsuariosTab({ onToast }: { onToast: (m: string) => void }) {
         Conecta quando o <b>e-mail do franqueado no Financeiro</b> (Fundos › Fundo de MKT ›
         Disparo, contato do franqueado) é o mesmo do <b>login no HRM</b>. O status de recebimento é editado só no
         Financeiro. Com <b>Adimplente</b>, 85% do boleto entra na carteira e 15% fica como taxa
-        de administração; se o status mudar, o crédito sai.
+        de administração; se o status mudar, o crédito sai. Sem e-mail igual, use <b>Conectar
+        e-mail</b> para escolher o usuário — essa conexão vale acima do e-mail.
       </div>
+
+      <ConectarModal key={conectando?.franqueado_norm ?? 'fechado'} franqueado={conectando}
+        onClose={() => setConectando(null)} onConectado={conectado} />
     </>
   )
 }

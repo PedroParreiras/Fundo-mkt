@@ -5,6 +5,7 @@
 import type {
   Acao, AcaoPayload, Campanha, Carteira, Contribuicao, FinanceiroUsuariosResposta, FluxoResposta,
   LojaOpcao, Pedido, PedidosResposta, SincronizacaoCreditos, TipoDocumento, UsuarioCarteira,
+  UsuarioLivre,
 } from '../fundo/types'
 import { regiaoAtiva, type Region } from './region'
 
@@ -145,4 +146,12 @@ export const api = {
     get<FinanceiroUsuariosResposta>(`${BASE}/financeiro/usuarios${query({ competencia })}`),
   financeiroFluxo: () => get<FluxoResposta>(`${BASE}/financeiro/fluxo`),
   sincronizarCreditos: () => send<SincronizacaoCreditos>('POST', `${BASE}/financeiro/sincronizar`),
+  usuariosLivres: () => get<{ usuarios: UsuarioLivre[] }>(`${BASE}/financeiro/usuarios-livres`),
+  /** Conectar/desconectar já reconciliam os créditos e devolvem o resumo. */
+  conectarFranqueado: (franqueadoNorm: string, usuarioId: number) =>
+    send<SincronizacaoCreditos>('POST', `${BASE}/financeiro/vinculos`,
+      { franqueado_norm: franqueadoNorm, usuario_id: usuarioId }),
+  desconectarFranqueado: (franqueadoNorm: string) =>
+    send<SincronizacaoCreditos>('DELETE',
+      `${BASE}/financeiro/vinculos${query({ franqueado_norm: franqueadoNorm })}`),
 }

@@ -106,6 +106,12 @@ backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
   Adimplente → coluna Crédito (85%) e "Na carteira" / "Aguardando conexão".
   "conectado · sem acesso ao app" = o saldo existe, mas falta a flag
   `can_access_fundo_mkt`. Botão **Sincronizar créditos** = `POST …/financeiro/sincronizar`.
+- **Conectar e-mail** (linha vermelha): abre `ConectarModal` com os usuários do HRM ativos, papel
+  `user`, ainda sem conexão (`GET …/usuarios-livres`); escolher grava o vínculo manual
+  (`POST …/vinculos`), que vale ACIMA do e-mail e já credita. Linha conectada manualmente mostra
+  "conectado manualmente" + **Desconectar** (`DELETE …/vinculos`, com confirmação). O e-mail do
+  Financeiro não muda. Itens da lista têm `flex-shrink:0`: no telefone o `min-height` global de
+  botão encolhia o item por cima do e-mail.
 - **Valores** (`pages/financeiro/ValoresTab`): KPIs, 2 gráficos SVG
   (`GraficoColunas`, sem lib) e as tabelas "Mês a mês" e "Carteira de cada franqueado".
   Boleto/crédito contam no mês da competência; utilizado, no mês do resgate.

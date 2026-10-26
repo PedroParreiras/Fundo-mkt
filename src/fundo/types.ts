@@ -204,6 +204,15 @@ export interface FranqueadoFinanceiro {
   credito: number
   /** O lançamento automático já está na carteira. */
   creditado: boolean
+  /** Conectado pelo "Conectar e-mail" (vale acima do e-mail); pode desconectar. */
+  vinculo_manual: boolean
+}
+
+/** Usuário do HRM ainda sem franqueado — a lista do "Conectar e-mail". */
+export interface UsuarioLivre {
+  id: number
+  nome: string
+  email: string
 }
 
 export interface FinanceiroUsuariosResposta {

@@ -57,6 +57,24 @@
 .fundo-app .ger-table tr.row-sem-conexao .td-nome{color:var(--fin-erro)}
 .fundo-app .fin-sem-conexao{color:var(--fin-erro); font-weight:800}
 .fundo-app .fin-sem-conexao b{color:var(--fin-erro)}
+/* Célula "Não conectado" + botão; e o modal "Conectar e-mail". */
+.fundo-app .fin-conectar-cel{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.fundo-app .fin-link{padding:0; margin-top:2px}
+.fundo-app .fin-conectar{padding:0 22px 20px}
+.fundo-app .fin-livres{
+  display:flex; flex-direction:column; gap:6px; max-height:46vh; overflow-y:auto;
+  margin:4px 0 6px; padding-right:2px;
+}
+/* flex-shrink:0 — a lista rola; sem isso, no telefone o min-height global de
+   botão (40px) vira o piso e o item encolhe por cima do e-mail. */
+.fundo-app .fin-livre{
+  display:flex; flex-direction:column; align-items:flex-start; gap:1px; text-align:left; flex-shrink:0;
+  padding:10px 12px; border-radius:10px; cursor:pointer; font-family:inherit;
+  border:1px solid var(--mkt-card-border); background:var(--mkt-input-bg);
+}
+.fundo-app .fin-livre:hover{border-color:var(--mkt-border-hover)}
+.fundo-app .fin-livre.on{border-color:var(--fm-gold); box-shadow:inset 0 0 0 1px var(--fm-gold)}
+.fundo-app .fin-livre .td-sub{max-width:none}
 .fundo-app .fin-alerta{color:var(--text-accent); font-weight:700; font-size:12px; white-space:nowrap}
 .fundo-app .fin-ok{color:var(--fm-ok); font-weight:800; font-size:12px; white-space:nowrap}
 
@@ -116,6 +134,7 @@
 }
 @media (max-width: 760px){
   .fundo-app .fin-busca{max-width:none; margin:0; flex:1 1 100%}
+  .fundo-app .fin-conectar-cel{justify-content:flex-end}
   .fundo-app .ger-table--cards tbody tr.row-sem-conexao{border-color:var(--fin-erro)}
   .fundo-app .ger-table--cards tbody tr.row-sem-conexao td{background:transparent}
   .fundo-app .ger-table--cards tbody tr.row-sem-conexao td:first-child{box-shadow:none}
