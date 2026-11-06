@@ -91,7 +91,7 @@ cronograma). Agora a ação é UMA e a oferta é por região:
 | `/cronograma` | `pages/Cronograma` | campanhas do ano; a recomendação abre o mesmo resgate |
 | `/pedidos` | `pages/Pedidos` | **os próprios** pedidos, com a esteira de 4 etapas |
 | `/gerenciar` | `pages/Gerenciar` | **gestor**: Produtos + Campanhas + Carteiras + Pedidos |
-| `/financeiro` | `pages/Financeiro` | **gestor**: Usuários + Valores (cobrança do fundo × carteira) |
+| `/financeiro` | `pages/Financeiro` | **gestor**: Usuários + Valores + Controle financeiro (cobrança do fundo × carteira) |
 
 ## Financeiro (26/10/2026)
 
@@ -115,6 +115,16 @@ backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
 - **Valores** (`pages/financeiro/ValoresTab`): KPIs, 2 gráficos SVG
   (`GraficoColunas`, sem lib) e as tabelas "Mês a mês" e "Carteira de cada franqueado".
   Boleto/crédito contam no mês da competência; utilizado, no mês do resgate.
+- **Controle financeiro** (`pages/financeiro/ControleTab` → `ControleTodos` | `ControleExtrato`;
+  `GET …/financeiro/controle`, regra em `auth/services/fundo_mkt_service/controle.py`): mini fluxo
+  de caixa POR carteira (= usuário do HRM). Dropdowns franqueado + competência; KPIs = posição até
+  o fim do mês (saldo, gasto, a reembolsar, reembolsado). "Todos" = uma linha por franqueado;
+  um franqueado = fluxo mês a mês (mês escolhido em `row-on`) + lançamentos do mês. **Gasto inclui o
+  reembolso**; reembolso = pedido da categoria Documento (já reserva o saldo ao nascer).
+  `reembolsado` é 0 até existir a aba Reembolso (chave PIX + "pago"), que vai alimentá-lo pelo
+  mês do pagamento. Saldo = mesma conta da carteira do app. **Nasce desligada**: chave
+  `controleFinanceiro` (`FUNDO_MKT_CONTROLE_FIN=on` no auth/.env) via `lib/useChave` →
+  `GET /api/fundo-mkt/chaves`.
 - Cores por PAPEL em `styles/financeiro.css` (`--fin-credito/taxa/aberto/utilizado`),
   validadas contra as duas superfícies; a tabela "Mês a mês" é o alívio do verde-água
   abaixo de 3:1 no claro.

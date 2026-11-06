@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { Toast } from '../fundo/components/Toast'
 import { useToast } from '../fundo/useToast'
+import { useChave } from '../lib/useChave'
+import { ControleTab } from './financeiro/ControleTab'
 import { UsuariosTab } from './financeiro/UsuariosTab'
 import { ValoresTab } from './financeiro/ValoresTab'
 import { Page, PageHead } from './shared'
 
-type Aba = 'usuarios' | 'valores'
+type Aba = 'usuarios' | 'valores' | 'controle'
 
 const ABAS: { id: Aba; label: string }[] = [
   { id: 'usuarios', label: '👥 Usuários' },
   { id: 'valores', label: '📈 Valores' },
+  { id: 'controle', label: '🧮 Controle financeiro' },
 ]
 
 /** Área do gestor: liga a cobrança do fundo (Financeiro) à carteira do app.
@@ -17,6 +20,9 @@ const ABAS: { id: Aba; label: string }[] = [
 export function Financeiro() {
   const [aba, setAba] = useState<Aba>('usuarios')
   const { message, toast } = useToast()
+  // Nasce desligada (deploy só manual): FUNDO_MKT_CONTROLE_FIN=on no auth/.env liga.
+  const controleLigado = useChave('controleFinanceiro') === true
+  const abas = ABAS.filter((a) => a.id !== 'controle' || controleLigado)
 
   return (
     <Page>
@@ -24,7 +30,7 @@ export function Financeiro() {
         desc="Quem pagou o fundo, quem está conectado ao HRM e para onde vai o dinheiro: 85% vira crédito do franqueado, 15% é taxa de administração." />
 
       <div className="fund-subnav">
-        {ABAS.map((a) => (
+        {abas.map((a) => (
           <button key={a.id} className={`fsub ${aba === a.id ? 'active' : ''}`} onClick={() => setAba(a.id)}>
             {a.label}
           </button>
@@ -33,6 +39,7 @@ export function Financeiro() {
 
       {aba === 'usuarios' && <UsuariosTab onToast={toast} />}
       {aba === 'valores' && <ValoresTab />}
+      {aba === 'controle' && controleLigado && <ControleTab />}
 
       <Toast message={message} />
     </Page>

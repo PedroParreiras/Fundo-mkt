@@ -140,3 +140,18 @@
   .fundo-app .ger-table--cards tbody tr.row-sem-conexao td:first-child{box-shadow:none}
   .fundo-app .ger-table--cards tbody tr.row-sem-conexao{background:var(--fin-erro-bg)}
 }
+
+/* ---------- CONTROLE FINANCEIRO ---------- */
+.fundo-app .fin-select--largo{min-width:0}
+.fundo-app .fin-select--largo select{max-width:min(100%, 380px); min-width:0}
+.fundo-app .fin-kpi--destaque{border-color:var(--fm-gold); box-shadow:inset 0 0 0 1px var(--fm-gold)}
+.fundo-app .fin-entrada{color:var(--fm-ok); font-weight:800}
+.fundo-app .fin-saida{color:var(--mkt-strong); font-weight:800}
+.fundo-app .fin-secao-sub{
+  display:block; margin-top:2px; font-size:11.5px; font-weight:600;
+  color:var(--mkt-text-muted);
+}
+@media (max-width: 760px){
+  .fundo-app .fin-select--largo{flex:1 1 100%}
+  .fundo-app .fin-select--largo select{flex:1; max-width:none}
+}

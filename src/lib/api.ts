@@ -3,7 +3,8 @@
 // ferramentas /system/. Nenhuma tela faz `fetch` solto — tudo passa por aqui.
 
 import type {
-  Acao, AcaoPayload, Campanha, Carteira, Contribuicao, FinanceiroUsuariosResposta, FluxoResposta,
+  Acao, AcaoPayload, Campanha, Carteira, Contribuicao, ControleResposta, FinanceiroUsuariosResposta,
+  FluxoResposta,
   LojaOpcao, Pedido, PedidosResposta, SincronizacaoCreditos, TipoDocumento, UsuarioCarteira,
   UsuarioLivre,
 } from '../fundo/types'
@@ -74,6 +75,9 @@ const send = <T>(method: string, path: string, body?: unknown) =>
   request<T>(path, { method, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
 
 export const api = {
+  /** Chaves de tela (o que é visível nasce desligado) — via `useChave`. */
+  chaves: () => get<{ chaves: Record<string, boolean> }>(`${BASE}/chaves`),
+
   // catálogo
   acoes: (todas = false, region?: Region) =>
     get<{ acoes: Acao[] }>(`${BASE}/acoes${query({ todas: todas ? 1 : undefined, region })}`),
@@ -145,6 +149,9 @@ export const api = {
   financeiroUsuarios: (competencia?: string) =>
     get<FinanceiroUsuariosResposta>(`${BASE}/financeiro/usuarios${query({ competencia })}`),
   financeiroFluxo: () => get<FluxoResposta>(`${BASE}/financeiro/fluxo`),
+  /** Sem `usuarioId`: uma linha por franqueado. Com ele: extrato da carteira. */
+  financeiroControle: (usuarioId?: number, competencia?: string) =>
+    get<ControleResposta>(`${BASE}/financeiro/controle${query({ usuario_id: usuarioId, competencia })}`),
   sincronizarCreditos: () => send<SincronizacaoCreditos>('POST', `${BASE}/financeiro/sincronizar`),
   usuariosLivres: () => get<{ usuarios: UsuarioLivre[] }>(`${BASE}/financeiro/usuarios-livres`),
   /** Conectar/desconectar já reconciliam os créditos e devolvem o resumo. */

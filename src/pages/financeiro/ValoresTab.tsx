@@ -4,6 +4,7 @@ import type { FluxoCarteira, FluxoMes, FluxoResposta } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
 import { Carregando, ErroBox, EstadoVazio } from '../shared'
 import { GraficoColunas, type Serie } from './GraficoColunas'
+import { Kpi } from './Kpi'
 
 /** Cor por PAPEL, a mesma nos dois gráficos (tokens em styles/financeiro.css). */
 const COR = {
@@ -11,16 +12,6 @@ const COR = {
   taxa: 'var(--fin-taxa)',
   aberto: 'var(--fin-aberto)',
   utilizado: 'var(--fin-utilizado)',
-}
-
-function Kpi({ label, valor, sub }: { label: string; valor: number; sub?: string }) {
-  return (
-    <div className="fin-kpi">
-      <div className="fin-kpi-label">{label}</div>
-      <div className="fin-kpi-valor">{brl(valor)}</div>
-      {sub && <div className="fin-kpi-sub">{sub}</div>}
-    </div>
-  )
 }
 
 function serie(id: keyof typeof COR, label: string, meses: FluxoMes[], campo: keyof Omit<FluxoMes, 'mes'>): Serie {

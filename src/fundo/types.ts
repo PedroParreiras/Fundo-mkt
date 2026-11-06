@@ -261,3 +261,65 @@ export interface SincronizacaoCreditos {
   creditos: number
   valor_total: number
 }
+
+// ---------------------------------------------------------------- controle financeiro
+/** Posição acumulada até o FIM do mês escolhido. Gasto inclui o reembolso;
+ *  `a_reembolsar` e `saldo` são estoques, o resto é soma dos meses. */
+export interface ControlePosicao {
+  entrou: number
+  gasto: number
+  a_reembolsar: number
+  /** Sempre 0 até existir a aba Reembolso (chave PIX + "pago"). */
+  reembolsado: number
+  saldo: number
+}
+
+/** Um mês do fluxo de caixa: fluxos do mês + estoques no fim dele. */
+export interface ControleMes extends ControlePosicao {
+  /** AAAA-MM. Entrou = mês da competência; gasto/reembolso = mês do pedido. */
+  mes: string
+  /** Parte do gasto do mês que é reembolso (pedido Documento). */
+  reembolso: number
+}
+
+export interface ControleFranqueado {
+  usuario_id: number
+  franqueado: string
+  nome: string
+  email: string
+}
+
+export interface ControleLinha extends ControleFranqueado, ControlePosicao {
+  /** false = carteira com movimento de quem não está na cobrança do fundo. */
+  na_cobranca: boolean
+}
+
+export interface ControleLancamento {
+  data: string
+  tipo: 'credito' | 'resgate' | 'reembolso'
+  descricao: string
+  codigo: string | null
+  valor: number
+  situacao: string
+  etapa: string | null
+}
+
+export interface ControleDetalhe extends ControleFranqueado {
+  na_cobranca: boolean
+  posicao: ControlePosicao
+  meses: ControleMes[]
+  lancamentos: ControleLancamento[]
+}
+
+export interface ControleResposta {
+  /** Do mais recente ao mais antigo, sem buracos. */
+  competencias: string[]
+  competencia: string
+  franqueados: ControleFranqueado[]
+  /** Soma de todas as carteiras na posição do mês. */
+  total: ControlePosicao
+  usuario_id: number | null
+  /** Uma por franqueado — só quando nenhum foi escolhido. */
+  linhas: ControleLinha[]
+  detalhe: ControleDetalhe | null
+}
