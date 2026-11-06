@@ -128,8 +128,8 @@ backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
   (`--fin-entrada`/`--fin-saida`). **Reembolso só entra quando confirmado** (decisão de 06/11): não há "a
   reembolsar"; pedido Documento pendente fica fora do fluxo e `reembolsos` é 0 até a aba Reembolso (chave
   PIX + "pago") existir. Por isso o saldo daqui difere da carteira do app quando há Documento pendente (lá
-  ele reserva). **Nasce desligada**: chave `controleFinanceiro` (`FUNDO_MKT_CONTROLE_FIN=on` no auth/.env)
-  via `lib/useChave` → `GET /api/fundo-mkt/chaves`.
+  ele reserva). Atrás da chave `controleFinanceiro` (`FUNDO_MKT_CONTROLE_FIN` no auth/.env, via
+  `lib/useChave` → `GET /api/fundo-mkt/chaves`) — **ligada e publicada em 06/11/2026** (job 14141, sha 57a0f8b).
 - Cores por PAPEL em `styles/financeiro.css` (`--fin-credito/taxa/aberto/utilizado`),
   validadas contra as duas superfícies; a tabela "Mês a mês" é o alívio do verde-água
   abaixo de 3:1 no claro.

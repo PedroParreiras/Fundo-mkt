@@ -2,6 +2,11 @@
 
 Mais recente primeiro. A visão atual está em `AGENT_README.md`.
 
+## 2026-11-06 · Controle financeiro no ar
+
+Publicado pela fila do Painel (job 14141, `a251ab6..57a0f8b`; os commits de 22/09 a 26/10 da lista já estavam no
+bundle compilado à mão em 26/10) e chave `FUNDO_MKT_CONTROLE_FIN=on` ligada a pedido do usuário. Só gestor vê a aba.
+
 ## 2026-11-06 · Controle financeiro: competência por mês, todos os meses ou período
 
 Pedido do usuário depois da prévia: escolher um mês mostrava a planilha inteira.
