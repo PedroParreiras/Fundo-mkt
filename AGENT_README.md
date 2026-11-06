@@ -115,16 +115,18 @@ backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
 - **Valores** (`pages/financeiro/ValoresTab`): KPIs, 2 gráficos SVG
   (`GraficoColunas`, sem lib) e as tabelas "Mês a mês" e "Carteira de cada franqueado".
   Boleto/crédito contam no mês da competência; utilizado, no mês do resgate.
-- **Controle financeiro** (`pages/financeiro/ControleTab` → `ControleTodos` | `ControleExtrato`;
-  `GET …/financeiro/controle`, regra em `auth/services/fundo_mkt_service/controle.py`): mini fluxo
-  de caixa POR carteira (= usuário do HRM). Dropdowns franqueado + competência; KPIs = posição até
-  o fim do mês (saldo, gasto, a reembolsar, reembolsado). "Todos" = uma linha por franqueado;
-  um franqueado = fluxo mês a mês (mês escolhido em `row-on`) + lançamentos do mês. **Gasto inclui o
-  reembolso**; reembolso = pedido da categoria Documento (já reserva o saldo ao nascer).
-  `reembolsado` é 0 até existir a aba Reembolso (chave PIX + "pago"), que vai alimentá-lo pelo
-  mês do pagamento. Saldo = mesma conta da carteira do app. **Nasce desligada**: chave
-  `controleFinanceiro` (`FUNDO_MKT_CONTROLE_FIN=on` no auth/.env) via `lib/useChave` →
-  `GET /api/fundo-mkt/chaves`.
+- **Controle financeiro** (`pages/financeiro/ControleTab` → `ControlePlanilha` + `ControleTodos` |
+  `ControleLancamentos`; `GET …/financeiro/controle`, regra em `auth/services/fundo_mkt_service/controle.py`):
+  fluxo de caixa POR carteira (= usuário do HRM) em **planilha** — linhas: saldo inicial, ENTRADAS (crédito
+  do fundo 85% · lançamento manual), SAÍDAS (ações do catálogo · reembolso ao franqueado), resultado, saldo
+  final; colunas = meses + Total, mês da competência destacado (`col-on`), 1ª coluna presa na rolagem.
+  Dropdowns franqueado + competência; KPIs = acumulado até o mês. "Todos" = planilha da rede somada +
+  lista por franqueado; um franqueado = planilha + lançamentos do mês. **Entrada verde, saída vermelha**
+  (`--fin-entrada`/`--fin-saida`). **Reembolso só entra quando confirmado** (decisão de 06/11): não há "a
+  reembolsar"; pedido Documento pendente fica fora do fluxo e `reembolsos` é 0 até a aba Reembolso (chave
+  PIX + "pago") existir. Por isso o saldo daqui difere da carteira do app quando há Documento pendente (lá
+  ele reserva). **Nasce desligada**: chave `controleFinanceiro` (`FUNDO_MKT_CONTROLE_FIN=on` no auth/.env)
+  via `lib/useChave` → `GET /api/fundo-mkt/chaves`.
 - Cores por PAPEL em `styles/financeiro.css` (`--fin-credito/taxa/aberto/utilizado`),
   validadas contra as duas superfícies; a tabela "Mês a mês" é o alívio do verde-água
   abaixo de 3:1 no claro.

@@ -17,6 +17,9 @@
   --fin-grid:rgba(255,255,255,.08);
   --fin-erro:#ff7477;
   --fin-erro-bg:rgba(229,72,77,.10);
+  --fin-entrada:#4ade80;
+  --fin-saida:#ff7477;
+  --fin-col-on:rgba(237,177,37,.12);
 }
 [data-theme="light"] .fundo-app{
   --fin-credito:#2a78d6;
@@ -26,6 +29,9 @@
   --fin-grid:#eceef1;
   --fin-erro:#c62828;
   --fin-erro-bg:rgba(229,72,77,.07);
+  --fin-entrada:#15803d;
+  --fin-saida:#c62828;
+  --fin-col-on:rgba(237,177,37,.14);
 }
 
 /* ---------- USUÁRIOS ---------- */
@@ -145,13 +151,49 @@
 .fundo-app .fin-select--largo{min-width:0}
 .fundo-app .fin-select--largo select{max-width:min(100%, 380px); min-width:0}
 .fundo-app .fin-kpi--destaque{border-color:var(--fm-gold); box-shadow:inset 0 0 0 1px var(--fm-gold)}
-.fundo-app .fin-entrada{color:var(--fm-ok); font-weight:800}
-.fundo-app .fin-saida{color:var(--mkt-strong); font-weight:800}
+/* Entrada = verde, saída = vermelho (KPI, planilha, extrato e lista por franqueado). */
+.fundo-app .fin-entrada{color:var(--fin-entrada); font-weight:700}
+.fundo-app .fin-saida{color:var(--fin-saida); font-weight:700}
+.fundo-app .fin-kpi-valor.fin-entrada, .fundo-app .fin-kpi-valor.fin-saida{font-weight:800}
+
+/* Planilha do fluxo de caixa: linhas = entradas/saídas, colunas = meses. A 1ª
+   coluna fica presa na rolagem lateral (fundo OPACO, senão os números passam por baixo). */
+.fundo-app .fin-planilha{width:100%; min-width:560px; border-collapse:collapse; font-variant-numeric:tabular-nums}
+.fundo-app .fin-planilha th, .fundo-app .fin-planilha td{
+  padding:8px 14px; font-size:13px; white-space:nowrap; border:1px solid var(--mkt-card-border);
+}
+.fundo-app .fin-planilha tr > :first-child{border-left:0}
+.fundo-app .fin-planilha tr > :last-child{border-right:0}
+.fundo-app .fin-planilha thead th{
+  border-top:0; text-align:center; font-size:11px; font-weight:800; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--mkt-text-muted); background:var(--mkt-input-bg);
+}
+.fundo-app .fin-planilha tbody tr:last-child > *{border-bottom:0}
+.fundo-app .fin-planilha td{text-align:right; color:var(--mkt-text)}
+.fundo-app .fin-planilha th[scope="row"], .fundo-app .fin-planilha .pl-canto{
+  position:sticky; left:0; z-index:1; min-width:210px; text-align:left;
+  background:var(--mkt-modal-bg); color:var(--mkt-text); font-weight:600;
+}
+.fundo-app .fin-planilha .pl-item th[scope="row"]{padding-left:30px; font-weight:500}
+.fundo-app .fin-planilha .pl-secao th{
+  text-align:left; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--mkt-strong); background:var(--mkt-modal-inset);
+}
+.fundo-app .fin-planilha .pl-total > *, .fundo-app .fin-planilha .pl-resultado > *{font-weight:800}
+.fundo-app .fin-planilha .pl-resultado > *{border-top:2px solid var(--mkt-card-border)}
+.fundo-app .fin-planilha .pl-saldo > *{font-weight:800; color:var(--mkt-strong); background:var(--mkt-modal-inset)}
+.fundo-app .fin-planilha .col-total{border-left:2px solid var(--mkt-card-border)}
+.fundo-app .fin-planilha td.col-on, .fundo-app .fin-planilha th.col-on{
+  background-image:linear-gradient(var(--fin-col-on), var(--fin-col-on));
+}
+.fundo-app .fin-planilha thead th.col-on{color:var(--mkt-strong)}
 .fundo-app .fin-secao-sub{
   display:block; margin-top:2px; font-size:11.5px; font-weight:600;
   color:var(--mkt-text-muted);
 }
 @media (max-width: 760px){
+  .fundo-app .fin-planilha th[scope="row"], .fundo-app .fin-planilha .pl-canto{min-width:160px}
+  .fundo-app .fin-planilha th, .fundo-app .fin-planilha td{padding:7px 10px; font-size:12.5px}
   .fundo-app .fin-select--largo{flex:1 1 100%}
   .fundo-app .fin-select--largo select{flex:1; max-width:none}
 }

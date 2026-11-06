@@ -2,8 +2,14 @@ import { brl } from '../../fundo/format'
 import type { ControleLinha } from '../../fundo/types'
 import { EstadoVazio } from '../shared'
 
-/** Todos os franqueados na posição do mês — uma linha cada; "Extrato" abre o
- *  fluxo de caixa dele (mesmo efeito do dropdown). */
+/** Valor colorido só quando há movimento: zero fica neutro. */
+function Valor({ v, tom }: { v: number; tom: 'entrada' | 'saida' }) {
+  if (!v) return <span className="td-sub">{brl(0)}</span>
+  return <span className={`fin-${tom}`}>{tom === 'saida' ? '− ' : ''}{brl(v)}</span>
+}
+
+/** Todos os franqueados na posição do mês — uma linha cada; "Extrato" abre a
+ *  planilha dele (mesmo efeito do dropdown). */
 export function ControleTodos({ linhas, onEscolher }: {
   linhas: ControleLinha[]
   onEscolher: (usuarioId: number) => void
@@ -16,8 +22,7 @@ export function ControleTodos({ linhas, onEscolher }: {
     <div className="ger-table-wrap">
       <table className="ger-table ger-table--cards">
         <thead>
-          <tr><th>Franqueado</th><th>Entrou</th><th>Gasto</th><th>A reembolsar</th>
-            <th>Reembolsado</th><th>Saldo</th><th /></tr>
+          <tr><th>Franqueado</th><th>Entradas</th><th>Ações</th><th>Reembolsos</th><th>Saldo</th><th /></tr>
         </thead>
         <tbody>
           {linhas.map((l) => (
@@ -26,11 +31,10 @@ export function ControleTodos({ linhas, onEscolher }: {
                 <div className="td-nome">{l.franqueado}</div>
                 <div className="td-sub">{l.nome} · {l.email}{l.na_cobranca ? '' : ' · fora da cobrança'}</div>
               </td>
-              <td className="num" data-label="Entrou">{brl(l.entrou)}</td>
-              <td className="num" data-label="Gasto">{brl(l.gasto)}</td>
-              <td className="num" data-label="A reembolsar">{brl(l.a_reembolsar)}</td>
-              <td className="num" data-label="Reembolsado">{brl(l.reembolsado)}</td>
-              <td className="num" data-label="Saldo"><b>{brl(l.saldo)}</b></td>
+              <td className="num" data-label="Entradas"><Valor v={l.entradas} tom="entrada" /></td>
+              <td className="num" data-label="Ações"><Valor v={l.acoes} tom="saida" /></td>
+              <td className="num" data-label="Reembolsos"><Valor v={l.reembolsos} tom="saida" /></td>
+              <td className="num" data-label="Saldo"><b className={l.saldo < 0 ? 'fin-saida' : ''}>{brl(l.saldo)}</b></td>
               <td className="acoes-col">
                 <button type="button" className="link-btn" onClick={() => onEscolher(l.usuario_id)}>Extrato →</button>
               </td>

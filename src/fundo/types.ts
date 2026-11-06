@@ -263,23 +263,30 @@ export interface SincronizacaoCreditos {
 }
 
 // ---------------------------------------------------------------- controle financeiro
-/** Posição acumulada até o FIM do mês escolhido. Gasto inclui o reembolso;
- *  `a_reembolsar` e `saldo` são estoques, o resto é soma dos meses. */
+/** Acumulado até o FIM do mês escolhido. Reembolso só conta quando pago. */
 export interface ControlePosicao {
-  entrou: number
-  gasto: number
-  a_reembolsar: number
+  entradas: number
+  acoes: number
   /** Sempre 0 até existir a aba Reembolso (chave PIX + "pago"). */
-  reembolsado: number
+  reembolsos: number
+  saidas: number
   saldo: number
 }
 
-/** Um mês do fluxo de caixa: fluxos do mês + estoques no fim dele. */
-export interface ControleMes extends ControlePosicao {
-  /** AAAA-MM. Entrou = mês da competência; gasto/reembolso = mês do pedido. */
+/** Uma coluna da planilha. Entradas no mês da competência; ações no mês do
+ *  pedido; reembolso no mês do pagamento. */
+export interface ControleMes {
+  /** AAAA-MM */
   mes: string
-  /** Parte do gasto do mês que é reembolso (pedido Documento). */
-  reembolso: number
+  saldo_inicial: number
+  credito_fundo: number
+  lancamento_manual: number
+  entradas: number
+  acoes: number
+  reembolsos: number
+  saidas: number
+  resultado: number
+  saldo: number
 }
 
 export interface ControleFranqueado {
@@ -289,26 +296,21 @@ export interface ControleFranqueado {
   email: string
 }
 
-export interface ControleLinha extends ControleFranqueado, ControlePosicao {
+export interface ControleCarteira extends ControleFranqueado {
   /** false = carteira com movimento de quem não está na cobrança do fundo. */
   na_cobranca: boolean
 }
 
+export type ControleLinha = ControleCarteira & ControlePosicao
+
 export interface ControleLancamento {
   data: string
-  tipo: 'credito' | 'resgate' | 'reembolso'
+  tipo: 'credito' | 'manual' | 'acao' | 'reembolso'
   descricao: string
   codigo: string | null
   valor: number
-  situacao: string
+  /** Etapa da esteira (só ação do catálogo). */
   etapa: string | null
-}
-
-export interface ControleDetalhe extends ControleFranqueado {
-  na_cobranca: boolean
-  posicao: ControlePosicao
-  meses: ControleMes[]
-  lancamentos: ControleLancamento[]
 }
 
 export interface ControleResposta {
@@ -316,10 +318,14 @@ export interface ControleResposta {
   competencias: string[]
   competencia: string
   franqueados: ControleFranqueado[]
-  /** Soma de todas as carteiras na posição do mês. */
-  total: ControlePosicao
   usuario_id: number | null
-  /** Uma por franqueado — só quando nenhum foi escolhido. */
+  /** A carteira escolhida; null = a rede inteira. */
+  franqueado: ControleCarteira | null
+  /** Planilha do escopo (rede somada ou o franqueado), do 1º mês ao corrente. */
+  meses: ControleMes[]
+  posicao: ControlePosicao
+  /** Uma por franqueado — só na visão "Todos". */
   linhas: ControleLinha[]
-  detalhe: ControleDetalhe | null
+  /** Extrato do mês — só com um franqueado escolhido. */
+  lancamentos: ControleLancamento[]
 }

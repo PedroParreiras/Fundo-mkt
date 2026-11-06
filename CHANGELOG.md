@@ -2,6 +2,18 @@
 
 Mais recente primeiro. A visão atual está em `AGENT_README.md`.
 
+## 2026-11-06 · Controle financeiro em planilha; reembolso só quando pago
+
+Ajustes do usuário depois da prévia em HTML:
+- O fluxo virou **planilha de fluxo de caixa**: linhas = saldo inicial, entradas (crédito do fundo, lançamento
+  manual), saídas (ações do catálogo, reembolso ao franqueado), resultado e saldo final; colunas = meses + Total
+  (`ControlePlanilha`). "Todos" mostra a planilha da rede somada + a lista por franqueado.
+- **Reembolso só entra quando confirmado**: sai "A reembolsar" (KPI, coluna e situação). KPIs: Saldo, Entradas,
+  Gasto em ações, Reembolsado.
+- **Entradas em verde, saídas em vermelho** (KPI, planilha, extrato e lista); zero fica neutro.
+- `ControleExtrato` saiu; entraram `ControlePlanilha` e `ControleLancamentos`. `valorBR` em `fundo/format.ts`;
+  `Kpi` ganhou `tom`.
+
 ## 2026-11-06 · Financeiro › Controle financeiro (no escuro)
 
 Sub-aba nova do Financeiro (gestor): mini fluxo de caixa por franqueado, inspirado no
