@@ -50,14 +50,14 @@ function textoDoValor(v: number, tom: Tom, tipo: Tipo): string {
   return valorBR(v)
 }
 
-function LinhaPlanilha({ l, meses, competencia }: { l: Linha; meses: ControleMes[]; competencia: string }) {
-  const celulas = [...meses.map((m) => ({ chave: m.mes, v: m[l.campo], on: m.mes === competencia })),
-    { chave: 'total', v: total(meses, l.campo), on: false }]
+function LinhaPlanilha({ l, meses, comTotal }: { l: Linha; meses: ControleMes[]; comTotal: boolean }) {
+  const celulas = meses.map((m) => ({ chave: m.mes, v: m[l.campo] }))
+  if (comTotal) celulas.push({ chave: 'total', v: total(meses, l.campo) })
   return (
     <tr className={`pl-${l.tipo}`}>
       <th scope="row" title={l.title}>{l.label}</th>
       {celulas.map((c) => (
-        <td key={c.chave} className={`${c.on ? 'col-on' : ''} ${c.chave === 'total' ? 'col-total' : ''}`}>
+        <td key={c.chave} className={c.chave === 'total' ? 'col-total' : undefined}>
           <span className={classeDoValor(c.v, l.tom)}>{textoDoValor(c.v, l.tom, l.tipo)}</span>
         </td>
       ))}
@@ -66,25 +66,24 @@ function LinhaPlanilha({ l, meses, competencia }: { l: Linha; meses: ControleMes
 }
 
 /** Fluxo de caixa em formato de planilha: linhas = entradas e saídas, colunas
- *  = meses (+ Total). O mês da competência escolhida fica destacado. */
-export function ControlePlanilha({ meses, competencia }: { meses: ControleMes[]; competencia: string }) {
-  const colunas = meses.length + 2
+ *  = os meses do período (+ Total quando há mais de um). */
+export function ControlePlanilha({ meses }: { meses: ControleMes[] }) {
+  const comTotal = meses.length > 1
+  const colunas = meses.length + (comTotal ? 2 : 1)
   return (
-    <div className="ger-table-wrap">
+    <div className="ger-table-wrap fin-planilha-wrap">
       <table className="fin-planilha">
         <thead>
           <tr>
             <th scope="col" className="pl-canto">R$</th>
-            {meses.map((m) => (
-              <th key={m.mes} scope="col" className={m.mes === competencia ? 'col-on' : ''}>{mesCurto(m.mes)}</th>
-            ))}
-            <th scope="col" className="col-total">Total</th>
+            {meses.map((m) => <th key={m.mes} scope="col">{mesCurto(m.mes)}</th>)}
+            {comTotal && <th scope="col" className="col-total">Total</th>}
           </tr>
         </thead>
         <tbody>
           {BLOCOS.map((b, i) => [
             b.titulo && <tr key={`t${i}`} className="pl-secao"><th scope="rowgroup" colSpan={colunas}>{b.titulo}</th></tr>,
-            ...b.linhas.map((l) => <LinhaPlanilha key={l.campo} l={l} meses={meses} competencia={competencia} />),
+            ...b.linhas.map((l) => <LinhaPlanilha key={l.campo} l={l} meses={meses} comTotal={comTotal} />),
           ])}
         </tbody>
       </table>

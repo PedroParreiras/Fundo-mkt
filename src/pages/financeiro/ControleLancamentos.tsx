@@ -1,4 +1,4 @@
-import { brl, mesCurto } from '../../fundo/format'
+import { brl } from '../../fundo/format'
 import type { ControleLancamento } from '../../fundo/types'
 import { EstadoVazio } from '../shared'
 
@@ -27,10 +27,10 @@ function LinhaLancamento({ l }: { l: ControleLancamento }) {
   )
 }
 
-/** Extrato do mês escolhido: o que entrou e o que saiu da carteira. */
-export function ControleLancamentos({ itens, competencia }: { itens: ControleLancamento[]; competencia: string }) {
+/** Extrato do período: o que entrou e o que saiu da carteira. */
+export function ControleLancamentos({ itens, rotulo }: { itens: ControleLancamento[]; rotulo: string }) {
   if (!itens.length) {
-    return <EstadoVazio icone="🧾" titulo={`Sem lançamentos em ${mesCurto(competencia)}`}
+    return <EstadoVazio icone="🧾" titulo={`Sem lançamentos em ${rotulo}`}
       texto="O saldo vem dos meses anteriores." />
   }
   return (

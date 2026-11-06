@@ -2,6 +2,15 @@
 
 Mais recente primeiro. A visão atual está em `AGENT_README.md`.
 
+## 2026-11-06 · Controle financeiro: competência por mês, todos os meses ou período
+
+Pedido do usuário depois da prévia: escolher um mês mostrava a planilha inteira.
+- Competência agora tem "Todos os meses", "Período específico…" (abre De / Até) e cada mês; um mês mostra só
+  a coluna dele (sem Total). Filtros em `ControleFiltros.tsx`; API `financeiroControle(usuarioId, de, ate)`.
+- KPIs, lista por franqueado e lançamentos seguem o período; saldo = no fim do período.
+- Planilha do tamanho do conteúdo (um mês não estica a 1ª coluna pela tela). Saiu o destaque de coluna
+  (`col-on`), que não tem mais sentido. `periodoCurto` em `fundo/format.ts`.
+
 ## 2026-11-06 · Controle financeiro em planilha; reembolso só quando pago
 
 Ajustes do usuário depois da prévia em HTML:

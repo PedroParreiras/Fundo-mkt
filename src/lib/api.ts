@@ -149,9 +149,10 @@ export const api = {
   financeiroUsuarios: (competencia?: string) =>
     get<FinanceiroUsuariosResposta>(`${BASE}/financeiro/usuarios${query({ competencia })}`),
   financeiroFluxo: () => get<FluxoResposta>(`${BASE}/financeiro/fluxo`),
-  /** Sem `usuarioId`: uma linha por franqueado. Com ele: extrato da carteira. */
-  financeiroControle: (usuarioId?: number, competencia?: string) =>
-    get<ControleResposta>(`${BASE}/financeiro/controle${query({ usuario_id: usuarioId, competencia })}`),
+  /** Período `de`..`ate` (AAAA-MM; um mês = iguais; nada = o mês corrente).
+   *  Sem `usuarioId`: a rede + uma linha por franqueado. Com ele: a carteira. */
+  financeiroControle: (usuarioId?: number, de?: string, ate?: string) =>
+    get<ControleResposta>(`${BASE}/financeiro/controle${query({ usuario_id: usuarioId, de, ate })}`),
   sincronizarCreditos: () => send<SincronizacaoCreditos>('POST', `${BASE}/financeiro/sincronizar`),
   usuariosLivres: () => get<{ usuarios: UsuarioLivre[] }>(`${BASE}/financeiro/usuarios-livres`),
   /** Conectar/desconectar já reconciliam os créditos e devolvem o resumo. */

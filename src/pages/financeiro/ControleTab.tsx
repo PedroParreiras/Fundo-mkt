@@ -1,47 +1,23 @@
 import { useEffect, useState } from 'react'
-import { mesCurto } from '../../fundo/format'
+import { mesCurto, periodoCurto } from '../../fundo/format'
 import type { ControlePosicao, ControleResposta } from '../../fundo/types'
 import { api, ApiError } from '../../lib/api'
 import { Carregando, ErroBox } from '../shared'
+import { ControleFiltros, type Periodo } from './ControleFiltros'
 import { ControleLancamentos } from './ControleLancamentos'
 import { ControlePlanilha } from './ControlePlanilha'
 import { ControleTodos } from './ControleTodos'
 import { Kpi } from './Kpi'
 
-/** Acumulado até o fim do mês. Reembolso só conta depois de pago. Zero fica sem cor. */
-function PosicaoKpis({ p }: { p: ControlePosicao }) {
+/** O Total do período; o saldo é o do fim dele. Zero fica sem cor. */
+function PosicaoKpis({ p, ate }: { p: ControlePosicao; ate: string }) {
   const tom = (v: number, t: 'entrada' | 'saida') => (v ? t : undefined)
   return (
     <div className="fin-kpis">
-      <Kpi label="Saldo na carteira" valor={p.saldo} sub="acumulado" destaque />
+      <Kpi label="Saldo na carteira" valor={p.saldo} sub={`fim de ${mesCurto(ate)}`} destaque />
       <Kpi label="Entradas" valor={p.entradas} sub="créditos" tom={tom(p.entradas, 'entrada')} />
       <Kpi label="Gasto em ações" valor={p.acoes} sub="catálogo" tom={tom(p.acoes, 'saida')} />
       <Kpi label="Reembolsado" valor={p.reembolsos} sub="pago ao franqueado" tom={tom(p.reembolsos, 'saida')} />
-    </div>
-  )
-}
-
-function Filtros({ dados, onFranqueado, onCompetencia }: {
-  dados: ControleResposta
-  onFranqueado: (id: number | undefined) => void
-  onCompetencia: (c: string) => void
-}) {
-  return (
-    <div className="ger-bar">
-      <label className="fin-select fin-select--largo">
-        <span>Franqueado</span>
-        <select value={dados.usuario_id ?? ''}
-          onChange={(e) => onFranqueado(e.target.value ? Number(e.target.value) : undefined)}>
-          <option value="">Todos os franqueados</option>
-          {dados.franqueados.map((f) => <option key={f.usuario_id} value={f.usuario_id}>{f.franqueado}</option>)}
-        </select>
-      </label>
-      <label className="fin-select">
-        <span>Competência</span>
-        <select value={dados.competencia} onChange={(e) => onCompetencia(e.target.value)}>
-          {dados.competencias.map((c) => <option key={c} value={c}>{mesCurto(c)}</option>)}
-        </select>
-      </label>
     </div>
   )
 }
@@ -56,47 +32,49 @@ function Titulo({ texto, sub }: { texto: string; sub?: string }) {
 }
 
 /** Controle financeiro: fluxo de caixa POR franqueado em formato de planilha —
- *  entradas (crédito do fundo) × saídas (ações e reembolsos pagos), mês a mês.
- *  Regra no backend (fundo_mkt_service/controle.py). */
+ *  entradas (crédito do fundo) × saídas (ações e reembolsos pagos) — no mês, no
+ *  período ou em todos os meses. Regra no backend (fundo_mkt_service/controle.py). */
 export function ControleTab() {
   const [usuarioId, setUsuarioId] = useState<number | undefined>()
-  const [competencia, setCompetencia] = useState<string | undefined>()
+  // Sem de/ate o backend devolve o mês corrente.
+  const [periodo, setPeriodo] = useState<Periodo>({ modo: 'mes' })
   const [dados, setDados] = useState<ControleResposta | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let vivo = true
-    api.financeiroControle(usuarioId, competencia)
+    api.financeiroControle(usuarioId, periodo.de, periodo.ate)
       .then((d) => { if (vivo) { setDados(d); setError(null) } })
       .catch((e) => {
         if (vivo) setError(e instanceof ApiError ? e.message : 'Não consegui carregar o controle financeiro')
       })
     return () => { vivo = false }
-  }, [usuarioId, competencia])
+  }, [usuarioId, periodo.de, periodo.ate])
 
   if (!dados) return error ? <ErroBox mensagem={error} /> : <Carregando texto="Montando o fluxo de caixa…" />
 
   const f = dados.franqueado
+  const rotulo = periodo.modo === 'todos' ? 'todos os meses' : periodoCurto(dados.de, dados.ate)
   const escopo = f
     ? `${f.nome} · ${f.email}${f.na_cobranca ? '' : ' · fora da cobrança'}`
     : `Rede · ${dados.linhas.length} franqueados`
   return (
     <>
       {error && <ErroBox mensagem={error} />}
-      <Filtros dados={dados} onFranqueado={setUsuarioId} onCompetencia={setCompetencia} />
-      <PosicaoKpis p={dados.posicao} />
+      <ControleFiltros dados={dados} modo={periodo.modo} onFranqueado={setUsuarioId} onPeriodo={setPeriodo} />
+      <PosicaoKpis p={dados.posicao} ate={dados.ate} />
 
-      <Titulo texto="Fluxo de caixa" sub={escopo} />
-      <ControlePlanilha meses={dados.meses} competencia={dados.competencia} />
+      <Titulo texto={`Fluxo de caixa · ${rotulo}`} sub={escopo} />
+      <ControlePlanilha meses={dados.meses} />
 
       {f ? (
         <>
-          <Titulo texto={`Lançamentos de ${mesCurto(dados.competencia)}`} />
-          <ControleLancamentos itens={dados.lancamentos} competencia={dados.competencia} />
+          <Titulo texto={`Lançamentos · ${rotulo}`} />
+          <ControleLancamentos itens={dados.lancamentos} rotulo={rotulo} />
         </>
       ) : (
         <>
-          <Titulo texto="Por franqueado" sub={`posição até ${mesCurto(dados.competencia)}`} />
+          <Titulo texto="Por franqueado" sub={rotulo} />
           <ControleTodos linhas={dados.linhas} onEscolher={setUsuarioId} />
         </>
       )}

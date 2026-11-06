@@ -263,7 +263,8 @@ export interface SincronizacaoCreditos {
 }
 
 // ---------------------------------------------------------------- controle financeiro
-/** Acumulado até o FIM do mês escolhido. Reembolso só conta quando pago. */
+/** Coluna Total do período: fluxos somados; `saldo` = no FIM do período
+ *  (acumulado desde o início). Reembolso só conta quando pago. */
 export interface ControlePosicao {
   entradas: number
   acoes: number
@@ -316,16 +317,18 @@ export interface ControleLancamento {
 export interface ControleResposta {
   /** Do mais recente ao mais antigo, sem buracos. */
   competencias: string[]
-  competencia: string
+  /** Período mostrado (AAAA-MM, inclusive). Um mês: de = ate. */
+  de: string
+  ate: string
   franqueados: ControleFranqueado[]
   usuario_id: number | null
   /** A carteira escolhida; null = a rede inteira. */
   franqueado: ControleCarteira | null
-  /** Planilha do escopo (rede somada ou o franqueado), do 1º mês ao corrente. */
+  /** Colunas do período (rede somada ou o franqueado). */
   meses: ControleMes[]
   posicao: ControlePosicao
   /** Uma por franqueado — só na visão "Todos". */
   linhas: ControleLinha[]
-  /** Extrato do mês — só com um franqueado escolhido. */
+  /** Extrato do período — só com um franqueado escolhido. */
   lancamentos: ControleLancamento[]
 }

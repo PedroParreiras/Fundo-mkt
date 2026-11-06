@@ -19,7 +19,6 @@
   --fin-erro-bg:rgba(229,72,77,.10);
   --fin-entrada:#4ade80;
   --fin-saida:#ff7477;
-  --fin-col-on:rgba(237,177,37,.12);
 }
 [data-theme="light"] .fundo-app{
   --fin-credito:#2a78d6;
@@ -31,7 +30,6 @@
   --fin-erro-bg:rgba(229,72,77,.07);
   --fin-entrada:#15803d;
   --fin-saida:#c62828;
-  --fin-col-on:rgba(237,177,37,.14);
 }
 
 /* ---------- USUÁRIOS ---------- */
@@ -158,7 +156,11 @@
 
 /* Planilha do fluxo de caixa: linhas = entradas/saídas, colunas = meses. A 1ª
    coluna fica presa na rolagem lateral (fundo OPACO, senão os números passam por baixo). */
-.fundo-app .fin-planilha{width:100%; min-width:560px; border-collapse:collapse; font-variant-numeric:tabular-nums}
+/* Do tamanho do conteúdo (um mês não estica a 1ª coluna pela tela toda); com
+   muitos meses o quadro para em 100% e rola de lado. */
+.fundo-app .fin-planilha-wrap{width:fit-content; max-width:100%}
+.fundo-app .fin-planilha{border-collapse:collapse; font-variant-numeric:tabular-nums}
+.fundo-app .fin-planilha td, .fundo-app .fin-planilha thead th{min-width:130px}
 .fundo-app .fin-planilha th, .fundo-app .fin-planilha td{
   padding:8px 14px; font-size:13px; white-space:nowrap; border:1px solid var(--mkt-card-border);
 }
@@ -183,10 +185,6 @@
 .fundo-app .fin-planilha .pl-resultado > *{border-top:2px solid var(--mkt-card-border)}
 .fundo-app .fin-planilha .pl-saldo > *{font-weight:800; color:var(--mkt-strong); background:var(--mkt-modal-inset)}
 .fundo-app .fin-planilha .col-total{border-left:2px solid var(--mkt-card-border)}
-.fundo-app .fin-planilha td.col-on, .fundo-app .fin-planilha th.col-on{
-  background-image:linear-gradient(var(--fin-col-on), var(--fin-col-on));
-}
-.fundo-app .fin-planilha thead th.col-on{color:var(--mkt-strong)}
 .fundo-app .fin-secao-sub{
   display:block; margin-top:2px; font-size:11.5px; font-weight:600;
   color:var(--mkt-text-muted);

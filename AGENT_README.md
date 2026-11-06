@@ -119,9 +119,12 @@ backend devolve 403). **Global**: o toggle MG/GO/ES não recorta nada aqui.
   `ControleLancamentos`; `GET …/financeiro/controle`, regra em `auth/services/fundo_mkt_service/controle.py`):
   fluxo de caixa POR carteira (= usuário do HRM) em **planilha** — linhas: saldo inicial, ENTRADAS (crédito
   do fundo 85% · lançamento manual), SAÍDAS (ações do catálogo · reembolso ao franqueado), resultado, saldo
-  final; colunas = meses + Total, mês da competência destacado (`col-on`), 1ª coluna presa na rolagem.
-  Dropdowns franqueado + competência; KPIs = acumulado até o mês. "Todos" = planilha da rede somada +
-  lista por franqueado; um franqueado = planilha + lançamentos do mês. **Entrada verde, saída vermelha**
+  final; colunas = os meses do período (+ Total quando há mais de um); 1ª coluna presa na rolagem e o
+  quadro do tamanho do conteúdo (`fin-planilha-wrap`). Competência (`ControleFiltros`): um mês (só aquela
+  coluna) · "Todos os meses" · "Período específico" (abre De/Até, cada um só oferece meses coerentes); vai
+  como `de`/`ate`. KPIs = coluna Total do período (saldo = no fim dele; o saldo inicial vem de todo o
+  histórico). "Todos" os franqueados = planilha da rede somada + lista por franqueado no período; um
+  franqueado = planilha + lançamentos do período. **Entrada verde, saída vermelha**
   (`--fin-entrada`/`--fin-saida`). **Reembolso só entra quando confirmado** (decisão de 06/11): não há "a
   reembolsar"; pedido Documento pendente fica fora do fluxo e `reembolsos` é 0 até a aba Reembolso (chave
   PIX + "pago") existir. Por isso o saldo daqui difere da carteira do app quando há Documento pendente (lá

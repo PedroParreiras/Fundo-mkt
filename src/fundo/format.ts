@@ -29,6 +29,10 @@ export function mesCurto(aaaamm: string): string {
   return `${MESES_CURTOS[Number(mes) - 1] ?? mes}/${ano.slice(2)}`
 }
 
+/** Período de competência: 'set/26' ou 'set/26 a nov/26'. */
+export const periodoCurto = (de: string, ate: string) =>
+  de === ate ? mesCurto(de) : `${mesCurto(de)} a ${mesCurto(ate)}`
+
 /** Valor compacto p/ eixo e rótulo de coluna: R$ 950 · R$ 12,4 mil · R$ 1,2 mi. */
 export function brlCompacto(v: number): string {
   const abs = Math.abs(v)
